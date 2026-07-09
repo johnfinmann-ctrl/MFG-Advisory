@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MFG Advisory — The MFG Compass™</title>
-<meta name="description" content="MFG Advisory hjælper ejerledere og SMV'er med at omsætte strategi til resultater gennem The MFG Compass™ — mennesker, ledelse, kultur og forretning.">
+<title data-edit="seo-home-title">MFG Advisory — The MFG Compass™</title>
+<meta name="description" content="MFG Advisory hjælper ejerledere og SMV'er med at omsætte strategi til resultater gennem The MFG Compass™ — mennesker, ledelse, kultur og forretning." data-edit="seo-home-description">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
       <a href="kontakt.html" data-nav="kontakt">Kontakt</a>
     </nav>
     <div class="nav-cta">
-      <a class="tel" href="tel:+4560528900">60 52 89 00</a>
+      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">60 52 89 00</a>
       <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
     </div>
   </div>
@@ -54,8 +54,8 @@
   <div class="container">
     <div class="compass-head">
       <span class="eyebrow">The MFG Compass™</span>
-      <h2 class="display-lg">Fire retninger. Én metode. Konkrete resultater.</h2>
-      <p class="body-md">Vælg den retning, der fylder mest lige nu. Kompasset viser præcis, hvilke løsninger der hører til hver retning.</p>
+      <h2 class="display-lg" data-edit="compass-title">Fire retninger. Én metode. Konkrete resultater.</h2>
+      <p class="body-md" data-edit="compass-intro">Vælg den retning, der fylder mest lige nu. Kompasset viser præcis, hvilke løsninger der hører til hver retning.</p>
     </div>
 
     <div class="compass-stage">
@@ -124,26 +124,26 @@
     <div class="dir-teaser-grid">
       <a class="dir-teaser" href="mennesker.html">
         <span class="dt-ic"><svg class="icon"><use href="#i-people"/></svg></span>
-        <h4>Mennesker</h4>
-        <p>Det rigtige match, fra rekruttering til onboarding.</p>
+        <h4 data-edit="teaser-mennesker-title">Mennesker</h4>
+        <p data-edit="teaser-mennesker-desc">Det rigtige match, fra rekruttering til onboarding.</p>
         <span class="dt-link">Læs mere om Mennesker →</span>
       </a>
       <a class="dir-teaser" href="ledelse.html">
         <span class="dt-ic"><svg class="icon"><use href="#i-leadership"/></svg></span>
-        <h4>Ledelse</h4>
-        <p>Stærkere ledere, hurtigere beslutninger.</p>
+        <h4 data-edit="teaser-ledelse-title">Ledelse</h4>
+        <p data-edit="teaser-ledelse-desc">Stærkere ledere, hurtigere beslutninger.</p>
         <span class="dt-link">Læs mere om Ledelse →</span>
       </a>
       <a class="dir-teaser" href="kultur.html">
         <span class="dt-ic"><svg class="icon"><use href="#i-culture"/></svg></span>
-        <h4>Kultur</h4>
-        <p>Stærkere samarbejde og en tydelig ansvarskultur.</p>
+        <h4 data-edit="teaser-kultur-title">Kultur</h4>
+        <p data-edit="teaser-kultur-desc">Stærkere samarbejde og en tydelig ansvarskultur.</p>
         <span class="dt-link">Læs mere om Kultur →</span>
       </a>
       <a class="dir-teaser" href="forretning.html">
         <span class="dt-ic"><svg class="icon"><use href="#i-growth"/></svg></span>
-        <h4>Forretning</h4>
-        <p>Bedre eksekvering og en tydelig vej til vækst.</p>
+        <h4 data-edit="teaser-forretning-title">Forretning</h4>
+        <p data-edit="teaser-forretning-desc">Bedre eksekvering og en tydelig vej til vækst.</p>
         <span class="dt-link">Læs mere om Forretning →</span>
       </a>
     </div>
@@ -154,8 +154,8 @@
 <!-- ===== HOME CTA ===== -->
 <section class="home-cta">
   <div class="container">
-    <h2 class="display-md">Klar til at finde jeres retning?</h2>
-    <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
+    <h2 class="display-md" data-edit="home-cta-title">Klar til at finde jeres retning?</h2>
+    <a class="btn btn-copper" href="kontakt.html" data-edit="home-cta-button">Book en samtale</a>
   </div>
 </section>
 </main>
@@ -168,12 +168,15 @@
       <span>·</span>
       <span>CVR: <span data-edit="footer-cvr">tilføjes ved registrering</span></span>
     </div>
-    <div>© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
+    <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
     <div class="fl">Bygget af <a href="index.html">Nordic Operations</a></div>
   </div>
 </footer>
 
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/content-store.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/content-loader.js"></script>
 
 </body>
 </html>

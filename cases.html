@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cases og dokumenterede resultater — MFG Advisory</title>
-<meta name="description" content="Fire eksempler på dokumenterede resultater fra The MFG Compass™.">
+<title data-edit="seo-cases-title">Cases og dokumenterede resultater — MFG Advisory</title>
+<meta name="description" content="Fire eksempler på dokumenterede resultater fra The MFG Compass™." data-edit="seo-cases-description">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
       <a href="kontakt.html" data-nav="kontakt">Kontakt</a>
     </nav>
     <div class="nav-cta">
-      <a class="tel" href="tel:+4560528900">60 52 89 00</a>
+      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">60 52 89 00</a>
       <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
     </div>
   </div>
@@ -39,8 +39,8 @@
   <section class="subpage-hero">
     <div class="container">
       <span class="eyebrow">Dokumenteret</span>
-      <h1 class="display-lg">Cases og dokumenterede resultater</h1>
-      <p class="body-lg">Fire eksempler på, hvad der sker, når indsatsen sættes ind det rigtige sted i The MFG Compass™.</p>
+      <h1 class="display-lg" data-edit="cases-h1">Cases og dokumenterede resultater</h1>
+      <p class="body-lg" data-edit="cases-intro">Fire eksempler på, hvad der sker, når indsatsen sættes ind det rigtige sted i The MFG Compass™.</p>
     </div>
   </section>
   <section class="cases-section" id="cases-body">
@@ -48,26 +48,26 @@
       <div class="cases-grid">
         <a class="case-teaser" href="mennesker.html#case-mennesker" data-case="case-mennesker">
           <span class="ct-tag"><svg class="icon"><use href="#i-people"/></svg> Mennesker</span>
-          <h4>Produktionsvirksomhed, ca. 60 medarbejdere</h4>
-          <p>Kortere time-to-hire og markant færre opsigelser i prøvetiden efter ny rekrutteringsproces og IPA nordic-profiler.</p>
+          <h4 data-edit="cases-teaser-mennesker-title">Produktionsvirksomhed, ca. 60 medarbejdere</h4>
+          <p data-edit="cases-teaser-mennesker-desc">Kortere time-to-hire og markant færre opsigelser i prøvetiden efter ny rekrutteringsproces og IPA nordic-profiler.</p>
           <span class="ct-link">Se hele casen →</span>
         </a>
         <a class="case-teaser" href="ledelse.html#case-ledelse" data-case="case-ledelse">
           <span class="ct-tag"><svg class="icon"><use href="#i-leadership"/></svg> Ledelse</span>
-          <h4>Ejerledet handelsvirksomhed, generationsskifte</h4>
-          <p>Hurtigere beslutninger og en ledelsesstil, organisationen kunne følge, efter et halvt års fast sparring.</p>
+          <h4 data-edit="cases-teaser-ledelse-title">Ejerledet handelsvirksomhed, generationsskifte</h4>
+          <p data-edit="cases-teaser-ledelse-desc">Hurtigere beslutninger og en ledelsesstil, organisationen kunne følge, efter et halvt års fast sparring.</p>
           <span class="ct-link">Se hele casen →</span>
         </a>
         <a class="case-teaser" href="kultur.html#case-kultur" data-case="case-kultur">
           <span class="ct-tag"><svg class="icon"><use href="#i-culture"/></svg> Kultur</span>
-          <h4>Servicevirksomhed, to afdelinger i konflikt</h4>
-          <p>Færre eskalerede konflikter og hurtigere afklaring i det daglige samarbejde efter fælles teamudviklingsforløb.</p>
+          <h4 data-edit="cases-teaser-kultur-title">Servicevirksomhed, to afdelinger i konflikt</h4>
+          <p data-edit="cases-teaser-kultur-desc">Færre eskalerede konflikter og hurtigere afklaring i det daglige samarbejde efter fælles teamudviklingsforløb.</p>
           <span class="ct-link">Se hele casen →</span>
         </a>
         <a class="case-teaser" href="forretning.html#case-forretning" data-case="case-forretning">
           <span class="ct-tag"><svg class="icon"><use href="#i-growth"/></svg> Forretning</span>
-          <h4>Voksende SMV, manuelle HR-processer</h4>
-          <p>Betydeligt mindre administration og bedre datagrundlag efter uvildig valg og implementering af HR-system.</p>
+          <h4 data-edit="cases-teaser-forretning-title">Voksende SMV, manuelle HR-processer</h4>
+          <p data-edit="cases-teaser-forretning-desc">Betydeligt mindre administration og bedre datagrundlag efter uvildig valg og implementering af HR-system.</p>
           <span class="ct-link">Se hele casen →</span>
         </a>
       </div>
@@ -83,12 +83,15 @@
       <span>·</span>
       <span>CVR: <span data-edit="footer-cvr">tilføjes ved registrering</span></span>
     </div>
-    <div>© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
+    <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
     <div class="fl">Bygget af <a href="index.html">Nordic Operations</a></div>
   </div>
 </footer>
 
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/content-store.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/content-loader.js"></script>
 
 </body>
 </html>

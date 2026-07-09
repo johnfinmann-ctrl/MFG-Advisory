@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>MFG Advisory — Admin</title>
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<!-- ===== LOGIN GATE ===== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h1>MFG Advisory</h1>
+    <p>Adminpanel — indtast kode for at fortsætte</p>
+    <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" placeholder="••••••" autofocus>
+    <button class="btn btn-primary" id="pinSubmit" style="width:100%">Log ind</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">Standardkode: <code>mfg2026</code> — skift den under "Indstillinger" efter første login.</div>
+  </div>
+</div>
+
+<!-- ===== ADMIN APP ===== -->
+<div class="admin-app" id="adminApp">
+  <div class="admin-header">
+    <div>
+      <h1 style="display:inline">MFG Advisory · Admin</h1>
+      <span class="backend-pill" id="backendPill">—</span>
+    </div>
+    <div class="admin-header-actions">
+      <a href="index.html" target="_blank" rel="noopener">Se hjemmesiden ↗</a>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Log ud</button>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <nav class="admin-nav" id="adminNav">
+      <!-- populated by admin.js -->
+    </nav>
+
+    <main class="admin-main">
+      <div id="sectionsContainer">
+        <div class="loading-row">Indlæser indhold fra hjemmesidens sider …</div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/content-store.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

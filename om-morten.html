@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Om Morten Foged Guglielmetti — MFG Advisory</title>
-<meta name="description" content="Morten Foged Guglielmetti, Founder & Senior Advisor hos MFG Advisory.">
+<title data-edit="seo-om-title">Om Morten Foged Guglielmetti — MFG Advisory</title>
+<meta name="description" content="Morten Foged Guglielmetti, Founder & Senior Advisor hos MFG Advisory." data-edit="seo-om-description">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
       <a href="kontakt.html" data-nav="kontakt">Kontakt</a>
     </nav>
     <div class="nav-cta">
-      <a class="tel" href="tel:+4560528900">60 52 89 00</a>
+      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">60 52 89 00</a>
       <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
     </div>
   </div>
@@ -49,9 +49,9 @@
       <div class="om-copy">
         <p data-edit="om-bio-1">Jeg rådgiver ejerledere og SMV'er om ledelse, mennesker, kultur og forretning — med udgangspunkt i The MFG Compass™. Metoden er bygget på år med praktisk ledelseserfaring, ikke teori alene.</p>
         <p data-edit="om-bio-2">Min tilgang er ordentlighed, respekt og empati — kombineret med en klar forventning om, at rådgivningen skal føre til konkrete resultater.</p>
-        <div class="cred-row" data-edit="om-creds">
-          <span class="cred">Ledelsesrådgivning</span>
-          <span class="cred">IPA nordic-certificeret</span>
+        <div class="cred-row">
+          <span class="cred" data-edit="om-cred-1">Ledelsesrådgivning</span>
+          <span class="cred" data-edit="om-cred-2">IPA nordic-certificeret</span>
         </div>
       </div>
     </div>
@@ -66,12 +66,15 @@
       <span>·</span>
       <span>CVR: <span data-edit="footer-cvr">tilføjes ved registrering</span></span>
     </div>
-    <div>© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
+    <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
     <div class="fl">Bygget af <a href="index.html">Nordic Operations</a></div>
   </div>
 </footer>
 
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/content-store.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/content-loader.js"></script>
 
 </body>
 </html>

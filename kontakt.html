@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kontakt — MFG Advisory</title>
-<meta name="description" content="Book en strategisk samtale med MFG Advisory.">
+<title data-edit="seo-kontakt-title">Kontakt — MFG Advisory</title>
+<meta name="description" content="Book en strategisk samtale med MFG Advisory." data-edit="seo-kontakt-description">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
       <a href="kontakt.html" data-nav="kontakt" class="active">Kontakt</a>
     </nav>
     <div class="nav-cta">
-      <a class="tel" href="tel:+4560528900">60 52 89 00</a>
+      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">60 52 89 00</a>
       <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
     </div>
   </div>
@@ -47,14 +47,14 @@
   <section class="kontakt">
     <div class="container kontakt-inner">
       <div class="kontakt-cards">
-        <a class="kcard" href="tel:+4560528900" data-edit="kontakt-phone">
+        <a class="kcard" href="tel:+4560528900">
           <div class="kic"><svg class="icon"><use href="#i-phone"/></svg></div>
-          <div class="kt">60 52 89 00</div>
+          <div class="kt" data-edit="contact-phone">60 52 89 00</div>
           <div class="ks">Ring direkte</div>
         </a>
-        <a class="kcard" href="mailto:morten@mfgadvisory.dk" data-edit="kontakt-email">
+        <a class="kcard" href="mailto:morten@mfgadvisory.dk">
           <div class="kic"><svg class="icon"><use href="#i-mail"/></svg></div>
-          <div class="kt">morten@mfgadvisory.dk</div>
+          <div class="kt" data-edit="contact-email">morten@mfgadvisory.dk</div>
           <div class="ks">Skriv en mail</div>
         </a>
         <a class="kcard" href="#kontakt-form">
@@ -65,8 +65,8 @@
       </div>
 
       <div class="kontakt-form-wrap" id="kontakt-form">
-        <h3>Book en strategisk samtale</h3>
-        <p class="kf-sub">Udfyld formularen — den åbner en forudfyldt mail til morten@mfgadvisory.dk. (Formularen er klar til at blive koblet til et backend/mailservice senere.)</p>
+        <h3 data-edit="kontakt-form-title">Book en strategisk samtale</h3>
+        <p class="kf-sub" data-edit="kontakt-form-sub">Udfyld formularen — den åbner en forudfyldt mail til morten@mfgadvisory.dk. (Formularen er klar til at blive koblet til et backend/mailservice senere.)</p>
         <form class="kontakt-form" id="kontaktForm">
           <div>
             <label for="kf-name">Navn</label>
@@ -86,21 +86,21 @@
         </form>
       </div>
 
-      <div class="kontakt-person" data-edit="kontakt-person">
-        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti">
+      <div class="kontakt-person">
+        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti" data-edit="kontakt-person-img">
         <div>
-          <h4>Morten Foged Guglielmetti</h4>
-          <div class="role">Founder &amp; Senior Advisor</div>
-          <p>20+ års erfaring med ledelse og operationel drift. Rådgivning bygget på ordentlighed, respekt og empati — med fokus på målbare resultater.</p>
+          <h4 data-edit="kontakt-person-name">Morten Foged Guglielmetti</h4>
+          <div class="role" data-edit="kontakt-person-role">Founder &amp; Senior Advisor</div>
+          <p data-edit="kontakt-person-bio">20+ års erfaring med ledelse og operationel drift. Rådgivning bygget på ordentlighed, respekt og empati — med fokus på målbare resultater.</p>
         </div>
       </div>
 
-      <a class="li-link" href="#" aria-label="LinkedIn — indsæt link">
+      <a class="li-link" href="#" aria-label="LinkedIn — indsæt link" data-edit-href="social-linkedin">
         <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
         LinkedIn
       </a>
 
-      <p class="kontakt-closing">Lad os finde jeres retning i kompasset.</p>
+      <p class="kontakt-closing" data-edit="kontakt-closing">Lad os finde jeres retning i kompasset.</p>
     </div>
   </section>
 </main>
@@ -113,12 +113,15 @@
       <span>·</span>
       <span>CVR: <span data-edit="footer-cvr">tilføjes ved registrering</span></span>
     </div>
-    <div>© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
+    <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
     <div class="fl">Bygget af <a href="index.html">Nordic Operations</a></div>
   </div>
 </footer>
 
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/content-store.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/content-loader.js"></script>
 
 </body>
 </html>
