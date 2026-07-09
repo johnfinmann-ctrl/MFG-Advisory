@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kontakt — MFG Advisory</title>
+<meta name="description" content="Book en strategisk samtale med MFG Advisory.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="nav-wrap">
+    <a href="index.html" class="logo" data-nav="home">
+      <span class="mono">MFG</span>
+      <span class="word">MFG <em>Advisory</em></span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html" data-nav="home">Forside</a>
+      <a href="mennesker.html" data-nav="mennesker">Mennesker</a>
+      <a href="ledelse.html" data-nav="ledelse">Ledelse</a>
+      <a href="kultur.html" data-nav="kultur">Kultur</a>
+      <a href="forretning.html" data-nav="forretning">Forretning</a>
+      <a href="cases.html" data-nav="cases">Cases</a>
+      <a href="om-morten.html" data-nav="om">Om Morten</a>
+      <a href="kontakt.html" data-nav="kontakt" class="active">Kontakt</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="tel" href="tel:+4560528900">60 52 89 00</a>
+      <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="subpage-hero subpage-hero--dark">
+    <div class="container">
+      <span class="eyebrow">Kontakt</span>
+      <h1 class="display-lg" data-edit="kontakt-hero-title">Jeg skaber resultater gennem relationer, struktur og stærk kommerciel forståelse.</h1>
+      <p class="body-lg" data-edit="kontakt-hero-body">Jeg hjælper ejerledere og ledelsesteams med at skabe retning, udvikle mennesker og omsætte strategi til målbare resultater gennem The MFG Compass™.</p>
+      <a class="btn btn-copper" href="#kontakt-form">Book en strategisk samtale</a>
+    </div>
+  </section>
+  <section class="kontakt">
+    <div class="container kontakt-inner">
+      <div class="kontakt-cards">
+        <a class="kcard" href="tel:+4560528900" data-edit="kontakt-phone">
+          <div class="kic"><svg class="icon"><use href="#i-phone"/></svg></div>
+          <div class="kt">60 52 89 00</div>
+          <div class="ks">Ring direkte</div>
+        </a>
+        <a class="kcard" href="mailto:morten@mfgadvisory.dk" data-edit="kontakt-email">
+          <div class="kic"><svg class="icon"><use href="#i-mail"/></svg></div>
+          <div class="kt">morten@mfgadvisory.dk</div>
+          <div class="ks">Skriv en mail</div>
+        </a>
+        <a class="kcard" href="#kontakt-form">
+          <div class="kic"><svg class="icon"><use href="#i-message"/></svg></div>
+          <div class="kt">Kontaktformular</div>
+          <div class="ks">Skriv en besked</div>
+        </a>
+      </div>
+
+      <div class="kontakt-form-wrap" id="kontakt-form">
+        <h3>Book en strategisk samtale</h3>
+        <p class="kf-sub">Udfyld formularen — den åbner en forudfyldt mail til morten@mfgadvisory.dk. (Formularen er klar til at blive koblet til et backend/mailservice senere.)</p>
+        <form class="kontakt-form" id="kontaktForm">
+          <div>
+            <label for="kf-name">Navn</label>
+            <input type="text" id="kf-name" name="name" required>
+          </div>
+          <div>
+            <label for="kf-email">E-mail</label>
+            <input type="email" id="kf-email" name="email" required>
+          </div>
+          <div class="full">
+            <label for="kf-message">Besked</label>
+            <textarea id="kf-message" name="message" required></textarea>
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-copper">Send besked</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="kontakt-person" data-edit="kontakt-person">
+        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti">
+        <div>
+          <h4>Morten Foged Guglielmetti</h4>
+          <div class="role">Founder &amp; Senior Advisor</div>
+          <p>20+ års erfaring med ledelse og operationel drift. Rådgivning bygget på ordentlighed, respekt og empati — med fokus på målbare resultater.</p>
+        </div>
+      </div>
+
+      <a class="li-link" href="#" aria-label="LinkedIn — indsæt link">
+        <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+        LinkedIn
+      </a>
+
+      <p class="kontakt-closing">Lad os finde jeres retning i kompasset.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-brand">MFG <em>Advisory</em></div>
+    <div class="footer-links">
+      <a href="kontakt.html">Kontakt</a>
+      <span>·</span>
+      <span>CVR: <span data-edit="footer-cvr">tilføjes ved registrering</span></span>
+    </div>
+    <div>© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
+    <div class="fl">Bygget af <a href="index.html">Nordic Operations</a></div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>

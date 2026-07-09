@@ -151,8 +151,7 @@
   .home-cta h2{margin-bottom:24px}
 
   /* ===== PAGE ROUTING ===== */
-  .page{display:none}
-  .page.active{display:block}
+  /* (removed — this is now a real multi-page site; each .html file is a standalone page) */
 
   /* ===== HOMEPAGE DIRECTION TEASERS ===== */
   .dir-teaser-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:76px;text-align:left;position:relative;z-index:2}

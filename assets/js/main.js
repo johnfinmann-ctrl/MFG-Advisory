@@ -15,59 +15,11 @@
       console.warn('MFG icon sprite could not be loaded (assets/icons/icons.svg). Icons will be blank if opened via file:// — serve the project over http(s) instead.');
     });
 
-  const PAGES = ['mennesker','ledelse','kultur','forretning','cases','om','kontakt'];
+  // Cosmetic needle rotation when a compass direction is chosen (brief flourish before navigation)
   const needle = document.getElementById('needle');
-
-  function showPage(name){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    const el = document.getElementById('page-'+name);
-    if(el) el.classList.add('active');
-  }
-
-  function setActiveNav(name){
-    document.querySelectorAll('.main-nav a, .logo').forEach(a=>{
-      a.classList.toggle('active', a.dataset.nav === name);
-    });
-  }
-
-  function route(){
-    const raw = (location.hash || '').replace('#','');
-    if(PAGES.includes(raw)){
-      showPage(raw);
-      setActiveNav(raw);
-      window.scrollTo(0,0);
-    } else {
-      showPage('home');
-      setActiveNav('home');
-      if(raw){
-        setTimeout(()=>{
-          const el = document.getElementById(raw);
-          if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-        }, 60);
-      }
-    }
-  }
-
-  window.addEventListener('hashchange', route);
-  window.addEventListener('DOMContentLoaded', route);
-  route();
-
-  // Cosmetic needle rotation when a compass direction is chosen
   document.querySelectorAll('.dir-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       if(needle) needle.style.transform = 'translate(-50%,-100%) rotate('+btn.dataset.angle+'deg)';
-    });
-  });
-
-  // Case teasers: navigate to the subpage, then scroll to the specific case card
-  document.querySelectorAll('.case-teaser').forEach(link=>{
-    link.addEventListener('click', ()=>{
-      const caseId = link.dataset.case;
-      if(!caseId) return;
-      setTimeout(()=>{
-        const el = document.getElementById(caseId);
-        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-      }, 120);
     });
   });
 
