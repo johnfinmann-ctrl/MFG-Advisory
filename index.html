@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-edit="seo-home-title">MFG Advisory — The MFG Compass™</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+<link rel="shortcut icon" href="assets/images/favicon.ico">
 <meta name="description" content="MFG Advisory hjælper ejerledere og SMV'er med at omsætte strategi til resultater gennem The MFG Compass™ — mennesker, ledelse, kultur og forretning." data-edit="seo-home-description">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,21 +40,8 @@
 </header>
 
 <main>
-<!-- ===== HERO ===== -->
-<section class="hero">
-  <div class="container hero-inner">
-    <span class="eyebrow" data-edit="hero-eyebrow">MFG Advisory</span>
-    <h1 class="display-xl" data-edit="hero-title">Når mennesker lykkes,<br>følger resultaterne med</h1>
-    <p class="body-lg" data-edit="hero-body">Jeg hjælper ejerledere og SMV'er med at udvikle ledere, styrke samarbejdet og skabe resultater gennem ordentlighed, respekt og empati.</p>
-    <div class="hero-actions">
-      <a class="btn btn-copper" href="#compass" data-edit="hero-cta-primary">Mød The MFG Compass™</a>
-      <a class="btn btn-ghost" href="kontakt.html" data-edit="hero-cta-secondary">Book en samtale</a>
-    </div>
-  </div>
-</section>
-
-<!-- ===== COMPASS ===== -->
-<section class="compass-section" id="compass">
+<!-- ===== COMPASS — first, largest visual element ===== -->
+<section class="compass-section compass-section--home" id="compass">
   <div class="container">
     <div class="compass-head">
       <span class="eyebrow">The MFG Compass™</span>
@@ -58,11 +49,12 @@
       <p class="body-md" data-edit="compass-intro">Vælg den retning, der fylder mest lige nu. Kompasset viser præcis, hvilke løsninger der hører til hver retning.</p>
     </div>
 
-    <div class="compass-stage">
+    <div class="compass-stage compass-stage--home">
       <svg class="compass-rose" viewBox="0 0 400 400" aria-hidden="true">
+      <circle cx="200" cy="200" r="196" fill="none" stroke="var(--sand)" stroke-width="1" opacity="0.30"/>
       <circle cx="200" cy="200" r="192" fill="none" stroke="var(--copper)" stroke-width="1" opacity="0.55"/>
       <circle cx="200" cy="200" r="150" fill="none" stroke="var(--copper)" stroke-width="1" opacity="0.35"/>
-      <circle cx="200" cy="200" r="108" fill="none" stroke="var(--copper)" stroke-width="1" opacity="0.25"/>
+      <circle cx="200" cy="200" r="108" fill="none" stroke="var(--sand)" stroke-width="1" opacity="0.30"/>
       <line x1="200" y1="16" x2="200" y2="384" stroke="var(--copper)" stroke-width="1" opacity="0.22"/>
       <line x1="16" y1="200" x2="384" y2="200" stroke="var(--copper)" stroke-width="1" opacity="0.22"/>
       <line x1="70" y1="70" x2="330" y2="330" stroke="var(--copper)" stroke-width="0.75" opacity="0.14"/>
@@ -120,7 +112,25 @@
         <span class="ic"><svg class="icon"><use href="#i-culture"/></svg></span><span class="lb">Kultur</span>
       </a>
     </div>
+  </div>
+</section>
 
+<!-- ===== HERO TEXT — below the compass ===== -->
+<section class="hero hero--under-compass">
+  <div class="container hero-inner">
+    <span class="eyebrow" data-edit="hero-eyebrow">MFG Advisory</span>
+    <h1 class="display-xl" data-edit="hero-title">Når mennesker lykkes,<br>følger resultaterne med</h1>
+    <p class="body-lg" data-edit="hero-body">Jeg hjælper ejerledere og SMV'er med at udvikle ledere, styrke samarbejdet og skabe resultater gennem ordentlighed, respekt og empati.</p>
+    <div class="hero-actions">
+      <a class="btn btn-copper" href="#compass" data-edit="hero-cta-primary">Mød The MFG Compass™</a>
+      <a class="btn btn-ghost" href="kontakt.html" data-edit="hero-cta-secondary">Book en samtale</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOUR DIRECTIONS — short intro ===== -->
+<section class="directions-intro">
+  <div class="container">
     <div class="dir-teaser-grid">
       <a class="dir-teaser" href="mennesker.html">
         <span class="dt-ic"><svg class="icon"><use href="#i-people"/></svg></span>
@@ -147,7 +157,6 @@
         <span class="dt-link">Læs mere om Forretning →</span>
       </a>
     </div>
-
   </div>
 </section>
 
@@ -177,6 +186,7 @@
 <script src="assets/js/content-store.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/content-loader.js"></script>
+<script src="assets/js/cookie-consent.js"></script>
 
 </body>
 </html>
