@@ -4,6 +4,29 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC5 — hvad er nyt
+
+- **CMS-menuen** er nu: Dashboard, Forside, **The MFG Compass™**, Mennesker,
+  Ledelse, Kultur, Forretning, Cases, Testimonials, Om Morten, **Kontakt**
+  (samler nu også telefon/e-mail/CVR/LinkedIn/adresse ét sted), SEO,
+  **Analytics**, **Cookiebanner**, Indstillinger.
+- **Cases** har fået flere felter: Kunde (med "skjul kundenavn"-checkbox),
+  Sekundær Compass-retning, PDF-upload og Galleri (flere billeder).
+- **Testimonials** har nu separate felter for Titel og Firma (i stedet for
+  ét kombineret felt), samt et separat Logo-felt ud over personfotoet.
+- **Adresse** er nu et redigerbart felt under Kontakt — tomt som standard,
+  så der ikke vises geografisk information, medmindre du selv udfylder det.
+- **Favicon** kan nu udskiftes direkte fra Indstillinger uden at skulle
+  håndtere filer manuelt.
+- **Om Morten**: LinkedIn, Mail og Telefon vises nu alle tre diskret under
+  portrættet (ikke kun LinkedIn).
+- **Forsiden**: Kompasset er nu det første store element, efterfulgt af
+  hero-tekst, kort introduktion til de fire retninger, et udpluk af cases,
+  en kort Om Morten-præsentation og en afsluttende kontakt-CTA.
+- Kompasset har fået fire fremhævede "arme", der bliver gyldne ved hover
+  over den tilhørende retning, plus en creme-farvet detaljering og en
+  bundtekst-caption under selve kompasset.
+
 ## Sådan kommer du i gang (0 opsætning)
 
 1. Åbn `admin.html` i browseren (lokalt eller via GitHub Pages).
@@ -20,24 +43,31 @@ hvor de blev gemt — hvis du redigerer fra din bærbare, ser andre enheder
 
 ## Adminpanelets menu
 
-**Dashboard** · **Forside** · **Kompasset** · **Mennesker** · **Ledelse** ·
-**Kultur** · **Forretning** · **Cases** · **Testimonials** · **Om Morten** ·
-**Kontakt** · **SEO** · **Indstillinger**
+**Dashboard** · **Forside** · **The MFG Compass™** · **Mennesker** ·
+**Ledelse** · **Kultur** · **Forretning** · **Cases** · **Testimonials** ·
+**Om Morten** · **Kontakt** · **SEO** · **Analytics** · **Cookiebanner** ·
+**Indstillinger**
 
-- **Kompasset** samler Compass-titel/intro og de fire retningers korte
-  forsidetekster ét sted (adskilt fra Forsidens hero-tekst).
+- **The MFG Compass™** samler Compass-titel/intro og de fire retningers
+  korte forsidetekster ét sted (adskilt fra Forsidens hero-tekst).
 - **Cases** og **Testimonials** har fuld opret/redigér/slet-funktion uden
-  kode: titel, branche, udfordring, løsning, resultat, billede og
-  tilknyttet Compass-retning (cases) / navn, titel/virksomhed, citat,
-  billede og retning (testimonials). Begge vises automatisk nederst på
-  Cases-siden, så snart mindst én er oprettet.
-- **Om Morten** har nu separate, redigerbare lister for **Kompetencer**
-  og **Certificeringer** (tilføj/fjern linjer frit).
+  kode. Cases: titel, branche, kunde (kan skjules), udfordring, løsning,
+  resultat, billede, PDF, galleri, primær og sekundær Compass-retning.
+  Testimonials: navn, titel, firma, citat, foto, logo, Compass-retning.
+  Begge vises automatisk nederst på Cases-siden, så snart mindst én er
+  oprettet.
+- **Kontakt** indeholder nu både sidens egne tekster OG de globale
+  kontaktoplysninger (telefon, e-mail, CVR, LinkedIn, adresse), som
+  automatisk bruges alle steder på hjemmesiden.
+- **Om Morten** har separate, redigerbare lister for **Kompetencer** og
+  **Certificeringer** (tilføj/fjern linjer frit).
 
 ## Sådan aktiverer du Supabase (delt lagring på tværs af enheder)
 
 1. Opret et gratis projekt på https://supabase.com
 2. Gå til **SQL Editor** og kør hele indholdet af `supabase/schema.sql`
+   (opretter tabellen `content`, alle RLS-policies, og storage-bucketten
+   `mfg-media` med sine egne policies).
 3. Gå til **Project Settings → API** og kopiér:
    - Project URL
    - "anon public" nøglen
@@ -66,15 +96,16 @@ mail). For at sende rigtige mails uden mailto:
 4. Formularen sender nu direkte til den service — mailto bruges kun som
    fallback, hvis kaldet skulde fejle.
 
-Feltet er tomt som standard — indtil du udfylder det, virker formularen
-præcis som før (mailto).
+Feltet er tomt som standard, og der er ingen hårdkodede API-nøgler nogen
+steder i koden — indtil du udfylder det, virker formularen præcis som før
+(mailto).
 
 ## Analytics (Plausible eller Google Analytics)
 
 Ingen tracking er aktiveret som standard, og der er ikke indsat noget
 tracking-ID nogen steder i koden. For at slå det til:
 
-1. Gå til **Admin → Indstillinger → Analytics**.
+1. Gå til **Admin → Analytics**.
 2. Vælg udbyder (Plausible eller Google Analytics).
 3. Indsæt dit Site-ID (Plausible, fx `mfgadvisory.dk`) eller
    Measurement-ID (Google Analytics, fx `G-XXXXXXX`).
@@ -90,14 +121,14 @@ Vises automatisk ved første besøg, med to valg: **"Kun nødvendige"** og
 **"Accepter alle"**. Valget gemmes i browserens LocalStorage
 (`mfg_cookie_consent`), så banneret ikke vises igen ved senere besøg.
 Kun ved "Accepter alle" indlæses et evt. konfigureret analytics-script.
+Status og en kort forklaring findes under **Admin → Cookiebanner**.
 
 ## Favicon
 
-`assets/images/favicon.ico` (+ PNG-varianter i samme mappe) matcher det
-eksisterende MFG-monogram fra headeren (navy cirkel, guld ring og tekst).
-Vil du bruge et andet/officielt logo senere, udskift blot filerne i
-`assets/images/favicon*.png` og `favicon.ico` — alle sider peger allerede
-på dem.
+Udskiftes direkte fra **Admin → Indstillinger → Favicon** — upload et
+billede, og det opdateres på alle sider med det samme (kræver at siden
+køres over http/https, ikke ved at åbne filen direkte). Standard-faviconen
+matcher det eksisterende MFG-monogram fra headeren.
 
 ## 404-side
 
@@ -107,17 +138,17 @@ automatisk for alle ugyldige URL'er uden yderligere opsætning.
 
 ## Hvad kan redigeres
 
-- **Alt tekstindhold** på alle 8 sider (overskrifter, brødtekst, knapper,
+- **Alt tekstindhold** på alle sider (overskrifter, brødtekst, knapper,
   udfordringer, løsninger, case-indhold, indsigter)
-- **Billeder** — Mortens portræt (Om Morten + Kontakt-siden), med
-  filupload direkte i adminpanelet
-- **Kontaktoplysninger** — telefon, e-mail, CVR, LinkedIn-link (ét sted,
-  bruges automatisk alle steder på siden, inkl. `tel:`/`mailto:`-links)
-- **SEO-data** — titel og meta-beskrivelse for hver enkelt side, samlet
-  i én oversigt
+- **Billeder** — Mortens portræt (bruges konsekvent på Forside, Om Morten
+  og Kontakt), med filupload direkte i adminpanelet
+- **Kontaktoplysninger** — telefon, e-mail, CVR, adresse, LinkedIn-link
+  (ét sted, bruges automatisk alle steder på siden, inkl. `tel:`/`mailto:`)
+- **SEO-data** — titel og meta-beskrivelse for hver enkelt side
 - **CTA-knapper** — teksten på alle "Book en samtale"-knapper m.fl.
 - **Cases og Testimonials** — fuld opret/redigér/slet uden kode (se ovenfor)
 - **Kompetencer og Certificeringer** — frie, redigerbare lister på Om Morten
+- **Favicon** — direkte upload, se ovenfor
 
 ## Hvordan det virker teknisk (til fremtidig CMS-udvidelse)
 
@@ -135,8 +166,8 @@ automatisk for alle ugyldige URL'er uden yderligere opsætning.
   overskriver kun de elementer, hvor der findes en gemt ændring. Uden
   gemte ændringer (eller hvis JavaScript fejler) vises den originale,
   designede tekst — siden går aldrig i stykker. Den samme fil renderer nu
-  også Cases, Testimonials og Om Mortens kompetence-/certificeringslister
-  dynamisk, når data findes.
+  også Cases (inkl. galleri/PDF/kunde-visning), Testimonials (inkl. logo)
+  og Om Mortens kompetence-/certificeringslister dynamisk, når data findes.
 
 ## Vigtige begrænsninger (vær ærlig om dette)
 
@@ -150,16 +181,17 @@ automatisk for alle ugyldige URL'er uden yderligere opsætning.
   læsning/skrivning med den nøgle. Har I brug for skarpere adgangskontrol
   senere, er næste skridt Supabase Auth (rigtigt login) — det er ikke
   bygget her, men arkitekturen er klar til at blive udvidet med det.
-- Billeder gemt uden Supabase Storage (dvs. i ren LocalStorage-tilstand)
-  gemmes som base64 direkte i den samme JSON-blob som alt andet tekst-
-  indhold. Det virker fint til nogle få billeder, men er ikke en
-  langsigtet løsning for mange/store billeder — actives Supabase Storage,
-  hvis det bliver behov for det (sker automatisk, når Supabase er sat op).
+- Billeder, PDF'er og galleri-filer gemt uden Supabase Storage (dvs. i
+  ren LocalStorage-tilstand) gemmes som base64 direkte i den samme
+  JSON-blob som alt andet tekstindhold. Det virker fint til nogle få
+  filer, men er ikke en langsigtet løsning for mange/store filer —
+  aktiveres Supabase Storage automatisk, når Supabase er sat op.
 - **Kompasset og MFG Icon Library**: der var ikke vedhæftet et
-  referencebillede af det officielle kompas eller en officiel ikonfil til
-  denne sprint. Kompasset er derfor bygget videre på den eksisterende,
-  selvbyggede navy/guld-kompasrose (nu større og med en sand-tonet ring
-  tilføjet), og ikonerne er fortsat det tidligere byggede, konsistente
-  SVG-linjeikonsæt. Send referencematerialet, så tilpasses begge dele
-  præcist.
+  referencebillede (Compass-plakaten) eller en officiel ikonfil til denne
+  sprint. Kompasset er derfor videreudviklet på den eksisterende,
+  selvbyggede navy/guld/creme-kompasrose (nu med fremhævede "arme" ved
+  hover og en bundtekst-caption), og ikonerne er fortsat det tidligere
+  byggede, konsistente SVG-linjeikonsæt. Send referencematerialet, så
+  tilpasses begge dele pixelnært.
+
 

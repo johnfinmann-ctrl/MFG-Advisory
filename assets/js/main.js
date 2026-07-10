@@ -18,9 +18,15 @@
   // Cosmetic needle rotation when a compass direction is chosen (brief flourish before navigation)
   const needle = document.getElementById('needle');
   document.querySelectorAll('.dir-btn').forEach(btn=>{
+    const dir = btn.dataset.dir;
+    const arm = document.getElementById('arm-' + dir);
     btn.addEventListener('click', ()=>{
       if(needle) needle.style.transform = 'translate(-50%,-100%) rotate('+btn.dataset.angle+'deg)';
     });
+    btn.addEventListener('mouseenter', ()=>{ if(arm) arm.classList.add('arm-active'); });
+    btn.addEventListener('mouseleave', ()=>{ if(arm) arm.classList.remove('arm-active'); });
+    btn.addEventListener('focus', ()=>{ if(arm) arm.classList.add('arm-active'); });
+    btn.addEventListener('blur', ()=>{ if(arm) arm.classList.remove('arm-active'); });
   });
 
   // Contact form: uses a real mail service (Formspree/Resend) when an endpoint

@@ -11,6 +11,17 @@
 -- 1) Table that stores every editable piece of content as a simple
 --    key/value pair. The "key" matches the data-edit attribute in the
 --    HTML (e.g. "hero-title", "mennesker-case-title", "contact-phone").
+--    A few keys hold JSON (stored as plain text) rather than a single
+--    string value:
+--      "cases"        — array of {title, industry, customer, hideCustomer,
+--                        challenge, solution, result, direction, direction2,
+--                        image, pdf, gallery[]}
+--      "testimonials" — array of {name, title, company, quote, direction,
+--                        image, logo}
+--      "om-competencies" / "om-certifications" — array of strings
+--    These are parsed/stringified in assets/js/admin.js and
+--    assets/js/content-loader.js — the table itself doesn't need to know
+--    about their internal shape, it's still just one text value per key.
 create table if not exists content (
   key text primary key,
   value text,

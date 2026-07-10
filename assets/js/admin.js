@@ -34,7 +34,7 @@
   const NAV_ORDER = [
     { section: 'dashboard', label: 'Dashboard' },
     { section: 'home', label: 'Forside' },
-    { section: 'kompasset', label: 'Kompasset' },
+    { section: 'kompasset', label: 'The MFG Compass™' },
     { section: 'mennesker', label: 'Mennesker' },
     { section: 'ledelse', label: 'Ledelse' },
     { section: 'kultur', label: 'Kultur' },
@@ -44,6 +44,8 @@
     { section: 'om', label: 'Om Morten' },
     { section: 'kontakt', label: 'Kontakt' },
     { section: 'seo', label: 'SEO' },
+    { section: 'analytics', label: 'Analytics' },
+    { section: 'cookiebanner', label: 'Cookiebanner' },
     { section: 'settings', label: 'Indstillinger' }
   ];
 
@@ -109,7 +111,6 @@
   async function discoverFields() {
     fieldsBySection = {};
     PAGES.forEach(p => { fieldsBySection[p.section] = []; });
-    fieldsBySection.global = [];
     fieldsBySection.seo = [];
     fieldsBySection.kompasset = [];
 
@@ -138,7 +139,7 @@
         const field = { key, label: humanLabel(key), type: fieldTypeFor(tag, defaultValue), defaultValue, tag };
 
         if (GLOBAL_KEYS.includes(key)) {
-          fieldsBySection.global.push(field);
+          fieldsBySection.kontakt.push(field);
         } else if (key.startsWith('seo-')) {
           field.type = key.endsWith('description') ? 'textarea' : 'text';
           fieldsBySection.seo.push(field);
@@ -153,7 +154,7 @@
         const key = el.getAttribute('data-edit-href');
         if (seen.has(key)) return;
         seen.add(key);
-        fieldsBySection.global.push({ key, label: humanLabel(key), type: 'text', defaultValue: el.getAttribute('href'), tag: 'a-href' });
+        fieldsBySection.kontakt.push({ key, label: humanLabel(key), type: 'text', defaultValue: el.getAttribute('href'), tag: 'a-href' });
       });
     }
   }
@@ -249,9 +250,15 @@
     return DIRECTIONS.map(d => `<option value="${d.value}" ${d.value === selected ? 'selected' : ''}>${d.label}</option>`).join('');
   }
 
+  function directionOptionsOptional(selected) {
+    return '<option value="" ' + (!selected ? 'selected' : '') + '>— Ingen —</option>' + directionOptions(selected);
+  }
+
   function renderCaseRows(items) {
     if (items.length === 0) return `<p class="section-sub">Ingen cases oprettet endnu.</p>`;
-    return items.map((c, i) => `
+    return items.map((c, i) => {
+      const galleryCount = Array.isArray(c.gallery) ? c.gallery.length : 0;
+      return `
       <div class="testi-card" data-case-index="${i}">
         <button class="btn btn-danger btn-sm testi-remove" data-remove-case="${i}">Fjern</button>
         <div class="testi-row">
@@ -264,12 +271,34 @@
             <input type="text" data-case-field="industry" data-case-index="${i}" value="${escapeAttr(c.industry || '')}">
           </div>
           <div>
-            <label>Tilknyttet Compass-retning</label>
+            <label>Kunde</label>
+            <input type="text" data-case-field="customer" data-case-index="${i}" value="${escapeAttr(c.customer || '')}" placeholder="Kundens navn (valgfrit)">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
+            <input type="checkbox" style="width:auto" data-case-field="hideCustomer" data-case-index="${i}" ${c.hideCustomer ? 'checked' : ''} id="hideCust-${i}">
+            <label for="hideCust-${i}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Skjul kundenavn på hjemmesiden</label>
+          </div>
+          <div>
+            <label>Primær Compass-retning</label>
             <select data-case-field="direction" data-case-index="${i}">${directionOptions(c.direction)}</select>
+          </div>
+          <div>
+            <label>Sekundær Compass-retning</label>
+            <select data-case-field="direction2" data-case-index="${i}">${directionOptionsOptional(c.direction2)}</select>
           </div>
           <div>
             <label>Billede</label>
             <input type="file" accept="image/*" data-case-image="${i}">
+          </div>
+          <div>
+            <label>PDF (case-dokument)</label>
+            <input type="file" accept="application/pdf" data-case-pdf="${i}">
+            ${c.pdf ? '<div class="field-note">Der er allerede uploadet en PDF.</div>' : ''}
+          </div>
+          <div class="full">
+            <label>Galleri (flere billeder)</label>
+            <input type="file" accept="image/*" multiple data-case-gallery="${i}">
+            <div class="field-note">${galleryCount} billede(r) i galleriet nu. Vælger du nye filer, erstatter de hele galleriet.</div>
           </div>
           <div class="full">
             <label>Udfordring</label>
@@ -284,7 +313,8 @@
             <textarea data-case-field="result" data-case-index="${i}">${escapeHtml(c.result || '')}</textarea>
           </div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   function collectCasesFromDOM() {
@@ -293,7 +323,8 @@
       const idx = parseInt(card.getAttribute('data-case-index'), 10);
       const item = items[idx] || {};
       card.querySelectorAll('[data-case-field]').forEach(inp => {
-        item[inp.getAttribute('data-case-field')] = inp.value.trim();
+        const field = inp.getAttribute('data-case-field');
+        item[field] = inp.type === 'checkbox' ? inp.checked : inp.value.trim();
       });
       items[idx] = item;
     });
@@ -321,16 +352,24 @@
             <input type="text" data-testi-field="name" data-testi-index="${i}" value="${escapeAttr(t.name || '')}">
           </div>
           <div>
-            <label>Titel / virksomhed</label>
-            <input type="text" data-testi-field="role" data-testi-index="${i}" value="${escapeAttr(t.role || '')}">
+            <label>Titel</label>
+            <input type="text" data-testi-field="title" data-testi-index="${i}" value="${escapeAttr(t.title || '')}">
+          </div>
+          <div>
+            <label>Firma</label>
+            <input type="text" data-testi-field="company" data-testi-index="${i}" value="${escapeAttr(t.company || '')}">
           </div>
           <div>
             <label>Tilknyttet Compass-retning</label>
             <select data-testi-field="direction" data-testi-index="${i}">${directionOptions(t.direction)}</select>
           </div>
           <div>
-            <label>Billede / logo</label>
+            <label>Foto (person)</label>
             <input type="file" accept="image/*" data-testi-image="${i}">
+          </div>
+          <div>
+            <label>Logo (firma)</label>
+            <input type="file" accept="image/*" data-testi-logo="${i}">
           </div>
           <div class="full">
             <label>Citat</label>
@@ -388,11 +427,39 @@
   }
 
   // ---------------- Settings ----------------
+  function renderAnalyticsSection() {
+    const analyticsProvider = savedContent['config-analytics-provider'] || 'none';
+    const analyticsId = savedContent['config-analytics-id'] || '';
+    return `
+      <p class="section-sub">Forberedt til Plausible eller Google Analytics. Der er ikke indsat noget tracking-ID som standard, og intet indlæses uden samtykke fra cookiebanneret.</p>
+      <div class="field-card">
+        <label>Analytics-udbyder</label>
+        <select id="analyticsProviderSelect" style="margin-bottom:10px">
+          <option value="none" ${analyticsProvider === 'none' ? 'selected' : ''}>Ingen</option>
+          <option value="plausible" ${analyticsProvider === 'plausible' ? 'selected' : ''}>Plausible</option>
+          <option value="ga" ${analyticsProvider === 'ga' ? 'selected' : ''}>Google Analytics</option>
+        </select>
+        <label style="margin-top:6px">Site-ID / Measurement-ID</label>
+        <input type="text" id="analyticsIdInput" placeholder="fx mfgadvisory.dk eller G-XXXXXXX" value="${escapeAttr(analyticsId)}">
+        <button class="btn btn-outline btn-sm" id="saveAnalyticsBtn" style="margin-top:10px">Gem analytics-indstillinger</button>
+      </div>
+    `;
+  }
+
+  function renderCookiebannerSection() {
+    return `
+      <p class="section-sub">Cookiebanneret vises automatisk ved første besøg med to valg: "Kun nødvendige" og "Accepter alle". Valget gemmes i besøgendes browser, så banneret ikke gentages.</p>
+      <div class="field-card">
+        <label>Status</label>
+        <p>Aktivt på alle offentlige sider (assets/js/cookie-consent.js). Analytics indlæses udelukkende ved "Accepter alle" — se Analytics-fanen for udbyder/ID.</p>
+      </div>
+    `;
+  }
+
   function renderSettingsSection() {
     const backend = window.MFGStore.backend();
     const formEndpoint = savedContent['config-form-endpoint'] || '';
-    const analyticsProvider = savedContent['config-analytics-provider'] || 'none';
-    const analyticsId = savedContent['config-analytics-id'] || '';
+    const faviconImg = savedContent['favicon-img'] || 'assets/images/favicon-32.png';
 
     return `
       <div class="banner">
@@ -404,22 +471,22 @@
         <label>Kontaktformular — mailservice-endpoint</label>
         <p class="field-note" style="margin-bottom:10px">
           Indsæt dit Formspree- eller Resend-endpoint (fx <code>https://formspree.io/f/xxxxabcd</code>).
-          Er feltet tomt, bruger formularen fortsat den nuværende mailto-løsning.
+          Er feltet tomt, bruger formularen fortsat den nuværende mailto-løsning. Ingen nøgler er hårdkodet.
         </p>
         <input type="text" id="formEndpointInput" placeholder="https://formspree.io/f/xxxxabcd" value="${escapeAttr(formEndpoint)}">
         <button class="btn btn-outline btn-sm" id="saveFormEndpointBtn" style="margin-top:10px">Gem endpoint</button>
       </div>
 
       <div class="field-card">
-        <label>Analytics</label>
-        <p class="field-note" style="margin-bottom:10px">Vælg udbyder og indsæt dit Site-ID / Measurement-ID. Indlæses først, når en besøgende har accepteret analytics-cookies.</p>
-        <select id="analyticsProviderSelect" style="margin-bottom:10px">
-          <option value="none" ${analyticsProvider === 'none' ? 'selected' : ''}>Ingen</option>
-          <option value="plausible" ${analyticsProvider === 'plausible' ? 'selected' : ''}>Plausible</option>
-          <option value="ga" ${analyticsProvider === 'ga' ? 'selected' : ''}>Google Analytics</option>
-        </select>
-        <input type="text" id="analyticsIdInput" placeholder="fx mfgadvisory.dk eller G-XXXXXXX" value="${escapeAttr(analyticsId)}">
-        <button class="btn btn-outline btn-sm" id="saveAnalyticsBtn" style="margin-top:10px">Gem analytics-indstillinger</button>
+        <label>Favicon</label>
+        <div class="img-field">
+          <img src="${faviconImg}" alt="">
+          <div class="img-controls">
+            <input type="file" accept="image/*" id="faviconInput">
+            <div class="field-note">Erstatter faviconen på alle sider med det samme efter gem (kræver at siden køres over http/https).</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" id="saveFaviconBtn" style="margin-top:10px">Gem favicon</button>
       </div>
 
       <div class="field-card">
@@ -452,13 +519,15 @@
     if (section === 'cases') return `<h2>${label}</h2>` + renderCasesSection();
     if (section === 'testimonials') return `<h2>${label}</h2>` + renderTestimonialsSection();
     if (section === 'om') return `<h2>${label}</h2>` + renderOmSection();
+    if (section === 'analytics') return `<h2>${label}</h2>` + renderAnalyticsSection();
+    if (section === 'cookiebanner') return `<h2>${label}</h2>` + renderCookiebannerSection();
     if (section === 'settings') return `<h2>${label}</h2>` + renderSettingsSection();
 
     let html = `<h2>${label}</h2>`;
     if (section === 'home') html += `<p class="section-sub">Hero-tekst og forsidens afsluttende CTA.</p>`;
     if (section === 'kompasset') html += `<p class="section-sub">Compass-tekster og de fire retningers korte intro på forsiden.</p>`;
     if (section === 'seo') html += `<p class="section-sub">Titel og meta-beskrivelse for hver side (vises i Google og faneblade).</p>`;
-    if (section === 'global') html += `<p class="section-sub">Telefon, e-mail, CVR og LinkedIn — bruges automatisk alle steder på hjemmesiden.</p>`;
+    if (section === 'kontakt') html += `<p class="section-sub">Kontaktside-tekster, samt telefon/e-mail/CVR/LinkedIn/adresse — sidstnævnte bruges automatisk alle steder på hjemmesiden.</p>`;
 
     const fields = fieldsBySection[section] || [];
     if (fields.length === 0) html += `<p class="section-sub">Ingen felter fundet.</p>`;
@@ -483,6 +552,12 @@
             items[idx].image = await window.MFGStore.uploadImage(inp.files[0]);
           }
         }
+        for (const inp of Array.from(document.querySelectorAll('[data-testi-logo]'))) {
+          if (inp.files && inp.files[0]) {
+            const idx = parseInt(inp.getAttribute('data-testi-logo'), 10);
+            items[idx].logo = await window.MFGStore.uploadImage(inp.files[0]);
+          }
+        }
         await window.MFGStore.setMany({ testimonials: JSON.stringify(items) });
         savedContent['testimonials'] = JSON.stringify(items);
         document.getElementById('section-testimonials').innerHTML = renderSection('testimonials', 'Testimonials');
@@ -493,6 +568,22 @@
           if (inp.files && inp.files[0]) {
             const idx = parseInt(inp.getAttribute('data-case-image'), 10);
             items[idx].image = await window.MFGStore.uploadImage(inp.files[0]);
+          }
+        }
+        for (const inp of Array.from(document.querySelectorAll('[data-case-pdf]'))) {
+          if (inp.files && inp.files[0]) {
+            const idx = parseInt(inp.getAttribute('data-case-pdf'), 10);
+            items[idx].pdf = await window.MFGStore.uploadImage(inp.files[0]); // uploadImage works for any file type
+          }
+        }
+        for (const inp of Array.from(document.querySelectorAll('[data-case-gallery]'))) {
+          if (inp.files && inp.files.length > 0) {
+            const idx = parseInt(inp.getAttribute('data-case-gallery'), 10);
+            const urls = [];
+            for (const file of Array.from(inp.files)) {
+              urls.push(await window.MFGStore.uploadImage(file));
+            }
+            items[idx].gallery = urls;
           }
         }
         await window.MFGStore.setMany({ cases: JSON.stringify(items) });
@@ -547,7 +638,7 @@
     if (addCaseBtn) {
       addCaseBtn.addEventListener('click', () => {
         const items = jsonArray('cases');
-        items.push({ title: '', industry: '', challenge: '', solution: '', result: '', direction: 'mennesker', image: '' });
+        items.push({ title: '', industry: '', customer: '', hideCustomer: false, challenge: '', solution: '', result: '', direction: 'mennesker', direction2: '', image: '', pdf: '', gallery: [] });
         savedContent['cases'] = JSON.stringify(items);
         document.getElementById('section-cases').innerHTML = renderSection('cases', 'Cases');
         wireDynamicSections();
@@ -567,7 +658,7 @@
     if (addTestiBtn) {
       addTestiBtn.addEventListener('click', () => {
         const items = jsonArray('testimonials');
-        items.push({ name: '', role: '', quote: '', direction: 'mennesker', image: '' });
+        items.push({ name: '', title: '', company: '', quote: '', direction: 'mennesker', image: '', logo: '' });
         savedContent['testimonials'] = JSON.stringify(items);
         document.getElementById('section-testimonials').innerHTML = renderSection('testimonials', 'Testimonials');
         wireDynamicSections();
@@ -655,6 +746,29 @@
         savedContent['config-form-endpoint'] = val;
         saveFormEndpointBtn.textContent = 'Gemt ✓';
         setTimeout(() => { saveFormEndpointBtn.textContent = 'Gem endpoint'; }, 2000);
+      });
+    }
+
+    const faviconInput = document.getElementById('faviconInput');
+    if (faviconInput) {
+      faviconInput.addEventListener('change', () => {
+        if (faviconInput.files && faviconInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = () => { faviconInput.closest('.img-field').querySelector('img').src = reader.result; };
+          reader.readAsDataURL(faviconInput.files[0]);
+        }
+      });
+    }
+    const saveFaviconBtn = document.getElementById('saveFaviconBtn');
+    if (saveFaviconBtn) {
+      saveFaviconBtn.addEventListener('click', async () => {
+        if (!faviconInput.files || !faviconInput.files[0]) { return; }
+        saveFaviconBtn.disabled = true; saveFaviconBtn.textContent = 'Gemmer …';
+        const url = await window.MFGStore.uploadImage(faviconInput.files[0]);
+        await window.MFGStore.setMany({ 'favicon-img': url });
+        savedContent['favicon-img'] = url;
+        saveFaviconBtn.disabled = false; saveFaviconBtn.textContent = 'Gemt ✓';
+        setTimeout(() => { saveFaviconBtn.textContent = 'Gem favicon'; }, 2000);
       });
     }
 
