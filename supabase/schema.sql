@@ -15,9 +15,13 @@
 --    string value:
 --      "cases"        — array of {title, industry, customer, hideCustomer,
 --                        challenge, solution, result, direction, direction2,
---                        image, pdf, gallery[]}
+--                        image, pdf, gallery[], ctaText, ctaLink}
 --      "testimonials" — array of {name, title, company, quote, direction,
 --                        image, logo}
+--      "solutions"    — array of {direction, title, teaser, long, challenges,
+--                        approach, results, image, icon, relatedCase,
+--                        ctaText, ctaLink, published, displayMode} — the
+--                        admin-created "løsningskort" on the four direction pages
 --      "om-competencies" / "om-certifications" — array of strings
 --    These are parsed/stringified in assets/js/admin.js and
 --    assets/js/content-loader.js — the table itself doesn't need to know

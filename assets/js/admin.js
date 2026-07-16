@@ -211,6 +211,7 @@
   function renderDashboard() {
     const cases = jsonArray('cases');
     const testimonials = jsonArray('testimonials');
+    const solutions = jsonArray('solutions');
     const backend = window.MFGStore.backend();
     return `
       <p class="section-sub">Overblik over hjemmesidens indhold.</p>
@@ -220,7 +221,7 @@
       </div>
       <div class="field-card">
         <label>Indhold</label>
-        <p>${cases.length} ekstra case(s) · ${testimonials.length} testimonial(s) oprettet i adminpanelet.</p>
+        <p>${cases.length} ekstra case(s) · ${testimonials.length} testimonial(s) · ${solutions.length} ekstra løsningskort — oprettet i adminpanelet.</p>
       </div>
       <div class="field-card">
         <label>Genveje</label>
@@ -294,6 +295,14 @@
             <label>PDF (case-dokument)</label>
             <input type="file" accept="application/pdf" data-case-pdf="${i}">
             ${c.pdf ? '<div class="field-note">Der er allerede uploadet en PDF.</div>' : ''}
+          </div>
+          <div>
+            <label>CTA-tekst</label>
+            <input type="text" data-case-field="ctaText" data-case-index="${i}" value="${escapeAttr(c.ctaText || 'Book en samtale')}">
+          </div>
+          <div>
+            <label>CTA-link</label>
+            <input type="text" data-case-field="ctaLink" data-case-index="${i}" value="${escapeAttr(c.ctaLink || 'kontakt.html')}">
           </div>
           <div class="full">
             <label>Galleri (flere billeder)</label>
@@ -426,6 +435,130 @@
     return html;
   }
 
+  // ---------------- Solution cards ("løsningskort") — per direction, no-code CRUD ----------------
+  const ICON_OPTIONS = ['i-people', 'i-leadership', 'i-culture', 'i-growth', 'i-phone', 'i-mail', 'i-message', 'i-arrow'];
+
+  function iconOptions(selected) {
+    return ICON_OPTIONS.map(i => `<option value="${i}" ${i === selected ? 'selected' : ''}>${i}</option>`).join('');
+  }
+
+  function solutionsForDirection(direction) {
+    const all = jsonArray('solutions');
+    return all.map((s, i) => ({ s, i })).filter(x => x.s.direction === direction);
+  }
+
+  function renderSolutionsManager(direction) {
+    const indexed = solutionsForDirection(direction);
+    let html = `<h3 style="margin:36px 0 6px">Ekstra løsningskort (${DIRECTIONS.find(d => d.value === direction).label})</h3>
+      <p class="section-sub">Vises automatisk under de faste løsningskort ovenfor på ${direction}.html. Oprettes uden kode.</p>
+      <div id="solutionsList-${direction}">${renderSolutionRows(direction, indexed)}</div>
+      <button class="btn btn-outline btn-sm" data-add-solution="${direction}">+ Tilføj løsningskort</button>
+      ${saveBar('solutions-' + direction, 'Gem løsningskort')}`;
+    return html;
+  }
+
+  function renderSolutionRows(direction, indexed) {
+    if (indexed.length === 0) return `<p class="section-sub">Ingen ekstra løsningskort oprettet endnu for denne retning.</p>`;
+    return indexed.map(({ s, i }) => {
+      return `
+      <div class="testi-card" data-solution-index="${i}">
+        <button class="btn btn-danger btn-sm testi-remove" data-remove-solution="${i}">Fjern</button>
+        <div class="testi-row">
+          <div>
+            <label>Titel</label>
+            <input type="text" data-sol-field="title" data-sol-index="${i}" value="${escapeAttr(s.title || '')}">
+          </div>
+          <div>
+            <label>Kort teaser</label>
+            <input type="text" data-sol-field="teaser" data-sol-index="${i}" value="${escapeAttr(s.teaser || '')}">
+          </div>
+          <div>
+            <label>Ikon</label>
+            <select data-sol-field="icon" data-sol-index="${i}">${iconOptions(s.icon)}</select>
+          </div>
+          <div>
+            <label>Billede</label>
+            <input type="file" accept="image/*" data-sol-image="${i}">
+          </div>
+          <div>
+            <label>Relateret case (link/anker)</label>
+            <input type="text" data-sol-field="relatedCase" data-sol-index="${i}" value="${escapeAttr(s.relatedCase || '')}" placeholder="fx #case-${direction} eller cases.html">
+          </div>
+          <div>
+            <label>Vis som</label>
+            <select data-sol-field="displayMode" data-sol-index="${i}">
+              <option value="accordion" ${s.displayMode !== 'link' ? 'selected' : ''}>Accordion (udfold på siden)</option>
+              <option value="link" ${s.displayMode === 'link' ? 'selected' : ''}>Link (til CTA-link)</option>
+            </select>
+          </div>
+          <div>
+            <label>CTA-tekst</label>
+            <input type="text" data-sol-field="ctaText" data-sol-index="${i}" value="${escapeAttr(s.ctaText || 'Book en samtale')}">
+          </div>
+          <div>
+            <label>CTA-link</label>
+            <input type="text" data-sol-field="ctaLink" data-sol-index="${i}" value="${escapeAttr(s.ctaLink || 'kontakt.html')}">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
+            <input type="checkbox" style="width:auto" data-sol-field="published" data-sol-index="${i}" ${s.published !== false ? 'checked' : ''} id="solPub-${i}">
+            <label for="solPub-${i}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Publiceret (vis på hjemmesiden)</label>
+          </div>
+          <div class="full">
+            <label>Lang beskrivelse</label>
+            <textarea data-sol-field="long" data-sol-index="${i}">${escapeHtml(s.long || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>Typiske udfordringer</label>
+            <textarea data-sol-field="challenges" data-sol-index="${i}">${escapeHtml(s.challenges || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>MFG's tilgang</label>
+            <textarea data-sol-field="approach" data-sol-index="${i}">${escapeHtml(s.approach || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>Forventede resultater</label>
+            <textarea data-sol-field="results" data-sol-index="${i}">${escapeHtml(s.results || '')}</textarea>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function collectSolutionsFromDOM(direction) {
+    const all = jsonArray('solutions');
+    document.querySelectorAll(`#solutionsList-${direction} .testi-card`).forEach(card => {
+      const idx = parseInt(card.getAttribute('data-solution-index'), 10);
+      const item = all[idx] || { direction };
+      card.querySelectorAll('[data-sol-field]').forEach(inp => {
+        const field = inp.getAttribute('data-sol-field');
+        item[field] = inp.type === 'checkbox' ? inp.checked : inp.value.trim();
+      });
+      all[idx] = item;
+    });
+    return all;
+  }
+
+  function renderKompassetSection() {
+    return `
+      <div class="banner">
+        <strong>The MFG Compass™ er nu Mortens officielle grafik</strong> (<code>assets/images/mfg-compass-original.jpg</code>),
+        brugt pixelkorrekt — den redigeres ikke via tekstfelter her.
+      </div>
+      <div class="field-card">
+        <label>Sådan opdaterer du selve grafikken</label>
+        <p class="field-note">Udskift filen <code>assets/images/mfg-compass-original.jpg</code> i projektet med en ny
+        version i samme billedformat og -forhold. De fire klikbare områder (Mennesker, Ledelse, Kultur, Forretning)
+        er placeret med procent-baserede koordinater i <code>assets/css/style.css</code>
+        (klasserne <code>.hotspot-mennesker</code>, <code>.hotspot-ledelse</code>, <code>.hotspot-kultur</code>,
+        <code>.hotspot-forretning</code>) og skal justeres manuelt, hvis en ny grafik har andre tekstplaceringer.</p>
+      </div>
+      <div class="field-card">
+        <label>Klikmål</label>
+        <p>Mennesker → <code>mennesker.html</code> · Ledelse → <code>ledelse.html</code> · Kultur → <code>kultur.html</code> · Forretning → <code>forretning.html</code></p>
+      </div>
+    `;
+  }
+
   // ---------------- Settings ----------------
   function renderAnalyticsSection() {
     const analyticsProvider = savedContent['config-analytics-provider'] || 'none';
@@ -522,17 +655,21 @@
     if (section === 'analytics') return `<h2>${label}</h2>` + renderAnalyticsSection();
     if (section === 'cookiebanner') return `<h2>${label}</h2>` + renderCookiebannerSection();
     if (section === 'settings') return `<h2>${label}</h2>` + renderSettingsSection();
+    if (section === 'kompasset') return `<h2>${label}</h2>` + renderKompassetSection();
 
     let html = `<h2>${label}</h2>`;
-    if (section === 'home') html += `<p class="section-sub">Hero-tekst og forsidens afsluttende CTA.</p>`;
-    if (section === 'kompasset') html += `<p class="section-sub">Compass-tekster og de fire retningers korte intro på forsiden.</p>`;
+    if (section === 'home') html += `<p class="section-sub">Hero-tekst og forsidens CTA.</p>`;
     if (section === 'seo') html += `<p class="section-sub">Titel og meta-beskrivelse for hver side (vises i Google og faneblade).</p>`;
     if (section === 'kontakt') html += `<p class="section-sub">Kontaktside-tekster, samt telefon/e-mail/CVR/LinkedIn/adresse — sidstnævnte bruges automatisk alle steder på hjemmesiden.</p>`;
 
     const fields = fieldsBySection[section] || [];
-    if (fields.length === 0) html += `<p class="section-sub">Ingen felter fundet.</p>`;
+    if (fields.length === 0 && DIRECTIONS.some(d => d.value === section) === false) html += `<p class="section-sub">Ingen felter fundet.</p>`;
     html += renderSimpleFields(fields);
     html += saveBar(section);
+
+    if (DIRECTIONS.some(d => d.value === section)) {
+      html += renderSolutionsManager(section);
+    }
     return html;
   }
 
@@ -544,7 +681,20 @@
     btn.textContent = 'Gemmer …';
 
     try {
-      if (section === 'testimonials') {
+      if (section.startsWith('solutions-')) {
+        const direction = section.replace('solutions-', '');
+        const items = collectSolutionsFromDOM(direction);
+        for (const inp of Array.from(document.querySelectorAll(`#solutionsList-${direction} [data-sol-image]`))) {
+          if (inp.files && inp.files[0]) {
+            const idx = parseInt(inp.getAttribute('data-sol-image'), 10);
+            items[idx].image = await window.MFGStore.uploadImage(inp.files[0]);
+          }
+        }
+        await window.MFGStore.setMany({ solutions: JSON.stringify(items) });
+        savedContent['solutions'] = JSON.stringify(items);
+        document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
+        wireDynamicSections();
+      } else if (section === 'testimonials') {
         const items = collectTestimonialsFromDOM();
         for (const inp of Array.from(document.querySelectorAll('[data-testi-image]'))) {
           if (inp.files && inp.files[0]) {
@@ -632,13 +782,37 @@
     }
   }
 
-  // ---------------- Dynamic list wiring (cases / testimonials / cred lists) ----------------
+  // ---------------- Dynamic list wiring (cases / testimonials / cred lists / solutions) ----------------
   function wireDynamicSections() {
+    document.querySelectorAll('[data-add-solution]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const direction = btn.getAttribute('data-add-solution');
+        const items = jsonArray('solutions');
+        items.push({ direction, title: '', teaser: '', long: '', challenges: '', approach: '', results: '', image: '', icon: 'i-people', relatedCase: `#case-${direction}`, ctaText: 'Book en samtale', ctaLink: 'kontakt.html', published: true, displayMode: 'accordion' });
+        savedContent['solutions'] = JSON.stringify(items);
+        document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
+        wireDynamicSections();
+      });
+    });
+    document.querySelectorAll('[data-remove-solution]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-remove-solution'), 10);
+        const items = jsonArray('solutions');
+        const direction = items[idx] ? items[idx].direction : null;
+        items.splice(idx, 1);
+        savedContent['solutions'] = JSON.stringify(items);
+        if (direction) {
+          document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
+        }
+        wireDynamicSections();
+      });
+    });
+
     const addCaseBtn = document.getElementById('addCaseBtn');
     if (addCaseBtn) {
       addCaseBtn.addEventListener('click', () => {
         const items = jsonArray('cases');
-        items.push({ title: '', industry: '', customer: '', hideCustomer: false, challenge: '', solution: '', result: '', direction: 'mennesker', direction2: '', image: '', pdf: '', gallery: [] });
+        items.push({ title: '', industry: '', customer: '', hideCustomer: false, challenge: '', solution: '', result: '', direction: 'mennesker', direction2: '', image: '', pdf: '', gallery: [], ctaText: 'Book en samtale', ctaLink: 'kontakt.html' });
         savedContent['cases'] = JSON.stringify(items);
         document.getElementById('section-cases').innerHTML = renderSection('cases', 'Cases');
         wireDynamicSections();

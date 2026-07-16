@@ -15,18 +15,17 @@
       console.warn('MFG icon sprite could not be loaded (assets/icons/icons.svg). Icons will be blank if opened via file:// — serve the project over http(s) instead.');
     });
 
-  // Cosmetic needle rotation when a compass direction is chosen (brief flourish before navigation)
-  const needle = document.getElementById('needle');
-  document.querySelectorAll('.dir-btn').forEach(btn=>{
-    const dir = btn.dataset.dir;
-    const arm = document.getElementById('arm-' + dir);
+  // Solution-card accordions ("Læs mere") on the four direction pages
+  document.querySelectorAll('.svc-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(needle) needle.style.transform = 'translate(-50%,-100%) rotate('+btn.dataset.angle+'deg)';
+      const card = btn.closest('.svc-card--accordion');
+      const isOpen = card.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      const actionLabel = btn.querySelector('.svc-toggle-action');
+      if(actionLabel){
+        actionLabel.childNodes[0].textContent = isOpen ? 'Luk ' : 'Læs mere ';
+      }
     });
-    btn.addEventListener('mouseenter', ()=>{ if(arm) arm.classList.add('arm-active'); });
-    btn.addEventListener('mouseleave', ()=>{ if(arm) arm.classList.remove('arm-active'); });
-    btn.addEventListener('focus', ()=>{ if(arm) arm.classList.add('arm-active'); });
-    btn.addEventListener('blur', ()=>{ if(arm) arm.classList.remove('arm-active'); });
   });
 
   // Contact form: uses a real mail service (Formspree/Resend) when an endpoint
