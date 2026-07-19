@@ -4,6 +4,22 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.2 — bugfix: overlap i mobilmenuen
+
+Skærmbilleder fra en rigtig iPhone viste, at "Book en strategisk samtale"
+og telefonnummeret lå **oven på** navigationslinkene i den åbne mobilmenu
+(bl.a. dækkede det "Ledelse"-linket delvist). Årsagen var, at både
+navigationslisten og CTA/telefon-blokken ved en fejl begge var sat til
+`position:absolute` på nøjagtig samme sted i CSS'en, så de blev lagt oven
+i hinanden i stedet for at stå i forlængelse af hinanden.
+
+Rettet ved at lade begge blokke indgå i headerens almindelige (men stadig
+fastgjorte) layout-flow i stedet for at blive taget ud af flowet med
+`position:absolute` — nu stakker de korrekt: navigationslinks først,
+CTA-knap og telefonnummer nederst, uden nogen overlap. Verificeret med
+automatiske positions-tjek (ingen link overlapper CTA/telefon-boksen) samt
+fuld regressionstest på 375/390/430/820/1440px.
+
 ## RC7.1 (Final Polish) — changelog
 
 1. **Mobilmenu**: Vurderede den skjulte vandrette navigation — hamburger-
