@@ -22,6 +22,7 @@
       <span class="mono">MFG</span>
       <span class="word">MFG <em>Advisory</em></span>
     </a>
+    <a class="nav-quick-cta btn btn-copper btn-sm" href="kontakt.html">Book</a>
     <button class="nav-hamburger" id="navHamburger" aria-expanded="false" aria-controls="mainNav" aria-label="Åbn menu">
       <span></span><span></span><span></span>
     </button>
@@ -37,7 +38,7 @@
     </nav>
     <div class="nav-cta">
       <a class="tel" href="tel:+4560528900" data-edit="contact-phone">+45 60 52 89 00</a>
-      <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
+      <a class="btn btn-copper" href="kontakt.html" data-edit="nav-cta-text">Book en strategisk samtale</a>
     </div>
   </div>
 </header>
@@ -75,7 +76,7 @@
 
       <div class="kontakt-form-wrap" id="kontakt-form">
         <h3 data-edit="kontakt-form-title">Book en strategisk samtale</h3>
-        <p class="kf-sub" data-edit="kontakt-form-sub">Udfyld formularen — den åbner en forudfyldt mail til morten@mfgadvisory.dk. (Formularen er klar til at blive koblet til et backend/mailservice senere.)</p>
+        <p class="kf-sub" data-edit="kontakt-form-sub">Udfyld formularen, så vender jeg tilbage hurtigst muligt — typisk inden for 1-2 hverdage.</p>
         <form class="kontakt-form" id="kontaktForm">
           <div>
             <label for="kf-name">Navn</label>
@@ -96,7 +97,7 @@
       </div>
 
       <div class="kontakt-person">
-        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti" data-edit="kontakt-person-img" loading="lazy" width="76" height="76">
+        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti" data-edit="om-portrait-img" loading="lazy" width="76" height="76">
         <div>
           <h4 data-edit="kontakt-person-name">Morten Foged Guglielmetti</h4>
           <div class="role" data-edit="kontakt-person-role">Founder &amp; Senior Advisor</div>
@@ -120,10 +121,13 @@
     <div class="footer-links">
       <a href="kontakt.html">Kontakt</a>
       <span>·</span>
-      <span>CVR: <span data-edit="footer-cvr">tilføjes ved registrering</span></span>
+      <span class="footer-cvr-wrap" id="footerCvrWrap" style="display:none">
+        <span aria-hidden="true">·</span>
+        <span>CVR: <span data-edit="footer-cvr"></span></span>
+      </span>
     </div>
     <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
-    <div class="fl">Bygget af <a href="index.html">Nordic Operations</a></div>
+    <div class="fl">Bygget af <a href="https://nordicoperations.dk" target="_blank" rel="noopener">Nordic Operations</a></div>
   </div>
 </footer>
 

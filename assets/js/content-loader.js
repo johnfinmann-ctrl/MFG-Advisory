@@ -45,6 +45,12 @@
     }
   }
 
+  function applyCvrVisibility(value) {
+    const wrap = document.getElementById('footerCvrWrap');
+    if (!wrap) return;
+    wrap.style.display = (value && value.trim()) ? 'inline' : 'none';
+  }
+
   function escapeHtml(s) {
     return (s || '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   }
@@ -267,6 +273,7 @@
       if (key === 'testimonials') renderTestimonials(value);
       if (key === 'solutions') renderSolutions(value);
       if (key === 'favicon-img') applyFavicon(value);
+      if (key === 'footer-cvr') applyCvrVisibility(value);
     });
   }
 

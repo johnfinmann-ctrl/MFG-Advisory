@@ -4,6 +4,37 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.1 (Final Polish) — changelog
+
+1. **Mobilmenu**: Vurderede den skjulte vandrette navigation — hamburger-
+   løsningen er bevaret, men strammet op: alle 8 menupunkter ligger i
+   menuen, aktiv side markeres, menuen lukker automatisk ved valg af
+   menupunkt *og* ved klik udenfor, baggrundens scroll låses, mens menuen
+   er åben, og der er ingen horisontal scroll. CTA-knappen hedder nu
+   **"Book en strategisk samtale"** og er redigerbar i CMS'et
+   (Admin → Kontakt). Derudover er der tilføjet en lille, altid synlig
+   **"Book"**-genvej ved siden af hamburger-ikonet på mobil.
+2. **Header/topafstand**: Luften under headeren er øget og samlet i
+   præcis to CSS-variabler (`--header-clearance` for desktop/tablet,
+   `--header-clearance-mobile` for mobil) — én fælles kilde for alle sider.
+3. **Portræt**: Om Morten-siden og kontaktsidens mini-visitkort peger nu
+   på **samme** CMS-nøgle (`om-portrait-img`) — én upload opdaterer begge
+   steder. Portrættet er desuden gjort lidt større på mobil (max-bredde
+   340px mod 300px på desktop).
+4. **Kontakt**: Den tekniske sætning om "backend/mailservice" er fjernet
+   og erstattet med en professionel kundetekst.
+5. **Footer**: "CVR: tilføjes ved registrering" er fjernet. CVR-feltet er
+   nu skjult som standard og vises kun automatisk, hvis et rigtigt CVR-
+   nummer indtastes via CMS'et. "Bygget af Nordic Operations" er nu et
+   rigtigt klikbart link (åbner i ny fane).
+6. **Visuel finish**: Bekræftet at kontaktkortene allerede deler samme
+   klasse (ens radius/skygge/padding), og at ingen elementer ligger under
+   headeren på nogen side.
+7. **Kvalitetssikring**: Fuld regressionstest kørt på desktop (1440px),
+   tablet (820px) og mobil (375/390/430px) — ingen horisontal scroll,
+   intet overlap, ingen beskæring, alle links, kontaktformular, navigation,
+   compass og CMS bekræftet fungerende uændret.
+
 ## RC7.1 — det rigtige portræt er nu indsat
 
 - **Mortens officielle portræt er nu på plads** (`assets/images/morten-portrait.jpg`)

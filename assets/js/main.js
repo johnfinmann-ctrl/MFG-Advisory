@@ -39,22 +39,31 @@
   const hamburger = document.getElementById('navHamburger');
   const navWrap = hamburger ? hamburger.closest('.nav-wrap') : null;
   if (hamburger && navWrap) {
-    hamburger.addEventListener('click', () => {
-      const isOpen = navWrap.classList.toggle('menu-open');
-      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    function openMenu(){
+      navWrap.classList.add('menu-open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('menu-lock');
+    }
+    function closeMenu(){
+      navWrap.classList.remove('menu-open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-lock');
+    }
+    hamburger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navWrap.classList.contains('menu-open') ? closeMenu() : openMenu();
     });
     // Close the menu after choosing a link, so it never stays open across navigation
     navWrap.querySelectorAll('.main-nav a, .nav-cta a').forEach(a => {
-      a.addEventListener('click', () => {
-        navWrap.classList.remove('menu-open');
-        hamburger.setAttribute('aria-expanded', 'false');
-      });
+      a.addEventListener('click', closeMenu);
     });
+    // Close on Escape
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && navWrap.classList.contains('menu-open')) {
-        navWrap.classList.remove('menu-open');
-        hamburger.setAttribute('aria-expanded', 'false');
-      }
+      if (e.key === 'Escape' && navWrap.classList.contains('menu-open')) closeMenu();
+    });
+    // Close on click/tap outside the menu
+    document.addEventListener('click', e => {
+      if (navWrap.classList.contains('menu-open') && !navWrap.contains(e.target)) closeMenu();
     });
   }
 

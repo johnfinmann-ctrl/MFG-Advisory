@@ -28,7 +28,7 @@
     { file: 'kontakt.html', section: 'kontakt', label: 'Kontakt' }
   ];
 
-  const GLOBAL_KEYS = ['contact-phone', 'contact-email', 'footer-cvr', 'footer-copyright', 'social-linkedin'];
+  const GLOBAL_KEYS = ['contact-phone', 'contact-email', 'footer-cvr', 'footer-copyright', 'social-linkedin', 'nav-cta-text'];
   const COMPASS_KEYS_PREFIX = ['compass-', 'teaser-'];
 
   const NAV_ORDER = [

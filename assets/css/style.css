@@ -10,8 +10,8 @@
     --cream:#f2e9d8;
     /* ONE shared value for how far the first section on every page must clear
        the fixed header — used everywhere instead of per-page top margins. */
-    --header-clearance:176px;
-    --header-clearance-mobile:110px;
+    --header-clearance:196px;
+    --header-clearance-mobile:130px;
     --white:#ffffff;
     --off-white:#f9f7f4;
     --warm-grey:#f2efea;
@@ -76,10 +76,13 @@
   .nav-wrap.menu-open .nav-hamburger span:nth-child(1){transform:translateY(6px) rotate(45deg)}
   .nav-wrap.menu-open .nav-hamburger span:nth-child(2){opacity:0}
   .nav-wrap.menu-open .nav-hamburger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  .nav-quick-cta{display:none}
+  body.menu-lock{overflow:hidden}
 
   @media(max-width:767px){
     .nav-wrap{padding:14px 20px;position:relative}
     .nav-hamburger{display:block}
+    .nav-quick-cta{display:inline-flex;order:3;margin-left:auto;padding:8px 16px;font-size:.78rem}
     .main-nav,.nav-cta{
       display:none;
       order:5;width:100%;
@@ -270,6 +273,7 @@
   @media(min-width:860px){.om-grid{grid-template-columns:300px 1fr;gap:70px}}
   .portrait{width:100%;max-width:300px;aspect-ratio:700/758;margin:0 auto;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-mid);background:var(--navy)}
   .portrait img{width:100%;height:100%;object-fit:cover}
+  @media(max-width:767px){.portrait{max-width:340px}}
   .om-copy .role{color:var(--copper);font-size:.95rem;font-weight:500;margin-bottom:20px}
   .om-copy p{margin-bottom:16px}
   .cred-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
