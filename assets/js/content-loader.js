@@ -80,7 +80,7 @@
     container.innerHTML = items.map((c, idx) => {
       const dir = DIRECTION_META[c.direction] || DIRECTION_META.mennesker;
       const dir2 = c.direction2 ? DIRECTION_META[c.direction2] : null;
-      const img = c.image ? '<img src="' + c.image + '" alt="">' : '';
+      const img = c.image ? '<img src="' + c.image + '" alt="" loading="lazy">' : '';
       const tags =
         '<span class="ct-tag"><svg class="icon"><use href="#' + dir.icon + '"/></svg> ' + dir.label + '</span>' +
         (dir2 ? ' <span class="ct-tag"><svg class="icon"><use href="#' + dir2.icon + '"/></svg> ' + dir2.label + '</span>' : '');
@@ -107,11 +107,11 @@
     if (!modal || !c) return;
     const dir = DIRECTION_META[c.direction] || DIRECTION_META.mennesker;
     const dir2 = c.direction2 ? DIRECTION_META[c.direction2] : null;
-    const img = c.image ? '<img src="' + c.image + '" alt="" class="case-modal-img">' : '';
+    const img = c.image ? '<img src="' + c.image + '" alt="" class="case-modal-img" loading="lazy">' : '';
     const customerLine = (c.customer && !c.hideCustomer) ? '<p class="case-customer">' + escapeHtml(c.customer) + '</p>' : '';
     const pdfLink = c.pdf ? '<a href="' + c.pdf + '" target="_blank" rel="noopener" class="ct-link">Åbn case-dokument (PDF) →</a>' : '';
     const gallery = Array.isArray(c.gallery) && c.gallery.length
-      ? '<div class="case-gallery">' + c.gallery.map(g => '<img src="' + g + '" alt="">').join('') + '</div>'
+      ? '<div class="case-gallery">' + c.gallery.map(g => '<img src="' + g + '" alt="" loading="lazy">').join('') + '</div>'
       : '';
 
     modal.querySelector('.case-modal-body').innerHTML =
@@ -162,8 +162,8 @@
 
     container.innerHTML = items.map(t => {
       const dir = DIRECTION_META[t.direction] || DIRECTION_META.mennesker;
-      const img = t.image ? '<img src="' + t.image + '" alt="" class="testimonial-avatar">' : '';
-      const logo = t.logo ? '<img src="' + t.logo + '" alt="" class="testimonial-logo">' : '';
+      const img = t.image ? '<img src="' + t.image + '" alt="" class="testimonial-avatar" loading="lazy">' : '';
+      const logo = t.logo ? '<img src="' + t.logo + '" alt="" class="testimonial-logo" loading="lazy">' : '';
       const roleLine = [t.title, t.company].filter(Boolean).map(escapeHtml).join(', ');
       return (
         '<div class="case-teaser">' +
@@ -198,7 +198,7 @@
     const wrap = document.createElement('div');
     wrap.innerHTML = visible.map(s => {
       const icon = s.icon || 'i-people';
-      const img = s.image ? '<img src="' + s.image + '" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius);margin-bottom:12px">' : '';
+      const img = s.image ? '<img src="' + s.image + '" alt="" loading="lazy" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius);margin-bottom:12px">' : '';
 
       if (s.displayMode === 'link') {
         return (

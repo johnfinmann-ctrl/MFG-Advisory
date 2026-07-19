@@ -22,7 +22,10 @@
       <span class="mono">MFG</span>
       <span class="word">MFG <em>Advisory</em></span>
     </a>
-    <nav class="main-nav">
+    <button class="nav-hamburger" id="navHamburger" aria-expanded="false" aria-controls="mainNav" aria-label="Åbn menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav" id="mainNav">
       <a href="index.html" data-nav="home">Forside</a>
       <a href="mennesker.html" data-nav="mennesker">Mennesker</a>
       <a href="ledelse.html" data-nav="ledelse">Ledelse</a>
@@ -33,7 +36,7 @@
       <a href="kontakt.html" data-nav="kontakt" class="active">Kontakt</a>
     </nav>
     <div class="nav-cta">
-      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">60 52 89 00</a>
+      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">+45 60 52 89 00</a>
       <a class="btn btn-copper" href="kontakt.html">Book en samtale</a>
     </div>
   </div>
@@ -53,7 +56,7 @@
       <div class="kontakt-cards">
         <a class="kcard" href="tel:+4560528900">
           <div class="kic"><svg class="icon"><use href="#i-phone"/></svg></div>
-          <div class="kt" data-edit="contact-phone">60 52 89 00</div>
+          <div class="kt" data-edit="contact-phone">+45 60 52 89 00</div>
           <div class="ks">Ring direkte</div>
         </a>
         <a class="kcard" href="mailto:morten@mfgadvisory.dk">
@@ -93,7 +96,7 @@
       </div>
 
       <div class="kontakt-person">
-        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti" data-edit="kontakt-person-img">
+        <img src="assets/images/morten-portrait.jpg" alt="Morten Foged Guglielmetti" data-edit="kontakt-person-img" loading="lazy" width="76" height="76">
         <div>
           <h4 data-edit="kontakt-person-name">Morten Foged Guglielmetti</h4>
           <div class="role" data-edit="kontakt-person-role">Founder &amp; Senior Advisor</div>

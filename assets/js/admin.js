@@ -539,11 +539,16 @@
   }
 
   function renderKompassetSection() {
-    return `
+    const fields = fieldsBySection.kompasset || [];
+    let html = `
       <div class="banner">
-        <strong>The MFG Compass™ er nu Mortens officielle grafik</strong> (<code>assets/images/mfg-compass-original.jpg</code>),
-        brugt pixelkorrekt — den redigeres ikke via tekstfelter her.
-      </div>
+        <strong>The MFG Compass™-billedet er Mortens officielle grafik</strong> (<code>assets/images/mfg-compass-original.jpg</code>),
+        brugt pixelkorrekt — selve billedet redigeres ikke via tekstfelter. Teksten, der folder ud, når en besøgende
+        klikker på en retning i kompasset, kan du derimod redigere lige her.
+      </div>`;
+    html += renderSimpleFields(fields);
+    html += saveBar('kompasset');
+    html += `
       <div class="field-card">
         <label>Sådan opdaterer du selve grafikken</label>
         <p class="field-note">Udskift filen <code>assets/images/mfg-compass-original.jpg</code> i projektet med en ny
@@ -553,10 +558,11 @@
         <code>.hotspot-forretning</code>) og skal justeres manuelt, hvis en ny grafik har andre tekstplaceringer.</p>
       </div>
       <div class="field-card">
-        <label>Klikmål</label>
+        <label>"Læs mere"-mål</label>
         <p>Mennesker → <code>mennesker.html</code> · Ledelse → <code>ledelse.html</code> · Kultur → <code>kultur.html</code> · Forretning → <code>forretning.html</code></p>
       </div>
     `;
+    return html;
   }
 
   // ---------------- Settings ----------------

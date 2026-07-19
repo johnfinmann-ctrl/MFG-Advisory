@@ -15,6 +15,49 @@
       console.warn('MFG icon sprite could not be loaded (assets/icons/icons.svg). Icons will be blank if opened via file:// — serve the project over http(s) instead.');
     });
 
+  // Compass hotspots: elegant in-place expand (stays on the homepage)
+  document.querySelectorAll('[data-compass-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dir = btn.getAttribute('data-compass-toggle');
+      const panel = document.getElementById('compass-panel-' + dir);
+      if (!panel) return;
+      const wasOpen = panel.classList.contains('open');
+
+      // Close any other open panel/hotspot first (accordion — one at a time)
+      document.querySelectorAll('.compass-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('[data-compass-toggle][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+
+      if (!wasOpen) {
+        panel.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+      }
+    });
+  });
+
+  // Mobile hamburger menu (<768px only — desktop nav is untouched by this)
+  const hamburger = document.getElementById('navHamburger');
+  const navWrap = hamburger ? hamburger.closest('.nav-wrap') : null;
+  if (hamburger && navWrap) {
+    hamburger.addEventListener('click', () => {
+      const isOpen = navWrap.classList.toggle('menu-open');
+      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    // Close the menu after choosing a link, so it never stays open across navigation
+    navWrap.querySelectorAll('.main-nav a, .nav-cta a').forEach(a => {
+      a.addEventListener('click', () => {
+        navWrap.classList.remove('menu-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && navWrap.classList.contains('menu-open')) {
+        navWrap.classList.remove('menu-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
   // Solution-card accordions ("Læs mere") on the four direction pages
   document.querySelectorAll('.svc-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
