@@ -4,6 +4,41 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.4 — ensartede Compass-hotspots
+
+Kun `assets/css/style.css` er ændret i denne runde — ingen HTML, JavaScript,
+tekster, links eller navigation er rørt.
+
+- **Forretning**: hotspot-markeringen (og dermed den gyldne ramme, der vises
+  ved hover/fokus) er flyttet ca. 17px længere ned, så afstanden til
+  kompasstjernen nu matcher de tre andre retninger visuelt.
+- **Ensartede rammer**: bredde, højde, border-radius og padding for alle
+  fire hotspots ligger nu i **én fælles CSS-regel** (`.compass-hotspot`)
+  — kun placeringen (`left`/`top`) er forskellig pr. retning, hvilket er
+  nødvendigt, fordi de fire tekstlabels rent faktisk sidder forskellige
+  steder i billedet. Der er ingen individuelle bredde/højde-værdier
+  tilbage pr. retning.
+- Placeringerne er beregnet ud fra en pixel-præcis måling af, hvor hver af
+  de fire tekstblokke (MENNESKER/LEDELSE/KULTUR/FORRETNING + undertekst)
+  rent faktisk ligger i billedet, så den nye, ensartede ramme er centreret
+  om hver tekstblok — ikke forskudt til nogen side.
+- **Vigtigt om klikzoner**: den nye, fælles størrelse er sat, så den er
+  **mindst lige så stor** som det tidligere klikområde for alle fire
+  retninger (aldrig mindre) — der er altså ikke sket nogen indskrænkning
+  af klikzonerne noget sted, kun en forstørrelse/ensretning hvor det var
+  nødvendigt.
+- En lille teknisk følgeændring: `.compass-original-wrap` brugte
+  `overflow:hidden` til at runde billedets hjørner. Det er flyttet til at
+  sidde direkte på billedet (`.compass-original-img{border-radius:10px}`)
+  i stedet, så de nu ensartede hotspot-rammer for Ledelse og Kultur (som
+  ligger helt ude ved billedets venstre/højre kant) ikke bliver skåret af.
+  Det visuelle resultat (afrundede hjørner) er identisk.
+- Verificeret automatisk: alle fire hotspots har nu identisk bredde, højde,
+  border-radius og padding; ingen af de fire dækker mindre end sit eget
+  tekstlabel; alle fire åbner stadig deres panel korrekt; "Læs mere"-links
+  navigerer stadig korrekt; ingen horisontal scroll på mobil (375px),
+  tablet (820px) og desktop (1440px).
+
 ## RC7.3 — ny stjerne i forsidegrafikken
 
 Selve stjerne-/kompasrose-grafikken i midten af forsidens Compass-billede
