@@ -4,6 +4,31 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.3 — ny stjerne i forsidegrafikken
+
+Selve stjerne-/kompasrose-grafikken i midten af forsidens Compass-billede
+er udskiftet med den nye stjerne fra bagsiden af visitkortet. Alt andet i
+grafikken er bevaret uændret:
+
+- Sandfarvet baggrund, titel ("THE MFG COMPASS™ / DIT KOMPAS FOR UDVIKLING"),
+  de fire retningstekster (Mennesker/Ledelse/Kultur/Forretning) og
+  bundteksten er alle 100% uændrede — kun cirklen med selve stjernen i
+  midten er skiftet ud.
+- Teknisk: den nye stjerne blev sat ind ved at finde de præcise
+  pixel-koordinater for den gamle kompas-cirkel (center ca. 335,377,
+  radius ca. 183px i det 693×719px store billede) og indsætte den nye
+  stjerne der med en cirkulær maske, så overgangen til den sandfarvede
+  baggrund er sømløs. Billedets samlede mål (693×719) er uændret, så
+  ingen andre filer skulle røres — de eksisterende klikbare områder
+  (`.hotspot-mennesker` osv. i `assets/css/style.css`) rammer stadig
+  præcis de samme steder, da de er baseret på tekstplaceringerne, som
+  ikke er flyttet.
+- Verificeret: billedet indlæses korrekt på mobil/tablet/desktop, alle
+  fire hotspots åbner stadig deres paneler, "Læs mere"-links navigerer
+  stadig korrekt, ingen tekst eller links er brudt, ingen horisontal
+  scroll. Kun `assets/images/mfg-compass-original.jpg` og den tilhørende
+  `.webp`-udgave er ændret — ingen andre filer i projektet er rørt.
+
 ## RC7.2 — bugfix: overlap i mobilmenuen
 
 Skærmbilleder fra en rigtig iPhone viste, at "Book en strategisk samtale"
