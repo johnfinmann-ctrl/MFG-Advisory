@@ -4,6 +4,46 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.5.4 — undersøgelse af PNG-fejlen
+
+**Konklusion: der er ingen fejl i selve hjemmesidens filer.** Jeg har
+gennemgået alle seks kontrolpunkter systematisk:
+
+1. **Alle PNG-filer er verificeret som ægte, gyldig binær billeddata** —
+   ikke tekst indsat i HTML/CSS/JS. Tjekket med tre uafhængige metoder:
+   `file`-kommandoen (bekræfter "PNG image data" for alle), Pythons
+   billedbibliotek PIL (åbner og validerer hver fil uden fejl), og en
+   direkte byte-for-byte kontrol af PNG-signaturen (`\x89PNG\r\n\x1a\n`)
+   i starten af hver fil. Alle tre metoder bekræfter gyldige filer.
+2. **Ingen filnavne har forkerte/doble endelser** — alle ender præcist på
+   `.png`, `.jpg` eller `.webp`, ingen `.png.html` eller lignende.
+3. **Alle `<img src="">` og `<link>`-referencer er gennemgået** — alle
+   peger korrekt på eksisterende filer i `assets/images/`.
+4. **Ingen navigation eller hotspot-link peger på en billedfil** — gennemsøgt
+   hele projektet for `.png`-forekomster; de eneste er de forventede
+   favicon-`<link>`-tags og admin-CMS'ets standardværdi for favicon.
+5. **Testet direkte via lokal HTTP-server**: alle tre favicon-PNG'er
+   bekræftet leveret med `Content-Type: image/png` og korrekt binært
+   indhold — præcis den måde, GitHub Pages også ville servere dem på.
+6. **`<picture>`-elementet på forsiden** bruger korrekt WebP som kilde og
+   JPG som fallback for selve Compass-billedet — ingen PNG indgår her,
+   og der er ingen forkerte type-angivelser.
+
+**Den sandsynlige, reelle årsag:** Sidste levering (RC7.5.1) indeholdt en
+ekstra mappe, `screenshots/`, med et skærmbillede jeg vedlagde som
+*reference til dig* — det var aldrig en del af selve hjemmesiden og blev
+ikke linket fra nogen side. At det lå inde i selve projekt-ZIP'en har
+sandsynligvis skabt forvirring om, hvad der reelt er "sitet". Den mappe er
+nu **fjernet helt** fra leverancen. Skærmbilleder til din egen kontrol
+sender jeg fremover kun som separate vedhæftninger i chatten — aldrig
+inde i selve projekt-ZIP'en.
+
+**Testet før levering:** Compass-billedet indlæses korrekt (bekræftet via
+`img.complete`/`naturalWidth`/`naturalHeight`), alle fire hotspots åbner
+deres paneler, alle favicon-links resolver korrekt, og der er ingen
+konsol- eller sidefejl. Ingen andre filer er ændret i forhold til RC7.5.1
+(bekræftet med en fuld mappe-diff).
+
 ## RC7.5.1 — tre sidste rettelser til Compass-hotspots
 
 **Igen et forbehold:** Billedvisningen var stadig ustabil i denne session

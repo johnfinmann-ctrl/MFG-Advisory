@@ -1,90 +1,200 @@
--- =========================================================================
--- MFG Advisory — Supabase schema
--- =========================================================================
--- Run this once in your Supabase project's SQL editor
--- (Project → SQL Editor → New query → paste all of this → Run).
---
--- After running it, copy your Project URL and "anon public" API key
--- (Project Settings → API) into assets/js/supabase-config.js.
--- =========================================================================
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-edit="seo-kultur-title">Kultur — The MFG Compass™ | MFG Advisory</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+<meta name="description" content="Stærkere samarbejde og en tydelig ansvarskultur — løsninger under Kultur i The MFG Compass™." data-edit="seo-kultur-description">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
 
--- 1) Table that stores every editable piece of content as a simple
---    key/value pair. The "key" matches the data-edit attribute in the
---    HTML (e.g. "hero-title", "mennesker-case-title", "contact-phone").
---    A few keys hold JSON (stored as plain text) rather than a single
---    string value:
---      "cases"        — array of {title, industry, customer, hideCustomer,
---                        challenge, solution, result, direction, direction2,
---                        image, pdf, gallery[], ctaText, ctaLink}
---      "testimonials" — array of {name, title, company, quote, direction,
---                        image, logo}
---      "solutions"    — array of {direction, title, teaser, long, challenges,
---                        approach, results, image, icon, relatedCase,
---                        ctaText, ctaLink, published, displayMode} — the
---                        admin-created "løsningskort" on the four direction pages
---      "om-competencies" / "om-certifications" — array of strings
---    These are parsed/stringified in assets/js/admin.js and
---    assets/js/content-loader.js — the table itself doesn't need to know
---    about their internal shape, it's still just one text value per key.
-create table if not exists content (
-  key text primary key,
-  value text,
-  updated_at timestamptz not null default now()
-);
+<header>
+  <div class="nav-wrap">
+    <a href="index.html" class="logo" data-nav="home">
+      <span class="mono">MFG</span>
+      <span class="word">MFG <em>Advisory</em></span>
+    </a>
+    <a class="nav-quick-cta btn btn-copper btn-sm" href="kontakt.html">Book</a>
+    <button class="nav-hamburger" id="navHamburger" aria-expanded="false" aria-controls="mainNav" aria-label="Åbn menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav" id="mainNav">
+      <a href="index.html" data-nav="home">Forside</a>
+      <a href="mennesker.html" data-nav="mennesker">Mennesker</a>
+      <a href="ledelse.html" data-nav="ledelse">Ledelse</a>
+      <a href="kultur.html" data-nav="kultur" class="active">Kultur</a>
+      <a href="forretning.html" data-nav="forretning">Forretning</a>
+      <a href="cases.html" data-nav="cases">Cases</a>
+      <a href="om-morten.html" data-nav="om">Om Morten</a>
+      <a href="kontakt.html" data-nav="kontakt">Kontakt</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">+45 60 52 89 00</a>
+      <a class="btn btn-copper" href="kontakt.html" data-edit="nav-cta-text">Book en strategisk samtale</a>
+    </div>
+  </div>
+</header>
 
--- Keep updated_at current on every write
-create or replace function set_updated_at()
-returns trigger as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
-$$ language plpgsql;
+<main>
+  <section class="subpage-hero">
+    <div class="container">
+      <a class="back-link" href="index.html#compass">← Retur til The MFG Compass™</a>
+      <span class="eyebrow">The MFG Compass™ · Retning</span>
+      <h1 class="display-lg"><svg class="icon"><use href="#i-culture"/></svg> <span data-edit="kultur-h1">Kultur</span></h1>
+      <p class="body-lg"><span data-edit="kultur-intro">Stærkere samarbejde og en tydelig ansvarskultur — teamudvikling og ledelsescoaching, der styrker tillid på tværs af organisationen.</span></p>
+      <div class="dir-switch">
+        <a href="mennesker.html" class="dsw">Mennesker</a>
+        <a href="ledelse.html" class="dsw">Ledelse</a>
+        <a href="kultur.html" class="dsw active">Kultur</a>
+        <a href="forretning.html" class="dsw">Forretning</a>
+      </div>
+    </div>
+  </section>
+  <section class="subpage-body">
+    <div class="container">
+      <div class="panel">
+        <p class="panel-challenge"><strong>Typiske udfordringer:</strong> <span data-edit="kultur-challenge">Samarbejdet knirker på tværs af teams, ansvar er uklart, og sygefravær eller lav trivsel begynder at kunne mærkes på bundlinjen.</span></p>
 
-drop trigger if exists trg_content_updated_at on content;
-create trigger trg_content_updated_at
-before update on content
-for each row execute function set_updated_at();
+        <span class="benefit-label">Resultater I kan forvente</span>
+        <div class="benefit-row">
+          <div class="benefit"><span data-edit="kultur-benefit-1">Højere engagement</span></div>
+          <div class="benefit"><span data-edit="kultur-benefit-2">Lavere sygefravær</span></div>
+          <div class="benefit"><span data-edit="kultur-benefit-3">Bedre samarbejde</span></div>
+          <div class="benefit"><span data-edit="kultur-benefit-4">Stærkere ansvarskultur</span></div>
+        </div>
 
--- 2) Row Level Security
--- IMPORTANT — read this:
--- This project has no separate backend/server, so the admin panel talks
--- to Supabase directly using the public "anon" key, which is visible in
--- the browser. That means these policies necessarily allow the anon key
--- to read AND write. The admin panel's PIN code is the only gate on
--- *who sees the editor*, not a real database-level authentication layer.
--- This is an accepted, documented trade-off for a no-backend static site.
--- If you need stronger protection later, the standard upgrade path is:
--- add Supabase Auth (real user login) and rewrite these policies to
--- require an authenticated session for INSERT/UPDATE/DELETE.
-alter table content enable row level security;
+        <div class="panel-block">
+          <span class="block-label">Løsninger — ydelser under Kultur</span>
+          <div class="svc-grid" data-solutions-target="kultur">
+            <div class="svc-card svc-card--accordion">
+              <button class="svc-toggle" aria-expanded="false">
+                <span class="svc-toggle-text">
+                  <h4 data-edit="kultur-svc1-title">Teamudvikling</h4>
+                  <p class="svc-teaser" data-edit="kultur-svc1-desc">Konkret teamarbejde, der styrker tillid, samarbejde og fælles spilleregler — bygget på virksomhedens egen hverdag, ikke generiske øvelser.</p>
+                </span>
+                <span class="svc-toggle-action">Læs mere <svg class="icon svc-chevron"><use href="#i-arrow"/></svg></span>
+              </button>
+              <div class="svc-detail">
+                <p data-edit="kultur-svc1-long">Konkret teamarbejde bygget på virksomhedens egen hverdag — ikke generiske øvelser fra en skabelon. Vi arbejder med de faktiske samarbejdsudfordringer, teamet står overfor.</p>
+                <div class="svc-detail-grid">
+                  <div>
+                    <span class="svc-detail-label">Typiske udfordringer</span>
+                    <p data-edit="kultur-svc1-challenges">Samarbejde, der knirker på tværs af afdelinger eller funktioner. Uklare spilleregler for, hvordan teamet reelt arbejder sammen. Konflikter, der ulmer uden at blive adresseret.</p>
+                  </div>
+                  <div>
+                    <span class="svc-detail-label">MFG's tilgang</span>
+                    <p data-edit="kultur-svc1-approach">Workshopforløb med afsæt i teamets egne situationer, tydelige aftaler om samarbejde, og opfølgning der sikrer, at aftalerne bliver til vane.</p>
+                  </div>
+                  <div>
+                    <span class="svc-detail-label">Forventede resultater</span>
+                    <p data-edit="kultur-svc1-results">Stærkere samarbejde, færre eskalerede konflikter og et team, der løser uenigheder, før de vokser sig store.</p>
+                  </div>
+                </div>
+                <div class="svc-detail-footer">
+                  <a href="#case-kultur" class="ct-link">Se relateret case →</a>
+                  <a class="btn btn-copper btn-sm" href="kontakt.html"><span data-edit="kultur-svc1-cta">Book en samtale</span></a>
+                </div>
+              </div>
+            </div>
+            <div class="svc-card svc-card--accordion">
+              <button class="svc-toggle" aria-expanded="false">
+                <span class="svc-toggle-text">
+                  <h4 data-edit="kultur-svc2-title">Ledelse &amp; Coaching</h4>
+                  <p class="svc-teaser" data-edit="kultur-svc2-desc">Ledere sætter kulturen. Coaching af ledergruppen skaber konsistens i den adfærd, der reelt smitter af på organisationen.</p>
+                </span>
+                <span class="svc-toggle-action">Læs mere <svg class="icon svc-chevron"><use href="#i-arrow"/></svg></span>
+              </button>
+              <div class="svc-detail">
+                <p data-edit="kultur-svc2-long">Ledere sætter kulturen — bevidst eller ubevidst. Coaching af ledergruppen skaber konsistens i den adfærd, der reelt smitter af på resten af organisationen.</p>
+                <div class="svc-detail-grid">
+                  <div>
+                    <span class="svc-detail-label">Typiske udfordringer</span>
+                    <p data-edit="kultur-svc2-challenges">Ledere, der siger ét og gør noget andet. Uens ledelsesstil på tværs af afdelinger, der skaber forvirring om, "hvordan vi gør her".</p>
+                  </div>
+                  <div>
+                    <span class="svc-detail-label">MFG's tilgang</span>
+                    <p data-edit="kultur-svc2-approach">Coaching af ledergruppen samlet og individuelt, med fokus på den adfærd der faktisk former kulturen i det daglige.</p>
+                  </div>
+                  <div>
+                    <span class="svc-detail-label">Forventede resultater</span>
+                    <p data-edit="kultur-svc2-results">En mere konsistent ledelseskultur og ledere, der aktivt går forrest i den kultur, virksomheden ønsker.</p>
+                  </div>
+                </div>
+                <div class="svc-detail-footer">
+                  <a href="#case-kultur" class="ct-link">Se relateret case →</a>
+                  <a class="btn btn-copper btn-sm" href="kontakt.html"><span data-edit="kultur-svc2-cta">Book en samtale</span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-drop policy if exists "public read" on content;
-create policy "public read" on content
-  for select using (true);
+        <div class="panel-block">
+          <span class="block-label">Case</span>
+          <div class="case-card" id="case-kultur">
+            <strong style="font-family:var(--font-display);font-size:1.15rem;font-weight:500"><span data-edit="kultur-case-title">Servicevirksomhed, to afdelinger i konflikt</span></strong>
+            <div class="case-steps">
+              <div class="case-step"><span class="k">Situation</span><p data-edit="kultur-case-situation">Samarbejdet mellem to afdelinger var præget af mistillid og uklare ansvarsområder.</p></div>
+              <div class="case-step"><span class="k">Retning</span><p data-edit="kultur-case-retning">Kultur — teamudvikling på tværs af afdelingerne.</p></div>
+              <div class="case-step"><span class="k">Løsning</span><p data-edit="kultur-case-losning">Fælles workshopforløb, tydelige snitflader og faste samarbejdsaftaler.</p></div>
+              <div class="case-step"><span class="k">Resultat</span><p data-edit="kultur-case-resultat">Færre eskalerede konflikter og hurtigere afklaring i det daglige samarbejde.</p></div>
+            </div>
+            <p class="case-note"><span data-edit="kultur-case-note">Illustrativt forløb baseret på typiske engagementer. Erstattes med dokumenteret case ved go-live.</span></p>
+          </div>
+        </div>
 
-drop policy if exists "public write" on content;
-create policy "public write" on content
-  for insert with check (true);
+        <div class="panel-block">
+          <span class="block-label">Indsigter</span>
+          <div class="insight-row">
+            <details class="insight">
+              <summary data-edit="kultur-insight1-q">Kultur er det, der sker, når ingen ser på</summary>
+              <div class="insight-body" data-edit="kultur-insight1-a">Værdier på væggen ændrer ingenting. Kultur skabes i de tusind små beslutninger, medarbejderne træffer, når ledelsen ikke er til stede.</div>
+            </details>
+            <details class="insight">
+              <summary data-edit="kultur-insight2-q">Ansvarskultur starter med tydelighed, ikke kontrol</summary>
+              <div class="insight-body" data-edit="kultur-insight2-a">Jo mere uklart ansvaret er, jo mere kontrol kræver det. Tydelighed er den billigste vej til ejerskab.</div>
+            </details>
+          </div>
+        </div>
 
-drop policy if exists "public update" on content;
-create policy "public update" on content
-  for update using (true);
+        <div class="panel-cta">
+          <p><span data-edit="kultur-cta-text">Vil du styrke samarbejdet og ansvarskulturen i teamet?</span></p>
+          <a class="btn btn-copper" href="kontakt.html"><span data-edit="kultur-cta-button">Book en samtale</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-drop policy if exists "public delete" on content;
-create policy "public delete" on content
-  for delete using (true);
+<footer>
+  <div class="container">
+    <div class="footer-brand">MFG <em>Advisory</em></div>
+    <div class="footer-links">
+      <a href="kontakt.html">Kontakt</a>
+      <span>·</span>
+      <span class="footer-cvr-wrap" id="footerCvrWrap" style="display:none">
+        <span aria-hidden="true">·</span>
+        <span>CVR: <span data-edit="footer-cvr"></span></span>
+      </span>
+    </div>
+    <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
+    <div class="fl">Bygget af <a href="https://nordicoperations.dk" target="_blank" rel="noopener">Nordic Operations</a></div>
+  </div>
+</footer>
 
--- 3) Storage bucket for uploaded images (portrait photo, future images).
--- If this fails with "already exists", that's fine — it means it's already set up.
-insert into storage.buckets (id, name, public)
-values ('mfg-media', 'mfg-media', true)
-on conflict (id) do nothing;
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/content-store.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/content-loader.js"></script>
+<script src="assets/js/cookie-consent.js"></script>
 
-drop policy if exists "public read media" on storage.objects;
-create policy "public read media" on storage.objects
-  for select using (bucket_id = 'mfg-media');
-
-drop policy if exists "public upload media" on storage.objects;
-create policy "public upload media" on storage.objects
-  for insert with check (bucket_id = 'mfg-media');
+</body>
+</html>

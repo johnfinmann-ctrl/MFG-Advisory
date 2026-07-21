@@ -117,8 +117,8 @@
   .compass-original-wrap{position:relative;display:inline-block;max-width:520px;width:100%;margin:0 auto;box-shadow:0 24px 70px rgba(0,0,0,.45)}
   .compass-original-img{display:block;width:100%;height:auto;border-radius:10px}
 
-  .compass-hotspot{position:absolute;display:block;width:42%;height:15%;border-radius:8px;transition:box-shadow .25s ease,background .25s ease;border:none;background:none;padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none}
-  .compass-hotspot:hover,.compass-hotspot:focus-visible,.compass-hotspot[aria-expanded="true"]{box-shadow:0 0 0 3px var(--copper-light),0 0 22px 4px rgba(212,164,92,.55);background:rgba(212,164,92,.08);outline:none}
+  .compass-hotspot{position:absolute;display:block;width:20.1%;height:11.7%;border-radius:8px;transition:box-shadow .25s ease,background .25s ease;border:none;background:none;padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none}
+  .compass-hotspot:hover,.compass-hotspot:focus-visible,.compass-hotspot[aria-expanded="true"]{box-shadow:0 0 0 3px var(--copper-light),0 0 12px 2px rgba(212,164,92,.5);background:rgba(212,164,92,.08);outline:none}
 
   .compass-panels{max-width:640px;margin:0 auto}
   .compass-panel{max-height:0;overflow:hidden;transition:max-height .4s ease}
@@ -133,10 +133,10 @@
   .compass-panel-footer .btn-ghost{border-color:rgba(255,255,255,.35);color:#fff}
   .compass-panel-footer .btn-ghost:hover{border-color:var(--copper-light);color:var(--copper-light)}
 
-  .hotspot-mennesker{left:27.3%;top:14.3%}
-  .hotspot-ledelse{left:0%;top:44.6%}
-  .hotspot-kultur{left:58.2%;top:44.6%}
-  .hotspot-forretning{left:27.3%;top:73.2%}
+  .hotspot-mennesker{left:38.31%;top:13.84%}
+  .hotspot-ledelse{left:0.43%;top:46.52%}
+  .hotspot-kultur{left:77.20%;top:46.52%}
+  .hotspot-forretning{left:37.66%;top:80.95%}
 
   .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
