@@ -4,6 +4,99 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.5.1 — tre sidste rettelser til Compass-hotspots
+
+**Igen et forbehold:** Billedvisningen var stadig ustabil i denne session
+(virkede kort i sidste runde, fejlede konsekvent i denne). Alle tre punkter
+er derfor verificeret matematisk/geometrisk (se detaljer nedenfor) samt via
+et vedlagt skærmbillede (`screenshots/rc751-compass-frames.png`) til din
+egen visuelle kontrol.
+
+**1. Kultur centreret korrekt:** Fandt roden af problemet — min tidligere
+centrering inkluderede ved en fejl den lille guld-forbindelsesprik mod
+kompasset som en del af "teksten". Da prikken sidder til venstre for selve
+ordet "KULTUR", trak den centreringen for langt mod venstre. Ekskluderede
+prikken og genberegnede ud fra kun den læsbare tekst — rammen er nu flyttet
+mod højre og centreret på selve "KULTUR" + undertekst.
+
+**2. Forretning-teksten flyttet (hele blokken):** Kontrollerede grundigt:
+min forrige rettelse flyttede rent faktisk både overskrift og undertekst
+sammen (verificeret ved pixelanalyse af begge versioner) — men tilsyneladende
+så det ikke tilstrækkeligt ud. Flyttede nu hele blokken ("FORRETNING" +
+begge undertekstlinjer, som én samlet, sammenhængende operation) yderligere
+ned. **Ærligt forbehold:** Jeg kunne kun flytte den **8px længere ned**
+(ikke fulde 12-15px), fordi bundteksten/citatet nedenunder er en fast,
+urørlig grænse — en fuld ekstra 12-15px shift ville visuelt have ramt
+bundteksten, hvilket ville bryde kravet om, at intet andet må ændres.
+Samlet er "FORRETNING"-blokken nu flyttet 23px ned i forhold til det
+allerførste, oprindelige billede.
+
+**3. Forretning-rammen genberegnet:** Rammen er nu centreret om den nye,
+lavere tekstposition, med samme størrelse som de tre andre, og ligger
+tydeligt under kompasset uden at røre cirklen.
+
+**4. Ens rammer:** Uændret fra RC7.5 — bredde, højde, border-radius og
+glød defineres stadig ét sted i `.compass-hotspot`; kun `left`/`top`
+varierer pr. retning.
+
+**Et vedvarende, ærligt forbehold:** Ligesom i RC7.5 er de fire tekstlabels
+fysisk forskellige størrelser i dette billede. Kultur er nu centreret på
+sin egen tekst, hvilket betyder dens afstand til kompasset (~17px) ikke er
+pixel-identisk med Ledelses (~10px) — det var nødvendigt for at opfylde det
+mere eksplicitte krav om centrering på selve teksten. Begge har dog en
+tydelig, synlig afstand, og ingen ramme rører cirklen.
+
+## RC7.5 — korrekt placering af Compass-hotspots
+
+**Vigtigt forbehold:** Min billedvisning fungerede ikke i denne session
+(bekræftet ved gentagne forsøg, også med et simpelt testbillede), så jeg
+kunne ikke personligt lave den visuelle skærmbillede-kontrol, der blev
+bedt om. I stedet har jeg verificeret alt **geometrisk/matematisk med
+pixel-præcision** (se `screenshots/`-mappen for de faktiske skærmbilleder
+til din egen visuelle kontrol).
+
+**1. Ens rammer:** Alle fire hotspots har nu identisk bredde (139px/20,1%),
+højde (84px/11,7%), border-radius (8px) og glød — defineret ét sted i
+`.compass-hotspot`. Kun `left`/`top` varierer pr. retning.
+
+**2. Ingen overlap med kompasset:** Kompassets cirkel blev målt præcist
+(center 335,377px, radius 183px). Alle fire rammer har nu **nøjagtig
+10px afstand** til cirklen — hverken mere eller mindre, verificeret med
+en geometrisk cirkel/rektangel-kollisionstest, ikke kun et øjemål.
+
+**3. Forretning flyttet ned:** Selve teksten ("FORRETNING" / "Vi omsætter
+potentiale" / "til resultater") er fysisk flyttet 15px ned i billedet
+(inden for det ønskede 12-18px-interval) — ikke kun rammen. Det gamle
+tekstområde er visket ud og erstattet med den korrekte cremefarvede
+baggrund; teksten er indsat på ny, lavere position. Rammen er genberegnet
+til at sidde centreret om den nye tekstposition.
+
+**Et ærligt forbehold om "perfekt centrering":** Kompassets fire
+tekstlabels er reelt forskellige størrelser (Mennesker/Forretning har
+bredere undertekster; Ledelse/Kultur sidder tæt på cirklens kant med
+meget lidt sideplads). En ramme, der er 100% ens i størrelse for alle
+fire OG har en tydelig, ens afstand til cirklen, kan derfor ikke være
+matematisk 100% centreret om al tekst i alle fire retninger samtidig —
+det er en fysisk umulighed i dette specifikke billede, ikke en fejl fra
+min side. Konkret betyder det, at rammerne dækker langt størstedelen af
+hver tekstblok, men et par pixels af den yderste kant (typisk den lille
+forbindelsesprik mod cirklen, eller yderste bogstav på den bredeste linje)
+kan ligge lige uden for rammen. Jeg har valgt at prioritere de eksplicit
+krævede "hårde" krav (ens størrelse, ingen overlap med cirklen, tydelig
+ens afstand) frem for pixel-perfekt tekstindramning i alle fire hjørner.
+
+**4-5. Funktionalitet og responsivitet:** Verificeret automatisk (22
+tjek): alle fire hotspots åbner stadig deres panel, "Læs mere"-links
+virker, ingen navigation væk fra forsiden ved klik, ingen horisontal
+scroll og ingen overlap med cirklen på 375px, 390px, 430px, tablet
+(820px) og desktop (1440px).
+
+**6. Visuel kontrol:** Se `screenshots/rc75-375.png`,
+`screenshots/rc75-390.png` og `screenshots/rc75-430.png` — de fire gyldne
+rammer er der fremtvunget synlige (normalt vises de kun ved hover/fokus)
+for at gøre kontrollen let. Kontrollér venligst selv, at de matcher dine
+forventninger, og sig til, hvis noget skal justeres.
+
 ## RC7.4 — ensartede Compass-hotspots
 
 Kun `assets/css/style.css` er ændret i denne runde — ingen HTML, JavaScript,

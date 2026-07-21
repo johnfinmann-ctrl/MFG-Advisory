@@ -1,83 +1,86 @@
-<!DOCTYPE html>
-<html lang="da">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siden blev ikke fundet — MFG Advisory</title>
-<meta name="description" content="Siden findes ikke. Find vej tilbage til MFG Advisory og The MFG Compass™.">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
-<link rel="shortcut icon" href="assets/images/favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
+/* =========================================================================
+   MFG Advisory — Cookie consent + gated analytics
+   =========================================================================
+   Shows a small banner until the visitor chooses "Kun nødvendige" or
+   "Accepter alle". Analytics (configured under Admin → Indstillinger) is
+   only ever loaded after explicit "Accepter alle" consent — never before,
+   and never if no analytics provider/ID has been configured.
+   ========================================================================= */
 
-<header>
-  <div class="nav-wrap">
-    <a href="index.html" class="logo" data-nav="home">
-      <span class="mono">MFG</span>
-      <span class="word">MFG <em>Advisory</em></span>
-    </a>
-    <a class="nav-quick-cta btn btn-copper btn-sm" href="kontakt.html">Book</a>
-    <button class="nav-hamburger" id="navHamburger" aria-expanded="false" aria-controls="mainNav" aria-label="Åbn menu">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="main-nav" id="mainNav">
-      <a href="index.html" data-nav="home">Forside</a>
-      <a href="mennesker.html" data-nav="mennesker">Mennesker</a>
-      <a href="ledelse.html" data-nav="ledelse">Ledelse</a>
-      <a href="kultur.html" data-nav="kultur">Kultur</a>
-      <a href="forretning.html" data-nav="forretning">Forretning</a>
-      <a href="cases.html" data-nav="cases">Cases</a>
-      <a href="om-morten.html" data-nav="om">Om Morten</a>
-      <a href="kontakt.html" data-nav="kontakt">Kontakt</a>
-    </nav>
-    <div class="nav-cta">
-      <a class="tel" href="tel:+4560528900" data-edit="contact-phone">+45 60 52 89 00</a>
-      <a class="btn btn-copper" href="kontakt.html" data-edit="nav-cta-text">Book en strategisk samtale</a>
-    </div>
-  </div>
-</header>
+(function () {
+  const CONSENT_KEY = 'mfg_cookie_consent'; // 'all' | 'necessary'
 
-<main>
-  <section class="subpage-hero subpage-hero--centered">
-    <div class="container">
-      <span class="eyebrow">404</span>
-      <h1 class="display-xl" style="margin:16px 0 20px">Denne retning findes ikke</h1>
-      <p class="body-lg" style="max-width:520px;margin:0 auto 36px">Siden, du ledte efter, er enten flyttet eller findes ikke længere. Lad The MFG Compass™ vise dig videre.</p>
-      <div class="hero-actions" style="justify-content:center">
-        <a class="btn btn-copper" href="index.html">Til forsiden</a>
-        <a class="btn btn-ghost" href="kontakt.html">Book en samtale</a>
-      </div>
-    </div>
-  </section>
-</main>
+  function getConsent() {
+    return localStorage.getItem(CONSENT_KEY);
+  }
 
-<footer>
-  <div class="container">
-    <div class="footer-brand">MFG <em>Advisory</em></div>
-    <div class="footer-links">
-      <a href="kontakt.html">Kontakt</a>
-      <span>·</span>
-      <span class="footer-cvr-wrap" id="footerCvrWrap" style="display:none">
-        <span aria-hidden="true">·</span>
-        <span>CVR: <span data-edit="footer-cvr"></span></span>
-      </span>
-    </div>
-    <div data-edit="footer-copyright">© 2026 MFG Advisory · Morten Foged Guglielmetti</div>
-    <div class="fl">Bygget af <a href="https://nordicoperations.dk" target="_blank" rel="noopener">Nordic Operations</a></div>
-  </div>
-</footer>
+  function setConsent(value) {
+    localStorage.setItem(CONSENT_KEY, value);
+  }
 
-<script src="assets/js/supabase-config.js"></script>
-<script src="assets/js/content-store.js"></script>
-<script src="assets/js/main.js"></script>
-<script src="assets/js/content-loader.js"></script>
-<script src="assets/js/cookie-consent.js"></script>
+  function loadAnalytics(provider, id) {
+    if (!provider || provider === 'none' || !id) return;
 
-</body>
-</html>
+    if (provider === 'plausible') {
+      const s = document.createElement('script');
+      s.defer = true;
+      s.setAttribute('data-domain', id);
+      s.src = 'https://plausible.io/js/script.js';
+      document.head.appendChild(s);
+    }
+
+    if (provider === 'ga') {
+      const s1 = document.createElement('script');
+      s1.async = true;
+      s1.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+      document.head.appendChild(s1);
+
+      const s2 = document.createElement('script');
+      s2.textContent =
+        "window.dataLayer = window.dataLayer || [];" +
+        "function gtag(){dataLayer.push(arguments);}" +
+        "gtag('js', new Date());" +
+        "gtag('config', '" + id.replace(/'/g, '') + "');";
+      document.head.appendChild(s2);
+    }
+  }
+
+  async function maybeLoadAnalyticsIfConsented() {
+    if (getConsent() !== 'all') return;
+    if (!window.MFGStore) return;
+    try {
+      const content = await window.MFGStore.getAll();
+      loadAnalytics(content['config-analytics-provider'], content['config-analytics-id']);
+    } catch (e) {
+      console.warn('MFG cookie-consent: could not read analytics config', e);
+    }
+  }
+
+  function renderBanner() {
+    const bar = document.createElement('div');
+    bar.className = 'cookie-banner';
+    bar.innerHTML =
+      '<p>Vi bruger nødvendige cookies for at hjemmesiden fungerer, og — kun med dit samtykke — analytics-cookies for at forstå trafik. Læs mere på <a href="kontakt.html">kontaktsiden</a>.</p>' +
+      '<div class="cookie-banner-actions">' +
+        '<button class="btn btn-ghost btn-sm" id="cookieNecessaryBtn">Kun nødvendige</button>' +
+        '<button class="btn btn-copper btn-sm" id="cookieAcceptBtn">Accepter alle</button>' +
+      '</div>';
+    document.body.appendChild(bar);
+
+    document.getElementById('cookieNecessaryBtn').addEventListener('click', () => {
+      setConsent('necessary');
+      bar.remove();
+    });
+    document.getElementById('cookieAcceptBtn').addEventListener('click', () => {
+      setConsent('all');
+      bar.remove();
+      maybeLoadAnalyticsIfConsented();
+    });
+  }
+
+  if (!getConsent()) {
+    renderBanner();
+  } else {
+    maybeLoadAnalyticsIfConsented();
+  }
+})();
