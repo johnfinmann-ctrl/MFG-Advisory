@@ -47,26 +47,34 @@
 <!-- ===== THE MFG COMPASS™ — original official graphic, used pixel-for-pixel ===== -->
 <section class="compass-section compass-section--home" id="compass">
   <div class="container">
-    <div class="compass-original-wrap">
-      <picture>
-        <source srcset="assets/images/mfg-compass-original.webp" type="image/webp">
-        <img src="assets/images/mfg-compass-original.jpg"
-             alt="The MFG Compass™ — Dit kompas for udvikling. Fire retninger: Mennesker, Ledelse, Kultur, Forretning."
-             class="compass-original-img" width="693" height="719">
-      </picture>
+    <div class="compass-stage">
+      <div class="compass-original-wrap">
+        <picture>
+          <source srcset="assets/images/mfg-compass-original.webp" type="image/webp">
+          <img src="assets/images/mfg-compass-original.jpg"
+               alt="The MFG Compass™ — Dit kompas for udvikling."
+               class="compass-original-img" width="693" height="719">
+        </picture>
+      </div>
 
-      <button class="compass-hotspot hotspot-mennesker" type="button" data-compass-toggle="mennesker" aria-expanded="false" aria-controls="compass-panel-mennesker" aria-label="Mennesker — vis mere">
-        <span class="visually-hidden">Mennesker</span>
-      </button>
-      <button class="compass-hotspot hotspot-ledelse" type="button" data-compass-toggle="ledelse" aria-expanded="false" aria-controls="compass-panel-ledelse" aria-label="Ledelse — vis mere">
-        <span class="visually-hidden">Ledelse</span>
-      </button>
-      <button class="compass-hotspot hotspot-kultur" type="button" data-compass-toggle="kultur" aria-expanded="false" aria-controls="compass-panel-kultur" aria-label="Kultur — vis mere">
-        <span class="visually-hidden">Kultur</span>
-      </button>
-      <button class="compass-hotspot hotspot-forretning" type="button" data-compass-toggle="forretning" aria-expanded="false" aria-controls="compass-panel-forretning" aria-label="Forretning — vis mere">
-        <span class="visually-hidden">Forretning</span>
-      </button>
+      <div class="compass-directions">
+        <button class="compass-direction compass-direction--people" type="button" data-compass-toggle="mennesker" aria-expanded="false" aria-controls="compass-panel-mennesker">
+          <span class="compass-direction__title">MENNESKER</span>
+          <span class="compass-direction__subtitle">Vi ser mennesket,<br>før vi ser rollen</span>
+        </button>
+        <button class="compass-direction compass-direction--leadership" type="button" data-compass-toggle="ledelse" aria-expanded="false" aria-controls="compass-panel-ledelse">
+          <span class="compass-direction__title">LEDELSE</span>
+          <span class="compass-direction__subtitle">Vi skaber retning<br>gennem ledelse</span>
+        </button>
+        <button class="compass-direction compass-direction--culture" type="button" data-compass-toggle="kultur" aria-expanded="false" aria-controls="compass-panel-kultur">
+          <span class="compass-direction__title">KULTUR</span>
+          <span class="compass-direction__subtitle">Vi bygger kultur,<br>hvor mennesker lykkes</span>
+        </button>
+        <button class="compass-direction compass-direction--business" type="button" data-compass-toggle="forretning" aria-expanded="false" aria-controls="compass-panel-forretning">
+          <span class="compass-direction__title">FORRETNING</span>
+          <span class="compass-direction__subtitle">Vi omsætter potentiale<br>til resultater</span>
+        </button>
+      </div>
     </div>
 
     <div class="compass-panels">

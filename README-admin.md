@@ -4,6 +4,102 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC7.7 — for stor lodret afstand på mobil (Kontakt + Om Morten)
+
+**1. Årsagen:** To CSS-regler brugte samme store padding på mobil som på
+desktop, uden nogen mobil-specifik reduktion:
+- `.kontakt{padding:90px 0 100px}` (Kontaktsidens sektion med kontaktkortene)
+- `.om{padding:90px 0 110px}` (Om Morten-sidens sektion med portrættet)
+
+Kombineret med `.subpage-hero`'s faste bundpadding (46px, samme på alle
+skærmstørrelser) gav det op til **136px** tomt rum mellem CTA-knappen og
+det første kontaktkort, og tilsvarende mellem undertitlen og portrættet
+på Om Morten. Der var **ingen** `height:100vh` eller
+`justify-content:space-between` involveret — det var udelukkende for
+generøs padding, der ikke var tilpasset mobil.
+
+Undervejs fandt jeg desuden en reel bug i min egen første rettelse: den
+nye mobil-regel stod placeret *før* grundreglerne i CSS-filen, så den
+blev overskrevet af dem (CSS-cascade: ved lige specificitet vinder den
+regel, der står sidst i filen). Rettet ved at flytte mobil-reglerne til
+efter grundreglerne, hvorefter de faktisk slår igennem.
+
+**2. Ændrede filer:** Kun `assets/css/style.css`. Ingen HTML, JavaScript,
+tekster, billeder eller andre filer er rørt.
+
+**3. Testede skærmbredder:** 375px, 390px, 430px, 768px og 1440px
+(desktop), automatiseret med 27 tjek:
+- Kontakt: afstand CTA → første kort er nu **48px** (var 136px), inden for
+  det ønskede 40-56px-interval.
+- Om Morten: afstand undertitel → portræt er nu **54px** (var 136px),
+  inden for 40-56px (medregnet brødtekstens egen 30px bundmargin).
+- 768px bruger bevidst stadig desktop-spacing, i tråd med sitets
+  eksisterende breakpoint ved 768px (samme grænse, hvor hovedmenuen
+  skifter fra hamburger til fuld visning).
+
+**4. Bekræftelse:**
+- **Desktop (1440px):** `.kontakt` og `.om`'s padding er uændret 90px —
+  verificeret direkte på computed style.
+- **Kompasset:** Billedet indlæses korrekt, og et hotspot-klik blev
+  testet og åbner stadig sit panel korrekt — kompasmodulet er ikke rørt.
+- Telefonnummer- og mail-links, kontaktformularen, samt alle sider, der
+  deler `.subpage-hero`-klassen (Cases, de fire retningssider, 404),
+  er testet uden horisontal scroll eller andre regressioner.
+
+## RC7.6 — Compass-retningerne er nu rigtige HTML-elementer
+
+Efter flere runder med pixel-justering af tekst indbygget i selve
+kompas-grafikken viste målingerne, at metoden ikke var holdbar (for lidt
+fysisk plads i billedet til at opfylde alle krav samtidig). Løsningen er
+nu ændret fundamentalt: de fire retningsnavne er ikke længere en del af
+billedet, men rigtige, tilgængelige HTML-knapper.
+
+**1. Tekstfri grafik:** Ja — `assets/images/mfg-compass-original.jpg` (og
+`.webp`) er nu redigeret, så de fire tekstblokke (MENNESKER, LEDELSE,
+KULTUR, FORRETNING + deres undertekster og forbindelsesprikker) er
+fjernet fra billedet. Titlen ("THE MFG COMPASS™ / DIT KOMPAS FOR
+UDVIKLING"), selve kompasset/stjernen og bundcitatet er bevaret uændret.
+Verificeret ved pixelanalyse: ingen mørke pixels tilbage i de fire
+tekstområder, mens cirkel, titel og bundtekst stadig er intakte.
+
+**2. Ændrede filer:** Kun `index.html`, `assets/css/style.css`,
+`assets/images/mfg-compass-original.jpg`, `assets/images/mfg-compass-original.webp`,
+og en tekstopdatering i admin-panelets forklaringstekst (`assets/js/admin.js`,
+ingen funktionel ændring). Bekræftet med en fuld mappe-diff — ingen andre
+filer er rørt (navigation, portræt, farver, footer, Supabase, cases,
+indsigter og øvrige tekster er 100% uændrede).
+
+**3. De fire ensartede HTML-elementer:** Alle fire bruger nøjagtig samme
+grundklasse `.compass-direction` (bredde, min-højde, padding, border,
+border-radius, typografi, hover/aktiv/fokus-tilstand er defineret ét
+sted). Kun placeringen styres af `.compass-direction--people`,
+`--leadership`, `--culture`, `--business` — disse sætter udelukkende
+`left`/`top`/`transform` til positionering, intet om størrelse eller
+udseende. Teksterne er nu almindelig, semantisk HTML
+(`<span class="compass-direction__title">` +
+`<span class="compass-direction__subtitle">`), ikke pixler i et billede.
+
+**4. Test af mobil og desktop:** Automatiseret testsuite (41 tjek) kørt
+ved 375px, 390px, 430px, 768px, 1024px og 1440px:
+- **Mobil (<768px):** Kompasset vises øverst, de fire retninger vises
+  som ens kort i et 2×2-grid nedenunder (1 kolonne under 420px) — ingen
+  absolut positionering, ingen risiko for overlap på smalle skærme.
+- **Desktop/tablet (≥768px):** De fire retninger ligger rundt om
+  kompasset som før, nu som synlige, klikbare kort. Verificeret
+  geometrisk, at ingen af de fire kort overlapper kompas-cirklen på
+  768px, 1024px og 1440px (fandt og rettede et lille overlap på Ledelse
+  under testen).
+- Alle fire klikhandlinger, "Læs mere"-links og accordion-adfærd er
+  bekræftet uændret. Ingen horisontal scroll på nogen af de seks bredder.
+
+**5. Ingen tekst beskæres:** Bekræftet automatisk — hvert kort tjekkes
+for, at dets `scrollHeight`/`scrollWidth` ikke overstiger dets synlige
+`clientHeight`/`clientWidth` (dvs. ingen indre overflow/beskæring af
+hverken overskrift eller undertekst) på alle seks testede bredder.
+
+**Ikke inkluderet endnu (som aftalt):** Klik på selve kompas-centrum er
+bevidst ikke tilføjet — det tages som en separat, senere opgave.
+
 ## RC7.5.4 — undersøgelse af PNG-fejlen
 
 **Konklusion: der er ingen fejl i selve hjemmesidens filer.** Jeg har

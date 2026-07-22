@@ -552,10 +552,11 @@
       <div class="field-card">
         <label>Sådan opdaterer du selve grafikken</label>
         <p class="field-note">Udskift filen <code>assets/images/mfg-compass-original.jpg</code> i projektet med en ny
-        version i samme billedformat og -forhold. De fire klikbare områder (Mennesker, Ledelse, Kultur, Forretning)
-        er placeret med procent-baserede koordinater i <code>assets/css/style.css</code>
-        (klasserne <code>.hotspot-mennesker</code>, <code>.hotspot-ledelse</code>, <code>.hotspot-kultur</code>,
-        <code>.hotspot-forretning</code>) og skal justeres manuelt, hvis en ny grafik har andre tekstplaceringer.</p>
+        version i samme billedformat og -forhold — grafikken indeholder ikke længere Mennesker/Ledelse/Kultur/
+        Forretning-teksterne (kun titlen, selve kompasset og bundcitatet). De fire retningsnavne og deres
+        undertekster er nu rigtige HTML-elementer (<code>.compass-direction</code> i <code>index.html</code> og
+        <code>assets/css/style.css</code>), ikke en del af billedet — de kan derfor ikke redigeres via CMS'et endnu,
+        men kræver en kodeændring.</p>
       </div>
       <div class="field-card">
         <label>"Læs mere"-mål</label>
