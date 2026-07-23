@@ -15,24 +15,10 @@
       console.warn('MFG icon sprite could not be loaded (assets/icons/icons.svg). Icons will be blank if opened via file:// — serve the project over http(s) instead.');
     });
 
-  // Compass hotspots: elegant in-place expand (stays on the homepage)
-  document.querySelectorAll('[data-compass-toggle]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const dir = btn.getAttribute('data-compass-toggle');
-      const panel = document.getElementById('compass-panel-' + dir);
-      if (!panel) return;
-      const wasOpen = panel.classList.contains('open');
-
-      // Close any other open panel/hotspot first (accordion — one at a time)
-      document.querySelectorAll('.compass-panel.open').forEach(p => p.classList.remove('open'));
-      document.querySelectorAll('[data-compass-toggle][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
-
-      if (!wasOpen) {
-        panel.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
-      }
-    });
+  // Compass "active" state: adds .is-active briefly on click/touch so keyboard and
+  // touch users see the same gold-frame feedback as mouse hover before navigating.
+  document.querySelectorAll('.compass-direction, .compass-center').forEach(el => {
+    el.addEventListener('pointerdown', () => el.classList.add('is-active'));
   });
 
   // Mobile hamburger menu (<768px only — desktop nav is untouched by this)

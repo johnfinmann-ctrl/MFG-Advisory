@@ -4,6 +4,116 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC8.1 — kritisk rettelse: LEDELSE/KULTUR blev beskåret på mobil
+
+**Årsagen fundet:** Mine tidligere automatiske tests tjekkede kun
+`document.documentElement.scrollWidth` (side-niveau scroll), ikke om det
+enkelte elements egen boks lå inden for viewportet. `.compass-section` har
+`overflow:hidden` (bruges til den bløde baggrundsgradient) — det forhindrer
+siden i at scrolle, men skjuler samtidig alt, der stikker uden for
+sektionen. Jeg havde tidligere sat Ledelse til `left:-4%` på smalle
+bredder for at undgå at overlappe kompasrosen — det placerede boksens
+venstre kant uden for viewportet, hvor `overflow:hidden` klippede den
+visuelt, uden at det nogensinde udløste side-scroll. Det er derfor mine
+tidligere "ingen horisontal scroll"-tjek bestod, mens teksten stadig var
+synligt beskåret. Bekræftet direkte: ved 390px lå Ledelses boks fra
+x=-35,45px til x=64,7px — 35px af den lå uden for skærmen.
+
+**Løsningen:** Et selvstændigt mobil-koordinatsystem (ikke genbrug af
+desktop-koordinater):
+- Ledelse: `left:2px` (aldrig negativ), Kultur: `right:2px` (aldrig ud
+  over 100%) — begge med `transform` kun på lodret akse, ingen vandret
+  centrering der kan skubbe dem ud over kanten.
+- Bredde styret med `clamp(78px, 23vw, 110px)` og reduceret skriftstørrelse
+  via `clamp()`, så hele teksten (inkl. "hvor mennesker lykkes") altid har
+  plads uden at blive beskåret internt.
+- Selve kompasrosen skaleres til 76% bredde på mobil (proportioner
+  fuldstændig bevaret, ikke forvrænget) — det skaber den nødvendige,
+  garanterede sideplads til Ledelse/Kultur, som eksplicit foreslået.
+- Mennesker/Forretning er nu fuldt centreret (både vandret og lodret) på
+  deres ankerpunkt, så deres boks aldrig vokser ind i kompasrosen.
+- "SE METODEN" er nu to linjer ("SE" / "METODEN"), større, centreret i
+  cirklen (ikke længere nederst), med en let mørk baggrund bag teksten for
+  bedre kontrast mod guldstjernen.
+
+**Ny, strengere testmetode:** Denne gang tjekker jeg hvert af de fire
+elementers **faktiske `getBoundingClientRect()`** direkte mod viewportets
+grænser (0 til viewport-bredde) — præcis den kontrol, der ville have
+fanget den oprindelige fejl. 56 tjek bestået ved 375px, 390px og 430px:
+ingen kant uden for viewport, ingen intern tekstbeskæring, alle fire
+tekster (inkl. "Vi bygger kultur, hvor mennesker lykkes") bekræftet
+tilstede i deres fulde ordlyd i DOM'en. Desuden verificeret, at intet
+element overlapper kompasrosen ved 375-1440px.
+
+**Desktop bekræftet uændret:** `.compass-original-wrap` er stadig 520px
+bred (100%, ikke skaleret ned) ved 1440px, og alle fire retningers
+`left`/`top`/`width`-værdier er identiske med RC8's godkendte desktop-layout.
+
+**Vigtigt forbehold:** Min egen billedvisning fungerede desværre ikke i
+denne session (bekræftet ved gentagne forsøg), så jeg kunne ikke
+personligt se skærmbillederne. De tre screenshots (375px, 390px, 430px)
+er derfor vedhæftet separat, så du kan lave den visuelle kontrol, du med
+rette beder om.
+
+## RC8 — nyt, rent Compass-billede med 5 klikbare områder
+
+**1. Det nye Compass-billede:** `mfg-compass-original.jpg` / `.webp`
+(1109×1419px) — Mortens professionelle, fuldstændigt tekstfrie grafik med
+guld kompasrose på mørkeblå baggrund. Det gamle billede (693×719px, med de
+gamle tekster visket ud af mig i en tidligere runde) er permanent
+udskiftet og bruges ikke længere noget sted.
+
+**2. Ændrede filer:**
+- `index.html` — kompasmodulet genopbygget: `.mfg-compass-stage`-wrapper,
+  fem rigtige klikområder, ingen accordion-paneler længere (erstattet af
+  direkte links + den nye side).
+- `assets/css/style.css` — hele kompasmodulets styling omskrevet: transparent
+  normaltilstand, gylden ramme kun ved interaktion, ny geometri tilpasset
+  det nye billedes proportioner.
+- `assets/js/main.js` — den gamle panel-toggle-logik fjernet (ikke længere
+  nødvendig); en lille tilføjelse sikrer, at touch/tastatur får samme
+  gyldne feedback som museover.
+- **Ny fil:** `mfg-compass.html` — hele den nye side om metoden.
+- Alle 10 offentlige sider fik tilføjet ét diskret link ("The MFG
+  Compass™") i footeren til den nye side, uden at fylde hovedmenuen.
+
+**3. De fem klikområder:**
+- **Mennesker / Ledelse / Kultur / Forretning**: rigtige `<a>`-links
+  (`mennesker.html`, `ledelse.html`, `kultur.html`, `forretning.html`),
+  med `aria-label="Læs om [Retning]"`. Alle fire deler nøjagtig samme
+  grundklasse `.compass-direction` (bredde, min-højde, padding, border,
+  radius, hover/fokus/aktiv-tilstand, animation ét sted) — kun
+  `--people/--leadership/--culture/--business`-modifierne sætter
+  placering. Normaltilstand: helt transparent, ingen ramme, ingen skygge,
+  lys tekst (da hele billedet nu er mørkeblåt). Gylden, afrundet ramme
+  vises kun ved hover/fokus/klik.
+- **Centrum**: et rundt `<a>`-link, positioneret præcist over
+  kompasrosen, med den diskrete tekst "SE METODEN" nederst i cirklen (for
+  ikke at dække selve stjernen) og `aria-label="Læs om The MFG
+  Compass-metoden"`. Fører til `mfg-compass.html`. Diskret gylden glød ved
+  hover/fokus/aktiv, ellers usynlig.
+
+**4. Testet ved:** 375px, 390px, 430px, 480px, 600px, 768px, 1024px og
+1440px — automatiseret (50 tjek i alt). Alle fire retninger forbliver
+positioneret omkring kompasset ved samtlige bredder (aldrig en liste
+under kompasset), ingen af de fem områder overlapper kompasrosen, ingen
+tekst beskæres, ingen horisontal scroll, ingen konsol-/sidefejl. Tastatur-
+navigation (Tab) når frem til de klikbare områder. Et reelt overlap med
+kompasrosen blev fundet og rettet for Ledelse/Kultur under testen (den
+oprindelige placering var for tæt på ringsystemet ved smalle bredder).
+
+**5. Øvrige sider:** Bekræftet uændrede — Om Morten, Kontakt, Cases,
+Supabase, admin, cookie-banner, kontaktoplysninger og alle øvrige tekster
+er ikke rørt. Kun kompasmodulet, billedreferencen, de fem klikområder, den
+nye side og footer-linket er ændret.
+
+**Vigtigt forbehold:** Min egen billedvisning var ustabil under denne
+session (bekræftet ved gentagne forsøg), så jeg kunne ikke personligt
+lave den sidste visuelle kontrol. Al positionering og alle mål er derfor
+verificeret geometrisk/matematisk (cirkeloverlap beregnet præcist, ikke
+skønnet), og desktop-/mobil-skærmbilleder er vedhæftet separat til din
+egen visuelle bekræftelse.
+
 ## RC7.7 — for stor lodret afstand på mobil (Kontakt + Om Morten)
 
 **1. Årsagen:** To CSS-regler brugte samme store padding på mobil som på
