@@ -4,6 +4,214 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC11.2 — konsekvent "vi" på forretnings- og ydelsessider
+
+Gennemgået manuelt (ikke automatisk søg-og-erstat) for hvert eneste fund
+af "jeg/mig/min/mit/mine" i alle offentlige HTML-filer.
+
+**1. Ændrede sider:** `index.html`, `mennesker.html`, `ledelse.html`,
+`kultur.html`, `forretning.html`, `kontakt.html`. Ingen andre filer rørt.
+
+**2. "Jeg" bevaret på Om Morten:** Faktisk **ingen** — ved gennemgang
+viste det sig, at Om Morten-sidens bio allerede er skrevet i tredje
+person ("Morten Foged Guglielmetti hjælper virksomheder med...", "Fokus
+er at skabe...") og ikke bruger "jeg" noget sted i forvejen. Der var
+derfor intet at bevare eller ændre på denne side — den opfylder allerede
+kravet om at være personlig uden at kollidere med "vi"-reglen andre steder.
+
+**3. "Vi" nu konsekvent brugt:**
+- **Forside:** Hero-teksten ("Vi hjælper ejerledere og SMV'er...") og alle
+  tre afsnit i Mød Morten-sektionen er rettet til "vi/vores", præcis som
+  specificeret. Overskriften "Rådgivning fra én, der selv har stået med
+  ansvaret" er bevaret uændret.
+- **Mennesker, Ledelse, Kultur, Forretning:** Hver sides "Jeg hjælper
+  jer..." er rettet til "Vi hjælper jer...", ordret som specificeret.
+- **Kontakt:** Hovedoverskrift og brødtekst rettet til "Vi skaber..." /
+  "Vi hjælper...". Desuden rettet formularteksten "så vender jeg tilbage"
+  til "så vender vi tilbage" — samme logik (virksomheden svarer, ikke kun
+  Morten personligt), selvom denne ene sætning ikke var eksplicit
+  citeret i opgaven.
+
+Ingen CTA'er brugte "Kontakt mig/Book mig/Skriv til mig" i forvejen —
+kontrolleret og bekræftet rent.
+
+**4. Ingen funktioner, links eller layout ændret:** Bekræftet med
+automatiseret test — kompas-links, sticky bookingknap, cookiebanner og
+admin-login fungerer alle uændret. HTML-balance verificeret på alle seks
+ændrede filer. En fuld diff mod forrige version bekræfter, at kun de seks
+navngivne HTML-filer er rørt — ingen CSS, JavaScript, billeder eller
+andre sider.
+
+## RC11.1 — sticky bookingknap, cookiebanner og mobilportræt rettet
+
+**1. Sticky bookingknap overlappede Mortens portræt:** Løst med en rigtig
+`IntersectionObserver`-baseret synlighedslogik (ikke bare cookiebanner +
+footer som før). Den fastholdte knap skjules nu automatisk, når en af
+følgende er synlig i viewport: en eksisterende "Book en samtale"-knap
+(hero, Morten-sektionen, retningssidernes CTA — undtaget selve den lille
+"Book"-genvej i headeren, som altid er synlig af design), footeren,
+kontaktformularen, eller Mortens portrætsektion. Den vises kun på
+almindelige tekstafsnit, hvor den reelt tilfører værdi — præcis som bedt om.
+
+**2. Cookiebanner dækkede indhold på Mennesker-siden:** `body` får nu
+klassen `cookie-banner-open`, mens banneret er åbent, og siden får
+midlertidigt ekstra bundplads, så alt indhold (inkl. footeren) kan
+scrolles helt fri af banneret. Selve cookiebanneret er visuelt uændret,
+og "Accepter alle" fungerer som før.
+
+**3. Mobilportræt for højt:** Portrættet er gjort mere kompakt på
+375–430px (kvadratisk beskæring i stedet for det høje 700:758-format,
+`object-fit:cover` + justeret `object-position`, så ansigt og skuldre
+forbliver i billedet). Det oprindelige billede er uændret — kun
+beskæringen på mobil er justeret. Desktop er 100% uændret.
+
+**4-5. Sikker bundplacering og visningslogik:** `env(safe-area-inset-bottom)`
+tilføjet til knappens position, så den ikke kolliderer med iPhones
+home-indikator. Ingen blink ved scroll — synligheden styres udelukkende
+af IntersectionObserver-events (ikke en scroll-lytter), som browseren i
+forvejen optimerer.
+
+**Ændrede filer (kun disse tre):** `assets/css/style.css`,
+`assets/js/cookie-consent.js`, `assets/js/mobile-sticky-cta.js`. Ingen
+tekster, HTML-indhold, Compass, desktoplayout, Clarity-events, Supabase,
+admin eller Cases er rørt — bekræftet med en fuld diff mod RC11.
+
+**Testet ved:** 375px, 390px og 430px — 39 automatiserede tjek i alt,
+herunder scroll-gennemløb af hele forsiden for at bekræfte, at sticky-CTA
+aldrig overlapper portrættet nogen steder, og at footeren kan scrolles
+100% fri af det åbne cookiebanner (målt med 2px margin).
+
+**Vigtigt forbehold:** Min billedvisning fungerede desværre slet ikke i
+denne session, så jeg kunne ikke personligt se de fire krævede
+screenshots. De er vedhæftet separat til din egen visuelle kontrol.
+
+## RC11 — mere personlig og kundevendt
+
+**1. Morten på forsiden:** Ny sektion ("Mød Morten") placeret umiddelbart
+efter The MFG Compass™ og hero-teksten, før footeren. Genbruger Mortens
+eksisterende portræt (samme fil som Om Morten og Kontakt — intet nyt eller
+kunstigt genereret billede). Desktop: to-delt layout med portræt ~36% af
+indholdsbredden (verificeret). Mobil: portræt over tekst, kompakt.
+
+**2-3. Nye indledninger:** Mennesker, Ledelse, Kultur og Forretning har
+hver fået en ny overskrift, to introafsnit og en afsluttende
+CTA-spørgsmål+knap, præcis som leveret. Sproget er gennemgående skrevet
+med "jer/jeres/I" til kunden, "jeg" om Mortens rådgivning. De eksisterende
+længere sektioner (typiske udfordringer, løsningskort, cases, indsigter)
+er urørt — ingen tydelig gentagelse blev fundet, der skulle fjernes.
+
+**4. Fast bookingknap på mobil:** Implementeret. Vises kun under 768px,
+samme navy/guld-stil som resten af sitet. Skjules automatisk, mens
+cookiebanneret er åbent (overvåget live), og skjules igen, når footeren
+kommer i syne, så den aldrig dækker footer-indhold. Siden får ekstra
+bundplads på mobil, så knappen ikke dækker tekst.
+
+**9. Clarity-events tilføjet:** `homepage_about_morten_click`,
+`homepage_booking_click`, `mennesker_booking_click`,
+`ledelse_booking_click`, `kultur_booking_click`,
+`forretning_booking_click`, `mobile_sticky_booking_click` — alle via et
+nyt, generisk `data-clarity-event`-attribut-system i
+`assets/js/analytics-clarity.js` (ægte event-delegation, så det også
+virker for den dynamisk indsatte sticky-knap). Clarity starter fortsat
+kun efter samtykke — ingen ændring af den eksisterende gate-logik.
+
+**Ændrede/nye filer:** `index.html` (Morten-sektion), `mennesker.html`,
+`ledelse.html`, `kultur.html`, `forretning.html` (nye indledninger),
+`assets/css/style.css` (nyt CSS til Morten-sektionen, CTA-spørgsmål og
+sticky-knap), `assets/js/analytics-clarity.js` (generisk event-tracking),
+ny fil `assets/js/mobile-sticky-cta.js`. De øvrige 5 sider
+(Kontakt, Om Morten, Cases, 404, The MFG Compass™) fik udelukkende
+tilføjet ét script-tag for sticky-knappen — ingen indholdsændringer
+(bekræftet med diff).
+
+**Testet ved:** 375px, 390px, 430px, 768px, 1024px og 1440px — 58
+automatiserede tjek. Ingen horisontal scroll noget sted. Cases, Compass,
+admin-login, Supabase og Clarity-konfiguration bekræftet uændrede.
+
+**Vigtigt forbehold:** Min billedvisning fungerede desværre ikke i denne
+session (gentestet flere gange), så jeg kunne ikke personligt se
+skærmbillederne. De er vedhæftet separat til din egen visuelle kontrol.
+
+## RC10 — Microsoft Clarity implementeret
+
+Sitet bruger nu **Microsoft Clarity** til statistik — gratis, ingen egen
+statistikdatabase. Der bruges **ikke** Plausible eller Google Analytics
+(den tidligere forberedte understøttelse af dem er fjernet og erstattet).
+
+- **Ét konfigurationssted:** `assets/js/clarity-config.js` indeholder kun
+  `window.MFG_CLARITY_PROJECT_ID = ''` — udfyld dette ene sted, og alle
+  sider bruger det automatisk. Se `docs/ANALYTICS.md` for en fuld guide
+  til at oprette en gratis konto og finde ID'et.
+- **Consent-styret:** Clarity indlæses udelukkende, hvis en besøgende har
+  valgt "Accepter alle" i cookiebanneret, og kun hvis et Project ID er
+  udfyldt. Scriptet indsættes højst én gang, uanset hvor mange gange
+  funktionen kaldes.
+- **Automatisk event-tracking** af: "Book en strategisk samtale"-klik,
+  telefon-klik, mail-klik, indsendt kontaktformular, klik på hver af de
+  fire kompas-retninger, klik på kompassets centrum, PDF-downloads og
+  eksterne links. Se den fulde liste i `docs/ANALYTICS.md`.
+- **Admin → Analytics** viser nu Clarity-status (Installeret/Ikke
+  konfigureret), Projekt-ID og en knap til at åbne Clarity-dashboardet —
+  rent visningsvindue, intet redigeres her.
+
+**Ændrede/nye filer:** `assets/js/clarity-config.js` (ny),
+`assets/js/analytics-clarity.js` (ny), `docs/ANALYTICS.md` (ny),
+`assets/js/cookie-consent.js` (Clarity i stedet for Plausible/GA),
+`assets/js/admin.js` (ny Analytics-visning), alle 10 offentlige sider samt
+`admin.html` (script-tags tilføjet). Design, layout, CSS, Compass,
+navigation, admin-login, Supabase og indhold er 100% uændrede — bekræftet
+med automatiseret test (34 tjek, ingen horisontal scroll, ingen
+konsolfejl, kontaktformular og alle sider bekræftet fungerende uændret).
+
+## RC9 — global mobilrettelse: for stor afstand øverst og nederst
+
+**1. CSS-reglen bag den store afstand øverst:** `.subpage-hero` (bruges af
+Om Morten, Kontakt, Cases, de fire retningssider og 404) havde en
+mobil-regel (`padding-top:var(--header-clearance-mobile)`), der **aldrig
+reelt blev anvendt** — den stod placeret *før* grundreglen
+`.subpage-hero{padding:var(--header-clearance) 0 46px}` i CSS-filen.
+Ved lige specificitet vinder den regel, der står sidst i filen, så
+desktop-værdien (196px) blev brugt selv på mobil. Målt direkte: 129px
+afstand under headeren i stedet for de tilsigtede ~56px — næsten det
+dobbelte. Nederst var der ikke en tilsvarende fejl (den regel var allerede
+korrekt placeret fra en tidligere rettelse) — footer-afstanden var
+faktisk allerede fin (56px), men den store afstand øverst gjorde hele
+siden føltes for tom.
+
+**2. Ingen CSS-regel skabte en decideret fejl nederst** — jeg gennemsøgte
+grundigt for `100vh`, `min-height`, `justify-content:space-between` og
+lignende og fandt intet af det nogen steder i projektet. Den oplevede
+"tomme plads nederst" var en direkte konsekvens af den forkerte
+øverste-afstand, som gjorde hele siden virke unaturligt lang.
+
+**3. Ændrede filer:** Kun `assets/css/style.css`. Ingen HTML, JavaScript,
+tekster, billeder eller andre filer er rørt (bortset fra `index.html`,
+som allerede indeholdt en tidligere godkendt tekstrettelse til
+kompas-centrum, "SKAB RETNING" — ikke en del af denne opgave).
+
+**4. Testet ved:** 375px, 390px, 430px og 768px, på alle ni sider
+(Forside, Mennesker, Ledelse, Kultur, Forretning, Cases, Om Morten,
+Kontakt, The MFG Compass). Præcise målinger:
+- **Om Morten:** header→"OM MORTEN" = 56px. Portræt→footer = 56px.
+- **Kontakt:** header→"KONTAKT" = 56px. Overskrift→brødtekst = 18px.
+  Brødtekst→CTA = 30px. CTA→første kontaktkort = 48px. Sidste
+  indhold→footer = 56px.
+- Alle værdier ligger inden for de ønskede intervaller (48-64px øverst,
+  24-32px mellem tekstelementer, 40-56px før første kort, 40-80px før
+  footer). 768px bruger fortsat desktop-værdierne uændret (samme
+  breakpoint-konvention som resten af sitet), ingen fejl fundet der.
+
+**5. Desktop og Compass bekræftet uændret:** `.kontakt`, `.om` og
+`.compass-section--home`'s padding er verificeret identiske med
+før-rettelsen ved 1440px (90px/90px/196px). Kompas-billedet, alle fem
+klikområder og kontaktformularen er testet og fungerer uændret.
+
+**Vigtigt forbehold:** Min billedvisning fungerede desværre ikke i denne
+session (gentestet flere gange), så jeg kunne ikke personligt se de tre
+krævede screenshots. De er vedhæftet separat (Om Morten ved 390px,
+Kontakt øverst ved 390px, Kontakt nederst/footer ved 390px), så du kan
+lave den visuelle kontrol selv.
+
 ## RC8.1 — kritisk rettelse: LEDELSE/KULTUR blev beskåret på mobil
 
 **Årsagen fundet:** Mine tidligere automatiske tests tjekkede kun
@@ -597,17 +805,20 @@ Formularen virker ud af boksen med en mailto-fallback. For rigtige mails:
 Feltet er tomt som standard, og der er ingen hårdkodede API-nøgler nogen
 steder i koden.
 
-## Analytics (Plausible eller Google Analytics)
+## Analytics (Microsoft Clarity)
 
-Intet tracking-ID er indsat som standard. Gå til **Admin → Analytics**,
-vælg udbyder og indsæt Site-ID/Measurement-ID. Scriptet indlæses kun,
-hvis en besøgende har accepteret analytics-cookies.
+MFG Advisory bruger Microsoft Clarity — gratis, ingen egen statistikdatabase,
+ingen Plausible, ingen Google Analytics. Se `docs/ANALYTICS.md` for en fuld
+guide til at oprette en konto og finde dit Project ID. Selve ID'et indsættes
+ét sted: `assets/js/clarity-config.js`. Status vises under **Admin → Analytics**.
 
 ## Cookiebanner
 
 Vises automatisk ved første besøg ("Kun nødvendige" / "Accepter alle").
 Valget gemmes i `mfg_cookie_consent` i LocalStorage. Status findes under
-**Admin → Cookiebanner**.
+**Admin → Cookiebanner**. Microsoft Clarity indlæses udelukkende, hvis
+besøgende har valgt "Accepter alle" — og kun hvis et Project ID er
+konfigureret.
 
 ## Favicon
 

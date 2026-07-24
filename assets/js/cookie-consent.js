@@ -2,9 +2,10 @@
    MFG Advisory — Cookie consent + gated analytics
    =========================================================================
    Shows a small banner until the visitor chooses "Kun nødvendige" or
-   "Accepter alle". Analytics (configured under Admin → Indstillinger) is
-   only ever loaded after explicit "Accepter alle" consent — never before,
-   and never if no analytics provider/ID has been configured.
+   "Accepter alle". Microsoft Clarity (configured in
+   assets/js/clarity-config.js) is only ever loaded after explicit
+   "Accepter alle" consent — never before, and never if no Project ID has
+   been configured. No Plausible or Google Analytics is used.
    ========================================================================= */
 
 (function () {
@@ -18,42 +19,10 @@
     localStorage.setItem(CONSENT_KEY, value);
   }
 
-  function loadAnalytics(provider, id) {
-    if (!provider || provider === 'none' || !id) return;
-
-    if (provider === 'plausible') {
-      const s = document.createElement('script');
-      s.defer = true;
-      s.setAttribute('data-domain', id);
-      s.src = 'https://plausible.io/js/script.js';
-      document.head.appendChild(s);
-    }
-
-    if (provider === 'ga') {
-      const s1 = document.createElement('script');
-      s1.async = true;
-      s1.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
-      document.head.appendChild(s1);
-
-      const s2 = document.createElement('script');
-      s2.textContent =
-        "window.dataLayer = window.dataLayer || [];" +
-        "function gtag(){dataLayer.push(arguments);}" +
-        "gtag('js', new Date());" +
-        "gtag('config', '" + id.replace(/'/g, '') + "');";
-      document.head.appendChild(s2);
-    }
-  }
-
-  async function maybeLoadAnalyticsIfConsented() {
+  function maybeLoadAnalyticsIfConsented() {
     if (getConsent() !== 'all') return;
-    if (!window.MFGStore) return;
-    try {
-      const content = await window.MFGStore.getAll();
-      loadAnalytics(content['config-analytics-provider'], content['config-analytics-id']);
-    } catch (e) {
-      console.warn('MFG cookie-consent: could not read analytics config', e);
-    }
+    if (typeof window.MFGLoadClarity !== 'function') return;
+    window.MFGLoadClarity(window.MFG_CLARITY_PROJECT_ID);
   }
 
   function renderBanner() {
@@ -66,14 +35,17 @@
         '<button class="btn btn-copper btn-sm" id="cookieAcceptBtn">Accepter alle</button>' +
       '</div>';
     document.body.appendChild(bar);
+    document.body.classList.add('cookie-banner-open');
 
     document.getElementById('cookieNecessaryBtn').addEventListener('click', () => {
       setConsent('necessary');
       bar.remove();
+      document.body.classList.remove('cookie-banner-open');
     });
     document.getElementById('cookieAcceptBtn').addEventListener('click', () => {
       setConsent('all');
       bar.remove();
+      document.body.classList.remove('cookie-banner-open');
       maybeLoadAnalyticsIfConsented();
     });
   }

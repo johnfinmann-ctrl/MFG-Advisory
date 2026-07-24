@@ -568,20 +568,25 @@
 
   // ---------------- Settings ----------------
   function renderAnalyticsSection() {
-    const analyticsProvider = savedContent['config-analytics-provider'] || 'none';
-    const analyticsId = savedContent['config-analytics-id'] || '';
+    const projectId = (window.MFG_CLARITY_PROJECT_ID || '').trim();
+    const isInstalled = projectId.length > 0;
     return `
-      <p class="section-sub">Forberedt til Plausible eller Google Analytics. Der er ikke indsat noget tracking-ID som standard, og intet indlæses uden samtykke fra cookiebanneret.</p>
+      <p class="section-sub">MFG Advisory bruger Microsoft Clarity — gratis, ingen egen statistikdatabase. Der bruges ikke Plausible eller Google Analytics.</p>
       <div class="field-card">
-        <label>Analytics-udbyder</label>
-        <select id="analyticsProviderSelect" style="margin-bottom:10px">
-          <option value="none" ${analyticsProvider === 'none' ? 'selected' : ''}>Ingen</option>
-          <option value="plausible" ${analyticsProvider === 'plausible' ? 'selected' : ''}>Plausible</option>
-          <option value="ga" ${analyticsProvider === 'ga' ? 'selected' : ''}>Google Analytics</option>
-        </select>
-        <label style="margin-top:6px">Site-ID / Measurement-ID</label>
-        <input type="text" id="analyticsIdInput" placeholder="fx mfgadvisory.dk eller G-XXXXXXX" value="${escapeAttr(analyticsId)}">
-        <button class="btn btn-outline btn-sm" id="saveAnalyticsBtn" style="margin-top:10px">Gem analytics-indstillinger</button>
+        <label>Microsoft Clarity</label>
+        <p style="margin-bottom:10px">
+          <strong>Status:</strong>
+          ${isInstalled
+            ? '<span style="color:#2e7d32">● Installeret</span>'
+            : '<span style="color:#b23b3b">● Ikke konfigureret</span>'}
+        </p>
+        <p style="margin-bottom:10px"><strong>Projekt-ID:</strong> ${isInstalled ? `<code>${escapeAttr(projectId)}</code>` : '<em>intet indsat endnu</em>'}</p>
+        <p class="field-note" style="margin-bottom:14px">
+          Projekt-ID'et indsættes ét sted i koden: <code>assets/js/clarity-config.js</code>.
+          Det kan ikke redigeres her i adminpanelet — se
+          <code>docs/ANALYTICS.md</code> for en trin-for-trin-guide.
+        </p>
+        <a class="btn btn-outline btn-sm" href="https://clarity.microsoft.com/" target="_blank" rel="noopener">Åbn Clarity Dashboard →</a>
       </div>
     `;
   }
@@ -950,19 +955,6 @@
         savedContent['favicon-img'] = url;
         saveFaviconBtn.disabled = false; saveFaviconBtn.textContent = 'Gemt ✓';
         setTimeout(() => { saveFaviconBtn.textContent = 'Gem favicon'; }, 2000);
-      });
-    }
-
-    const saveAnalyticsBtn = document.getElementById('saveAnalyticsBtn');
-    if (saveAnalyticsBtn) {
-      saveAnalyticsBtn.addEventListener('click', async () => {
-        const provider = document.getElementById('analyticsProviderSelect').value;
-        const id = document.getElementById('analyticsIdInput').value.trim();
-        await window.MFGStore.setMany({ 'config-analytics-provider': provider, 'config-analytics-id': id });
-        savedContent['config-analytics-provider'] = provider;
-        savedContent['config-analytics-id'] = id;
-        saveAnalyticsBtn.textContent = 'Gemt ✓';
-        setTimeout(() => { saveAnalyticsBtn.textContent = 'Gem analytics-indstillinger'; }, 2000);
       });
     }
 
