@@ -69,7 +69,11 @@
     // Kontaktformular sendt
     const kontaktForm = document.getElementById('kontaktForm');
     if (kontaktForm) {
-      kontaktForm.addEventListener('submit', () => track('kontaktformular_sendt'));
+      kontaktForm.addEventListener('submit', () => {
+        track('kontaktformular_sendt');
+        const msg = document.getElementById('kf-message');
+        if (msg && /^Emne: Forespørgsel på foredrag:/.test(msg.value)) track('talk_inquiry_submitted');
+      });
     }
 
     // Compass: de fire retninger + centrum

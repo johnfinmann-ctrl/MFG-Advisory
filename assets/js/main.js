@@ -21,6 +21,17 @@
     el.addEventListener('pointerdown', () => el.classList.add('is-active'));
   });
 
+  // Kontaktformular: overfør evt. emne fra ?emne=... (bruges af "Forespørg på
+  // foredraget"-links) som en synlig første linje i beskedfeltet.
+  const kfMessage = document.getElementById('kf-message');
+  if (kfMessage) {
+    const params = new URLSearchParams(window.location.search);
+    const emne = params.get('emne');
+    if (emne && !kfMessage.value) {
+      kfMessage.value = 'Emne: ' + emne + '\n\n';
+    }
+  }
+
   // Mobile hamburger menu (<768px only — desktop nav is untouched by this)
   const hamburger = document.getElementById('navHamburger');
   const navWrap = hamburger ? hamburger.closest('.nav-wrap') : null;

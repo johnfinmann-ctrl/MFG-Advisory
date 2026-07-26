@@ -58,6 +58,18 @@
   .main-nav a:hover{color:var(--navy)}
   .main-nav a.active{color:var(--copper);border-bottom-color:var(--copper)}
   @media(min-width:960px){.main-nav{order:2;width:auto;flex:1;justify-content:center}}
+  @media(min-width:960px){
+    .main-nav{gap:8px}
+    .main-nav a{font-size:.68rem}
+  }
+  @media(min-width:960px) and (max-width:1099px){
+    .main-nav{gap:5px}
+    .main-nav a{font-size:.635rem}
+  }
+  @media(min-width:1180px){
+    .main-nav{gap:16px}
+    .main-nav a{font-size:.77rem}
+  }
   .nav-cta{display:flex;align-items:center;gap:18px;order:2}
   @media(min-width:960px){.nav-cta{order:3}}
   .nav-cta a.tel{font-size:.85rem;color:var(--text-mid);display:none}
@@ -354,7 +366,8 @@
   .subpage-hero .eyebrow{display:block;margin-bottom:14px}
   .subpage-hero h1{margin-bottom:18px;display:flex;align-items:center;gap:14px}
   .subpage-hero p.body-lg{max-width:640px;margin-bottom:30px}
-  .dir-switch{display:flex;flex-wrap:wrap;gap:10px}
+  .dir-switch{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .dir-hero-actions{margin-top:28px}
   .dsw{border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:.8rem;color:var(--text-mid);transition:var(--transition)}
   .dsw:hover{border-color:var(--copper);color:var(--copper)}
   .dsw.active{background:var(--navy);border-color:var(--navy);color:var(--white)}
@@ -365,6 +378,8 @@
   .subpage-hero--dark .eyebrow{color:var(--copper-light)}
   .subpage-hero--dark h1{color:var(--white)}
   .subpage-hero--dark p.body-lg{color:#c7cedb}
+  .foredrag-hero p.body-lg{max-width:820px}
+  @media(min-width:1024px){.foredrag-hero .container{max-width:1320px}}
 
   /* ===== CASE DETAIL MODAL ===== */
   .case-teaser-btn{cursor:pointer;width:100%;font-family:inherit;color:inherit;text-align:left;border:1px solid rgba(255,255,255,.08)}
@@ -385,6 +400,7 @@
 
   /* ===== CASES OVERVIEW ===== */
   .cases-section{padding:100px 0;background:var(--navy)}
+  .foredrag-teaser{padding:70px 0}
   .cases-head{max-width:640px;margin:0 auto 52px;text-align:center}
   .cases-head .eyebrow{color:var(--copper-light);justify-content:center;display:flex}
   .cases-head h2{color:var(--white);margin:16px 0 14px}
@@ -404,6 +420,29 @@
   .case-teaser p{font-size:.88rem;line-height:1.6;color:#c7cedb;margin-bottom:14px}
   .case-teaser .ct-link{font-size:.8rem;color:var(--copper-light);font-weight:500}
   .case-teaser:hover .ct-link{color:var(--white)}
+
+  /* Foredrag cards reuse .case-teaser's look; only the action row differs
+     (a "Læs mere" trigger + a separate "Forespørg" link, side by side) */
+  .talk-card{cursor:default;padding:32px 28px}
+  .talk-card h4{font-size:1.38rem}
+  .talk-card p{font-size:.95rem;line-height:1.7}
+  .talk-card .ct-tag{margin-bottom:14px}
+  .talk-card-meta{font-size:.78rem;color:#9aa7ba;margin-top:-8px;margin-bottom:14px}
+  .talk-card-actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:8px}
+  .talk-card-actions button.ct-link{background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:.85rem}
+  .talk-card-actions .btn-ghost{border-color:rgba(255,255,255,.3);color:#fff;padding:9px 18px;font-size:.82rem}
+  .talk-card-actions .btn-ghost:hover{border-color:var(--copper-light);color:var(--copper-light)}
+  #foredrag-oversigt .container{max-width:1180px}
+  @media(min-width:1024px){#foredrag-oversigt .container{max-width:1320px}}
+  @media(min-width:1200px){#foredrag-oversigt .cases-grid{grid-template-columns:repeat(3,1fr);gap:26px}}
+  @media(max-width:767px){
+    .foredrag-hero .container,
+    #foredrag-oversigt .container{padding:0 18px}
+    #foredrag-oversigt .cases-grid{grid-template-columns:1fr;gap:16px}
+    .talk-card{padding:24px 20px}
+    .talk-card-actions .btn-ghost{padding:11px 18px;font-size:.85rem}
+    .talk-card-actions button.ct-link{font-size:.88rem;padding:6px 0}
+  }
 
   /* ===== OM MORTEN ===== */
   .om{padding:90px 0 110px;background:var(--white)}

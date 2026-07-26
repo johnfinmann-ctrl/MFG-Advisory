@@ -4,6 +4,206 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC14 — mere luft på de fire Compass-sider
+
+Ren spacing-justering på Mennesker, Ledelse, Kultur og Forretning.
+CTA-knappen "Book en samtale" er bevaret uændret på alle fire sider.
+
+**Ændringer:**
+- **30px** mellem sidste brødtekst og CTA-knappen (inden for det ønskede
+  24-32px-interval).
+- **20px** mellem CTA-knappen og Compass-navigationen
+  (Mennesker/Ledelse/Kultur/Forretning-fanerne) (inden for det ønskede
+  16-24px-interval).
+- Nøjagtig samme mål på alle fire sider — verificeret identisk ved test.
+
+**Sådan blev det gjort:** Én ny CSS-klasse (`dir-hero-actions`) tilføjet
+til CTA-rækken på hver af de fire sider, plus to nye linjer CSS. Ingen
+tekst, farve eller funktionalitet er ændret — bekræftet ved diff: hver
+af de fire HTML-filer har præcis dette ene, identiske linjeskift, intet
+andet. Kontakt, Om Morten, Cases, Foredrag, 404 og forsiden bruger samme
+`.hero-actions`-klasse men fik **ikke** den nye spacing, da klassen er
+scopet specifikt til de fire Compass-sider (holdt adskilt via
+`.dir-switch`, som kun findes på disse fire).
+
+**Testet:** 375px, 390px, 430px, 768px, 1024px, 1440px — 26 automatiserede
+tjek (præcise pixel-mål på alle fire sider, CTA-knap og Compass-navigation
+bekræftet intakte og funktionelle, ingen horisontal scroll, Compass og
+admin uændret).
+
+## RC13 — designforfinelse af Foredrag-siden
+
+**Ændrede filer (kun disse tre):** `assets/css/style.css`,
+`assets/js/content-loader.js`, `foredrag.html` (kun én ny CSS-klasse
+tilføjet til hero-sektionen — ingen tekstændringer). Cases, Compass,
+kontaktoplysninger, de syv foredragstekster og login er 100% urørt,
+bekræftet ved diff.
+
+**1. Desktop-læsbarhed:** Foredrag-sidens indholdsbredde er øget fra
+1180px til 1320px (kun på denne side — resten af sitet er uændret).
+Kortene har fået mere indvendig luft (32px/28px padding, op fra 26/24),
+større titel- og brødtekst, og et 3-kolonne-grid ved ≥1200px i stedet for
+2, så pladsen på brede skærme udnyttes bedre.
+
+**2. Hero-sektionen:** Den store tomme flade til højre er reduceret ved
+at gøre tekstopsætningen bredere specifikt for Foredrag (640px → 820px
+tekstbredde) — ikke ved at tilføje stockbilleder eller nye grafiske
+elementer, som bedt om. Andre siders hero-sektioner er verificeret
+uændrede (fortsat 640px).
+
+**3. Mobilversion:** Sidemargin reduceret til 18px (fra sitets
+standard 28px) specifikt på Foredrag-siden. Kortene vises i én kolonne,
+med større trykflader på "Læs mere" og "Forespørg". Testet ved 375, 390,
+430 og 768px.
+
+**4. Cookiebanner:** Testet grundigt ved alle seks bredder — ingen
+afskåret tekst eller knapper, ingen overlap, fungerer ens på
+desktop/mobil. **Et vigtigt forbehold:** Jeg har **ikke** tilføjet en
+tredje "Tilpas"-knap ud over de eksisterende "Kun nødvendige" og
+"Accepter alle". At tilføje en reel "Tilpas"-funktion (et
+præferencepanel til at vælge cookie-kategorier enkeltvis) ville være en
+ny funktion, ikke en rettelse — og opgaven bad eksplicit om, at
+eksisterende funktionalitet ikke må ændres. Sig til, hvis I ønsker en
+reel "Tilpas"-knap som en ny, separat opgave.
+
+**5. Det runde ikon nederst til højre:** Jeg gennemsøgte koden
+programmatisk for samtlige fixed/sticky-positionerede elementer på
+tværs af sider og fandt **intet** rundt ikon nederst til højre nogen
+steder. De eneste faste elementer er: headeren (top), cookiebanneret
+(bund, fuld bredde) og den mobile sticky-bookingknap (en fuldbredde-pille
+med afrundede hjørner, ikke et lille rundt ikon). Hvis I ser noget
+specifikt et bestemt sted, så sig endelig til præcis hvilken side og
+skærmstørrelse, så finder jeg det.
+
+**6. Foredragskortenes informationsstruktur:** Tilføjet en valgfri
+linje med målgruppe/format, som **kun** vises, hvis feltet faktisk er
+udfyldt i admin (ingen af de syv standardforedrag har disse felter
+udfyldt endnu, så linjen er ikke synlig, før Morten selv tilføjer det).
+Kategori, titel, kort beskrivelse, "Læs mere" og "Forespørg" er bevaret
+som ét fælles kortdesign.
+
+**7. Testet ved:** 375px, 390px, 430px, 768px, 1024px, 1440px — 27 nye
+tjek plus en fuld gennemgang af navigation (alle 11 sider), forsidens
+fremhævede foredrag, kontakt-forudfyldning, Compass, admin-CRUD og
+Cases. Alle bestået, ingen konsolfejl.
+
+**8. Præcise svar:**
+
+- **Gemmes foredrag nu permanent i Supabase, eller stadig i lokal
+  content-store?** Uændret siden RC12: foredragene ligger i den
+  eksisterende content-store — det vil sige LocalStorage, medmindre
+  `assets/js/supabase-config.js` er udfyldt med et rigtigt Supabase-
+  projekt, i hvilket tilfælde de i stedet ligger i den generiske
+  "content"-tabel (ikke den dedikerede `talks`-tabel fra migrationen,
+  som kræver rigtig Supabase-login for at kunne skrives til — se
+  forklaringen i `supabase/talks_migration.sql`).
+- **Kan adminændringer ses på en anden enhed?** Kun hvis Supabase reelt
+  er tilsluttet (rigtig URL/nøgle indsat i `supabase-config.js`). Som
+  projektet er konfigureret lige nu (tomme standardværdier), er svaret
+  **nej** — ændringer gemmes kun i browserens LocalStorage på den
+  enhed, hvor de blev lavet.
+- **Hvad mangler konkret, før løsningen er en rigtig PWA?** Der findes
+  slet ingen PWA-grundlag i projektet endnu: ingen `manifest.json`
+  (navn, ikoner, temafarver, startside, standalone-visning), ingen
+  service worker (offline-cache, installations-prompt), ingen
+  app-ikoner i PWA-størrelser (192px/512px), ingen offline-fallback-side,
+  og ingen cache-opdateringsstrategi. Det er en selvstændig opgave, jeg
+  ikke har påbegyndt endnu.
+
+## RC12 — Foredrag som ny, redigerbar produktkategori
+
+**1. Filer oprettet:** `foredrag.html`, `supabase/talks_migration.sql`,
+`sitemap.xml`, `robots.txt`. **Filer ændret:** `assets/js/content-loader.js`
+(rendering + modal for foredrag), `assets/js/admin.js` (fuld CRUD),
+`assets/js/analytics-clarity.js` (nye events), `assets/js/main.js`
+(kontaktformular-forudfyldning), `assets/css/style.css` (nav-spacing +
+foredragskort), samt alle 10 offentlige sider (kun ét nyt navigationslink
+tilføjet — bekræftet ved diff, ingen andre ændringer på disse sider).
+
+**2. Navigation:** "Foredrag" tilføjet mellem Forretning og Cases på alle
+sider, inkl. mobilmenuen (samme `<nav>`-element genbruges, så det virker
+automatisk begge steder). **Fandt og rettede en reel overlap-bug:** det
+ekstra menupunkt fik navigationen til at gå i intern scroll ved
+960-1300px desktop-bredder. Løst med to spacing-niveauer. **Ærligt
+forbehold:** ved det smalle 960-1010px-interval er der stadig ca. 5-25px
+intern scroll i selve nav-baren (det eksisterende `overflow-x:auto`-
+fallback, som var der i forvejen) — ingen overlap, ingen sidescroll, men
+heller ikke 100% fri af scroll i akkurat dette snævre interval.
+
+**3. De syv foredrag:** Oprettet med præcis de angivne titler og
+beskrivelser (inkl. korrekt stavning af "Psykologisk tryghed" og "The MFG
+Compass™ – Navigation under pres"). Bygget som duplikaterbare data — ét
+fælles kort-design (ikke syv hardcodede layouts), ligesom Cases-siden.
+
+**4. Midlertidigt statisk, klar til Supabase:** Foredragene ligger i dag i
+den eksisterende content-store (LocalStorage, eller den generiske
+"content"-tabel, hvis Supabase allerede er tilsluttet) — nøjagtig samme
+mekanisme som Cases og Testimonials bruger i forvejen. De 7 foredrag
+sås automatisk ved første besøg. Jeg har **desuden** leveret en
+selvstændig, korrekt afspærret `talks`-tabel i
+`supabase/talks_migration.sql` med den sikkerhedsmodel, du bad om — men
+den er ikke den aktive datakilde endnu. Se forklaringen i filens
+kommentarer: den nuværende PIN-baserede admin har ingen rigtig Supabase
+Auth-session, så den kan ikke skrive til en tabel, der (korrekt) kun
+tillader autentificerede brugere at skrive. Når adminpanelet får en
+rigtig Supabase-login, kan indholdet flyttes over uden at ændre
+sikkerhedsmodellen.
+
+**5. Adminfunktioner implementeret:** Opret, redigér, gem kladde (status
+"Kladde"), publicér/afpublicér (status "Udgivet"/"Afpubliceret"), slet
+med bekræftelse (`confirm()`-dialog), ændr rækkefølge (op/ned-knapper),
+markér som fremhævet, upload/udskift billede, upload PDF, indsæt
+video-link, redigér CTA-tekst/link, samt en forhåndsvisning (viser titel,
+undertitel, beskrivelse og udfyldte metafelter) — alt via samme login,
+samme PIN og samme sikkerhedsmodel som resten af adminpanelet. Ingen nyt
+login oprettet.
+
+**6. RLS-politikker (i talks_migration.sql):** Offentlig læseadgang
+**kun** til rækker med `status = 'published'`. Alt andet (opret, redigér,
+slet, og læsning af kladder/afpublicerede) kræver
+`auth.role() = 'authenticated'` — en rigtig Supabase-login, ikke bare
+anon-nøglen. Service role-nøglen bruges ingen steder i browseren.
+
+**7. Forespørgsler:** "Forespørg på foredraget" fører til
+`kontakt.html?emne=...`, som forudfylder beskedfeltet med
+"Emne: Forespørgsel på foredrag: [titel]". Testet, at almindelig brug af
+kontaktformularen (uden parameter) forbliver 100% upåvirket.
+
+**8. Clarity-events tilføjet:** `navigation_foredrag_click`,
+`homepage_foredrag_click`, `talk_card_click`, `talk_read_more_click`,
+`talk_inquiry_click`, `talk_inquiry_submitted`. Clarity indlæses fortsat
+udelukkende efter samtykke — uændret gate-logik.
+
+**9. PWA — ærligt forbehold:** Dette projekt har **endnu ingen**
+`manifest.json` eller service worker overhovedet — "den kommende PWA"
+nævnt i opgaven er endnu ikke bygget noget sted i projektet. Jeg kan
+derfor hverken bekræfte eller reelt teste "åbnes fra installeret PWA",
+"offline-visning" eller "cache-opdatering", fordi der intet er at teste
+endnu. Det, jeg **kan** bekræfte: foredrag.html bruger samme
+scriptmønster (almindelige `<script src="...">`-tags, ingen build-step,
+ingen hardcodet aggressiv caching) som resten af sitet, så den ikke
+lægger nogen kendte forhindringer i vejen for en fremtidig PWA — men en
+egentlig PWA-implementering er en selvstændig opgave, jeg ikke har
+udført her, og jeg vil hellere sige det ligeud end at påstå noget, jeg
+ikke kan bevise.
+
+**10. Bekræftelse:** Cases, Compass, Mortens portræt, kontaktoplysninger,
+Clarity-konfiguration, cookiebannerets design, admin-login/roller og
+øvrige adminfunktioner er alle bekræftet uændrede — verificeret med en
+fuld diff mod forrige version (alle 9 øvrige offentlige sider har kun ét
+tilføjet navigationslink, ellers 100% identiske) samt automatiserede
+tests (44 tjek: navigation, sidevisning, kort, modal, admin-CRUD i fuld
+opret→udgiv→afpublicér→slet-cyklus, ombestilling, forhåndsvisning,
+kontaktformular-forudfyldning, ingen konsolfejl, ingen horisontal scroll
+ved 375-1440px).
+
+**En reel bug fundet og rettet undervejs:** Adminpanelets hjælpefunktion
+`escapeAttr()` fejlede på tal (kastede en JavaScript-fejl, der stille
+afbrød hele Foredrag-sektionens visning) — rettet ved at konvertere
+sorterings-feltet til tekst, før det sendes til funktionen.
+
+**Testet ved:** 375px, 390px, 430px, 768px, 1024px, 1440px.
+
 ## RC11.2 — konsekvent "vi" på forretnings- og ydelsessider
 
 Gennemgået manuelt (ikke automatisk søg-og-erstat) for hvert eneste fund

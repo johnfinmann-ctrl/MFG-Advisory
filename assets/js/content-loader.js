@@ -74,6 +74,7 @@
   }
 
   let caseModalData = [];
+  let talkModalData = [];
 
   function renderCases(value) {
     const container = document.querySelector('[data-cases-list]');
@@ -258,6 +259,171 @@
     });
   }
 
+  function talkCategoryMeta(cat) {
+    const map = {
+      ledelse: { icon: 'i-leadership', label: 'Ledelse' },
+      kultur: { icon: 'i-culture', label: 'Kultur' },
+      mennesker: { icon: 'i-people', label: 'Mennesker' },
+      forretning: { icon: 'i-growth', label: 'Forretningsudvikling' },
+      'psykologisk-tryghed': { icon: 'i-culture', label: 'Psykologisk tryghed' },
+      tilknytning: { icon: 'i-people', label: 'Tilknytning' },
+      compass: { icon: 'i-growth', label: 'The MFG Compass™' }
+    };
+    return map[cat] || { icon: 'i-growth', label: cat || '' };
+  }
+
+  function renderTalks(value) {
+    const container = document.querySelector('[data-talks-list]');
+    if (!container) return;
+    const items = (parseJsonArray(value) || [])
+      .filter(t => t.status === 'published')
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    if (!items.length) return;
+
+    talkModalData = items;
+
+    container.innerHTML = items.map((t, idx) => {
+      const cat = talkCategoryMeta(t.category);
+      const img = t.image_url ? '<img src="' + t.image_url + '" alt="" loading="lazy">' : '';
+      const metaBits = [t.target_audience, t.format].filter(v => v && String(v).trim().length > 0);
+      const metaLine = metaBits.length ? '<p class="talk-card-meta">' + escapeHtml(metaBits.join(' · ')) + '</p>' : '';
+      return (
+        '<div class="case-teaser talk-card">' +
+          img +
+          '<span class="ct-tag"><svg class="icon"><use href="#' + cat.icon + '"/></svg> ' + cat.label + '</span>' +
+          '<h4>' + escapeHtml(t.title || '') + '</h4>' +
+          '<p>' + escapeHtml(t.excerpt || '') + '</p>' +
+          metaLine +
+          '<div class="talk-card-actions">' +
+            '<button class="ct-link" type="button" data-open-talk="' + idx + '" data-clarity-event="talk_read_more_click">Læs mere →</button>' +
+            '<a class="btn btn-ghost btn-sm" href="' + talkInquiryLink(t) + '" data-clarity-event="talk_inquiry_click">Forespørg</a>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    container.querySelectorAll('[data-open-talk]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openTalkModal(talkModalData[parseInt(btn.getAttribute('data-open-talk'), 10)]);
+        if (window.clarity) { try { window.clarity('event', 'talk_card_click'); } catch (e) {} }
+      });
+    });
+  }
+
+  function talkInquiryLink(t) {
+    const subject = 'Forespørgsel på foredrag: ' + (t.title || '');
+    return (t.cta_url || 'kontakt.html') + '?emne=' + encodeURIComponent(subject);
+  }
+
+  function renderFeaturedTalks(value) {
+    const container = document.querySelector('[data-featured-talks-list]');
+    if (!container) return;
+    const items = (parseJsonArray(value) || [])
+      .filter(t => t.status === 'published' && t.is_featured)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+      .slice(0, 3);
+    if (!items.length) return;
+
+    container.innerHTML = items.map(t => {
+      const cat = talkCategoryMeta(t.category);
+      return (
+        '<a class="case-teaser talk-card" href="foredrag.html">' +
+          '<span class="ct-tag"><svg class="icon"><use href="#' + cat.icon + '"/></svg> ' + cat.label + '</span>' +
+          '<h4>' + escapeHtml(t.title || '') + '</h4>' +
+          '<p>' + escapeHtml(t.excerpt || '') + '</p>' +
+        '</a>'
+      );
+    }).join('');
+  }
+
+  function openTalkModal(t) {
+    const modal = document.getElementById('talkModal');
+    if (!modal || !t) return;
+    const cat = talkCategoryMeta(t.category);
+    const img = t.image_url ? '<img src="' + t.image_url + '" alt="" class="case-modal-img" loading="lazy">' : '';
+    const subtitle = t.subtitle ? '<p class="case-customer">' + escapeHtml(t.subtitle) + '</p>' : '';
+    const full = t.body ? '<p style="margin-top:16px">' + escapeHtml(t.body) + '</p>' : '';
+
+    const metaRows = [
+      ['Målgruppe', t.target_audience],
+      ['Deltagernes udbytte', t.participant_outcomes],
+      ['Centrale emner', t.topics],
+      ['Varighed', t.duration],
+      ['Format', t.format]
+    ].filter(([, v]) => v && String(v).trim().length > 0);
+
+    const metaHtml = metaRows.length
+      ? '<div class="case-steps" style="margin-top:20px">' +
+          metaRows.map(([label, v]) => '<div class="case-step"><span class="k">' + label + '</span><p>' + escapeHtml(v) + '</p></div>').join('') +
+        '</div>'
+      : '';
+
+    const videoHtml = t.video_url
+      ? '<p style="margin-top:16px"><a class="ct-link" href="' + t.video_url + '" target="_blank" rel="noopener">Se video →</a></p>'
+      : '';
+    const docHtml = t.document_url
+      ? '<a href="' + t.document_url + '" target="_blank" rel="noopener" class="ct-link">Åbn program (PDF) →</a>'
+      : '';
+
+    modal.querySelector('.case-modal-body').innerHTML =
+      img +
+      '<span class="ct-tag"><svg class="icon"><use href="#' + cat.icon + '"/></svg> ' + cat.label + '</span>' +
+      '<h3>' + escapeHtml(t.title || '') + '</h3>' +
+      subtitle +
+      '<p class="case-modal-industry">' + escapeHtml(t.excerpt || '') + '</p>' +
+      full +
+      metaHtml +
+      videoHtml +
+      '<div class="case-modal-footer">' +
+        (docHtml || '<span></span>') +
+        '<a class="btn btn-copper" href="' + talkInquiryLink(t) + '" data-clarity-event="talk_inquiry_click">' + escapeHtml(t.cta_text || 'Forespørg på foredraget') + '</a>' +
+      '</div>';
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    const closeBtn = modal.querySelector('.case-modal-close');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeTalkModal() {
+    const modal = document.getElementById('talkModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function initTalkModal() {
+    const modal = document.getElementById('talkModal');
+    if (!modal) return;
+    modal.querySelector('.case-modal-close').addEventListener('click', closeTalkModal);
+    modal.querySelector('.case-modal-backdrop').addEventListener('click', closeTalkModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTalkModal(); });
+  }
+
+  const DEFAULT_TALKS = [
+    { id: 't1', slug: 'ledelse-der-skaber-retning', title: 'Ledelse, der skaber retning', category: 'ledelse', excerpt: 'Et foredrag om tydelig ledelse, ansvar, beslutningskraft og evnen til at omsætte mål til handling i en travl hverdag.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 1, is_featured: true, status: 'published' },
+    { id: 't2', slug: 'kultur-skabes-gennem-handling', title: 'Kultur skabes gennem handling', category: 'kultur', excerpt: 'Et foredrag om den adfærd, de vaner og de fælles standarder, der former organisationens kultur og resultater.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 2, is_featured: false, status: 'published' },
+    { id: 't3', slug: 'mennesket-bag-rollen', title: 'Mennesket bag rollen', category: 'mennesker', excerpt: 'Et foredrag om rekruttering, potentiale, motivation, personprofiler og betydningen af det rigtige match mellem menneske og organisation.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 3, is_featured: true, status: 'published' },
+    { id: 't4', slug: 'fra-potentiale-til-resultater', title: 'Fra potentiale til forretningsmæssige resultater', category: 'forretning', excerpt: 'Et foredrag om at skabe forbindelse mellem strategi, mennesker, prioriteringer og den daglige drift.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 4, is_featured: false, status: 'published' },
+    { id: 't5', slug: 'psykologisk-tryghed', title: 'Psykologisk tryghed med tydelige forventninger', category: 'psykologisk-tryghed', excerpt: 'Et foredrag om at skabe et miljø, hvor mennesker tør bidrage, stille spørgsmål og sige fra – uden at tydelighed, ansvar og resultater forsvinder.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 5, is_featured: false, status: 'published' },
+    { id: 't6', slug: 'tilknytning-i-en-tid-med-forandring', title: 'Tilknytning i en tid med forandring', category: 'tilknytning', excerpt: 'Et foredrag om, hvad der får mennesker til at engagere sig, føle tilhørsforhold og vælge at blive i organisationen.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 6, is_featured: false, status: 'published' },
+    { id: 't7', slug: 'mfg-compass-navigation-under-pres', title: 'The MFG Compass™ – Navigation under pres', category: 'compass', excerpt: 'Et foredrag om at navigere, prioritere og bevare retningen, når organisationen oplever pres, forandringer eller modstridende krav.', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 7, is_featured: true, status: 'published' }
+  ];
+
+  async function seedTalksIfNeeded(content) {
+    if (content.talks) return content;
+    if (!window.MFGStore) return content;
+    try {
+      const value = JSON.stringify(DEFAULT_TALKS);
+      await window.MFGStore.setMany({ talks: value });
+      content.talks = value;
+    } catch (e) {
+      console.warn('MFG content-loader: could not seed default talks', e);
+      content.talks = JSON.stringify(DEFAULT_TALKS);
+    }
+    return content;
+  }
+
   function apply(content) {
     Object.keys(content).forEach(key => {
       const value = content[key];
@@ -272,6 +438,7 @@
       if (key === 'cases') renderCases(value);
       if (key === 'testimonials') renderTestimonials(value);
       if (key === 'solutions') renderSolutions(value);
+      if (key === 'talks') { renderTalks(value); renderFeaturedTalks(value); }
       if (key === 'favicon-img') applyFavicon(value);
       if (key === 'footer-cvr') applyCvrVisibility(value);
     });
@@ -280,12 +447,15 @@
   if (!window.MFGStore) {
     console.warn('MFG content-loader: content-store.js not loaded — showing default content only.');
     initCaseModal();
+    initTalkModal();
     return;
   }
 
   initCaseModal();
+  initTalkModal();
 
   window.MFGStore.getAll()
+    .then(seedTalksIfNeeded)
     .then(apply)
     .catch(err => console.warn('MFG content-loader: could not load saved content, showing defaults.', err));
 })();

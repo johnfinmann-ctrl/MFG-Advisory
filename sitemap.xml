@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mfgadvisory.dk/index.html</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://mfgadvisory.dk/mennesker.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mfgadvisory.dk/ledelse.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mfgadvisory.dk/kultur.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mfgadvisory.dk/forretning.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mfgadvisory.dk/foredrag.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mfgadvisory.dk/cases.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mfgadvisory.dk/mfg-compass.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mfgadvisory.dk/om-morten.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://mfgadvisory.dk/kontakt.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+</urlset>

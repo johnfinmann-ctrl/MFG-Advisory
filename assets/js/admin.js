@@ -23,6 +23,7 @@
     { file: 'ledelse.html', section: 'ledelse', label: 'Ledelse' },
     { file: 'kultur.html', section: 'kultur', label: 'Kultur' },
     { file: 'forretning.html', section: 'forretning', label: 'Forretning' },
+    { file: 'foredrag.html', section: 'foredrag', label: 'Foredrag' },
     { file: 'cases.html', section: 'cases', label: 'Cases' },
     { file: 'om-morten.html', section: 'om', label: 'Om Morten' },
     { file: 'kontakt.html', section: 'kontakt', label: 'Kontakt' }
@@ -39,6 +40,7 @@
     { section: 'ledelse', label: 'Ledelse' },
     { section: 'kultur', label: 'Kultur' },
     { section: 'forretning', label: 'Forretning' },
+    { section: 'foredrag', label: 'Foredrag' },
     { section: 'cases', label: 'Cases' },
     { section: 'testimonials', label: 'Testimonials' },
     { section: 'om', label: 'Om Morten' },
@@ -212,6 +214,8 @@
     const cases = jsonArray('cases');
     const testimonials = jsonArray('testimonials');
     const solutions = jsonArray('solutions');
+    const talks = jsonArray('talks');
+    const publishedTalks = talks.filter(t => t.status === 'published').length;
     const backend = window.MFGStore.backend();
     return `
       <p class="section-sub">Overblik over hjemmesidens indhold.</p>
@@ -221,18 +225,162 @@
       </div>
       <div class="field-card">
         <label>Indhold</label>
-        <p>${cases.length} ekstra case(s) · ${testimonials.length} testimonial(s) · ${solutions.length} ekstra løsningskort — oprettet i adminpanelet.</p>
+        <p>${cases.length} ekstra case(s) · ${testimonials.length} testimonial(s) · ${solutions.length} ekstra løsningskort · ${talks.length} foredrag (${publishedTalks} udgivet) — oprettet i adminpanelet.</p>
       </div>
       <div class="field-card">
         <label>Genveje</label>
         <p><a href="index.html" target="_blank" rel="noopener">Se forsiden ↗</a> &nbsp;·&nbsp;
         <a href="cases.html" target="_blank" rel="noopener">Se Cases-siden ↗</a> &nbsp;·&nbsp;
+        <a href="foredrag.html" target="_blank" rel="noopener">Se Foredrag-siden ↗</a> &nbsp;·&nbsp;
         <a href="kontakt.html" target="_blank" rel="noopener">Se Kontakt-siden ↗</a></p>
       </div>
     `;
   }
 
   // ---------------- Cases (rich CRUD) ----------------
+  const TALK_CATEGORIES = [
+    { value: 'ledelse', label: 'Ledelse' },
+    { value: 'kultur', label: 'Kultur' },
+    { value: 'mennesker', label: 'Mennesker' },
+    { value: 'forretning', label: 'Forretningsudvikling' },
+    { value: 'psykologisk-tryghed', label: 'Psykologisk tryghed' },
+    { value: 'tilknytning', label: 'Tilknytning' },
+    { value: 'compass', label: 'The MFG Compass™' }
+  ];
+
+  function talkCategoryOptions(selected) {
+    return TALK_CATEGORIES.map(c => `<option value="${c.value}" ${c.value === selected ? 'selected' : ''}>${c.label}</option>`).join('');
+  }
+
+  function renderForedragSection() {
+    const simple = fieldsBySection.foredrag || [];
+    let html = `<p class="section-sub">Faste tekster på Foredrag-siden (hero mv.), samt selve foredragene, som vises som kort på siden og fremhævet på forsiden.</p>`;
+    html += renderSimpleFields(simple);
+    html += saveBar('foredrag-simple', 'Gem tekster');
+
+    html += `<h3 style="margin:32px 0 6px">Foredrag</h3>
+      <p class="section-sub">Kun foredrag med status "Udgivet" er synlige for besøgende. Kun foredrag markeret som "Fremhævet" kan vises på forsiden.</p>
+      <div id="foredragList">${renderForedragRows(jsonArray('talks'))}</div>
+      <button class="btn btn-outline btn-sm" id="addForedragBtn">+ Tilføj foredrag</button>
+      ${saveBar('foredrag-list', 'Gem foredrag')}`;
+    return html;
+  }
+
+  function renderForedragRows(items) {
+    if (items.length === 0) return `<p class="section-sub">Ingen foredrag oprettet endnu.</p>`;
+    const sorted = items.map((t, i) => ({ t, i })).sort((a, b) => (a.t.sort_order || 0) - (b.t.sort_order || 0));
+    return sorted.map(({ t, i }, pos) => `
+      <div class="testi-card" data-talk-index="${i}">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-outline btn-sm" data-move-talk-up="${i}" ${pos === 0 ? 'disabled' : ''} title="Flyt op">↑</button>
+            <button class="btn btn-outline btn-sm" data-move-talk-down="${i}" ${pos === sorted.length - 1 ? 'disabled' : ''} title="Flyt ned">↓</button>
+            <button class="btn btn-outline btn-sm" data-preview-talk="${i}">Forhåndsvis</button>
+          </div>
+          <button class="btn btn-danger btn-sm" data-remove-talk="${i}">Slet</button>
+        </div>
+        <div class="testi-row">
+          <div>
+            <label>Titel</label>
+            <input type="text" data-talk-field="title" data-talk-index="${i}" value="${escapeAttr(t.title || '')}">
+          </div>
+          <div>
+            <label>Undertitel</label>
+            <input type="text" data-talk-field="subtitle" data-talk-index="${i}" value="${escapeAttr(t.subtitle || '')}">
+          </div>
+          <div>
+            <label>Kategori</label>
+            <select data-talk-field="category" data-talk-index="${i}">${talkCategoryOptions(t.category)}</select>
+          </div>
+          <div>
+            <label>Status</label>
+            <select data-talk-field="status" data-talk-index="${i}">
+              <option value="draft" ${t.status === 'draft' ? 'selected' : ''}>Kladde</option>
+              <option value="published" ${t.status === 'published' || !t.status ? 'selected' : ''}>Udgivet</option>
+              <option value="archived" ${t.status === 'archived' ? 'selected' : ''}>Afpubliceret</option>
+            </select>
+          </div>
+          <div>
+            <label>Sortering (lavest først)</label>
+            <input type="number" data-talk-field="sort_order" data-talk-index="${i}" value="${escapeAttr(String(t.sort_order != null ? t.sort_order : (i + 1)))}">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
+            <input type="checkbox" style="width:auto" data-talk-field="is_featured" data-talk-index="${i}" ${t.is_featured ? 'checked' : ''} id="talkFeatured-${i}">
+            <label for="talkFeatured-${i}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Fremhævet (vises på forsiden)</label>
+          </div>
+          <div>
+            <label>Varighed</label>
+            <input type="text" data-talk-field="duration" data-talk-index="${i}" value="${escapeAttr(t.duration || '')}" placeholder="fx 60 minutter (valgfrit)">
+          </div>
+          <div>
+            <label>Format</label>
+            <input type="text" data-talk-field="format" data-talk-index="${i}" value="${escapeAttr(t.format || '')}" placeholder="fx Fysisk / online (valgfrit)">
+          </div>
+          <div>
+            <label>Billede</label>
+            <input type="file" accept="image/*" data-talk-image="${i}">
+            ${t.image_url ? '<div class="field-note">Der er allerede uploadet et billede.</div>' : ''}
+          </div>
+          <div>
+            <label>Video-link</label>
+            <input type="text" data-talk-field="video_url" data-talk-index="${i}" value="${escapeAttr(t.video_url || '')}" placeholder="valgfrit">
+          </div>
+          <div>
+            <label>PDF / program</label>
+            <input type="file" accept="application/pdf" data-talk-pdf="${i}">
+            ${t.document_url ? '<div class="field-note">Der er allerede uploadet en PDF.</div>' : ''}
+          </div>
+          <div>
+            <label>CTA-tekst</label>
+            <input type="text" data-talk-field="cta_text" data-talk-index="${i}" value="${escapeAttr(t.cta_text || 'Forespørg på foredraget')}">
+          </div>
+          <div>
+            <label>CTA-link</label>
+            <input type="text" data-talk-field="cta_url" data-talk-index="${i}" value="${escapeAttr(t.cta_url || 'kontakt.html')}">
+          </div>
+          <div class="full">
+            <label>Kort beskrivelse (vises på kortet)</label>
+            <textarea data-talk-field="excerpt" data-talk-index="${i}">${escapeHtml(t.excerpt || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>Fuld beskrivelse (vises i detaljevisningen, valgfrit)</label>
+            <textarea data-talk-field="body" data-talk-index="${i}">${escapeHtml(t.body || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>Målgruppe (valgfrit)</label>
+            <textarea data-talk-field="target_audience" data-talk-index="${i}">${escapeHtml(t.target_audience || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>Deltagernes udbytte (valgfrit)</label>
+            <textarea data-talk-field="participant_outcomes" data-talk-index="${i}">${escapeHtml(t.participant_outcomes || '')}</textarea>
+          </div>
+          <div class="full">
+            <label>Centrale emner (valgfrit)</label>
+            <textarea data-talk-field="topics" data-talk-index="${i}">${escapeHtml(t.topics || '')}</textarea>
+          </div>
+        </div>
+        <div class="talk-preview" id="talkPreview-${i}" style="display:none;margin-top:16px;padding:16px;background:#f7f4ee;border-radius:8px"></div>
+      </div>`).join('');
+  }
+
+  function collectForedragFromDOM() {
+    const items = jsonArray('talks');
+    document.querySelectorAll('#foredragList .testi-card').forEach(card => {
+      const idx = parseInt(card.getAttribute('data-talk-index'), 10);
+      const item = items[idx] || {};
+      card.querySelectorAll('[data-talk-field]').forEach(inp => {
+        const field = inp.getAttribute('data-talk-field');
+        if (field === 'is_featured') item[field] = inp.checked;
+        else if (field === 'sort_order') item[field] = parseInt(inp.value, 10) || 0;
+        else item[field] = inp.value.trim();
+      });
+      if (!item.id) item.id = 'talk-' + Date.now() + '-' + idx;
+      if (!item.slug) item.slug = (item.title || 'foredrag').toLowerCase().replace(/[^a-z0-9æøå]+/g, '-').replace(/(^-|-$)/g, '');
+      items[idx] = item;
+    });
+    return items;
+  }
+
   function renderCasesSection() {
     const simple = fieldsBySection.cases || [];
     let html = `<p class="section-sub">Faste tekster på Cases-siden, samt cases I selv opretter (uden kode).</p>`;
@@ -662,6 +810,7 @@
   function renderSection(section, label) {
     if (section === 'dashboard') return `<h2>${label}</h2>` + renderDashboard();
     if (section === 'cases') return `<h2>${label}</h2>` + renderCasesSection();
+    if (section === 'foredrag') return `<h2>${label}</h2>` + renderForedragSection();
     if (section === 'testimonials') return `<h2>${label}</h2>` + renderTestimonialsSection();
     if (section === 'om') return `<h2>${label}</h2>` + renderOmSection();
     if (section === 'analytics') return `<h2>${label}</h2>` + renderAnalyticsSection();
@@ -724,6 +873,24 @@
         savedContent['testimonials'] = JSON.stringify(items);
         document.getElementById('section-testimonials').innerHTML = renderSection('testimonials', 'Testimonials');
         wireDynamicSections();
+      } else if (section === 'foredrag-list') {
+        const items = collectForedragFromDOM();
+        for (const inp of Array.from(document.querySelectorAll('[data-talk-image]'))) {
+          if (inp.files && inp.files[0]) {
+            const idx = parseInt(inp.getAttribute('data-talk-image'), 10);
+            items[idx].image_url = await window.MFGStore.uploadImage(inp.files[0]);
+          }
+        }
+        for (const inp of Array.from(document.querySelectorAll('[data-talk-pdf]'))) {
+          if (inp.files && inp.files[0]) {
+            const idx = parseInt(inp.getAttribute('data-talk-pdf'), 10);
+            items[idx].document_url = await window.MFGStore.uploadImage(inp.files[0]); // works for any file type
+          }
+        }
+        await window.MFGStore.setMany({ talks: JSON.stringify(items) });
+        savedContent['talks'] = JSON.stringify(items);
+        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
+        wireDynamicSections();
       } else if (section === 'cases-list') {
         const items = collectCasesFromDOM();
         for (const inp of Array.from(document.querySelectorAll('[data-case-image]'))) {
@@ -764,7 +931,7 @@
         await window.MFGStore.setMany(updates);
         Object.assign(savedContent, updates);
       } else {
-        const sectionKey = section === 'cases-simple' ? 'cases' : section;
+        const sectionKey = section === 'cases-simple' ? 'cases' : (section === 'foredrag-simple' ? 'foredrag' : section);
         const container = document.getElementById('section-' + sectionKey) || document.querySelector(`[data-save-section="${section}"]`).closest('.admin-section');
         const updates = {};
         container.querySelectorAll('[data-field-key]').forEach(inp => { updates[inp.getAttribute('data-field-key')] = inp.value; });
@@ -817,6 +984,69 @@
           document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
         }
         wireDynamicSections();
+      });
+    });
+
+    const addForedragBtn = document.getElementById('addForedragBtn');
+    if (addForedragBtn) {
+      addForedragBtn.addEventListener('click', () => {
+        const items = jsonArray('talks');
+        const nextOrder = items.length ? Math.max(...items.map(t => t.sort_order || 0)) + 1 : 1;
+        items.push({ id: 'talk-' + Date.now(), slug: '', title: '', subtitle: '', category: 'ledelse', excerpt: '', body: '', target_audience: '', participant_outcomes: '', topics: '', duration: '', format: '', image_url: '', video_url: '', document_url: '', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: nextOrder, is_featured: false, status: 'draft' });
+        savedContent['talks'] = JSON.stringify(items);
+        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
+        wireDynamicSections();
+      });
+    }
+    document.querySelectorAll('[data-remove-talk]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('Er du sikker på, at du vil slette dette foredrag? Det kan ikke fortrydes, når du gemmer.')) return;
+        const items = jsonArray('talks');
+        items.splice(parseInt(btn.getAttribute('data-remove-talk'), 10), 1);
+        savedContent['talks'] = JSON.stringify(items);
+        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
+        wireDynamicSections();
+      });
+    });
+    document.querySelectorAll('[data-move-talk-up], [data-move-talk-down]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const isUp = btn.hasAttribute('data-move-talk-up');
+        const idx = parseInt(btn.getAttribute(isUp ? 'data-move-talk-up' : 'data-move-talk-down'), 10);
+        const items = jsonArray('talks');
+        const sorted = items.map((t, i) => ({ t, i })).sort((a, b) => (a.t.sort_order || 0) - (b.t.sort_order || 0));
+        const pos = sorted.findIndex(x => x.i === idx);
+        const swapWith = isUp ? pos - 1 : pos + 1;
+        if (swapWith < 0 || swapWith >= sorted.length) return;
+        const a = sorted[pos].t.sort_order || 0;
+        const b = sorted[swapWith].t.sort_order || 0;
+        sorted[pos].t.sort_order = b;
+        sorted[swapWith].t.sort_order = a;
+        savedContent['talks'] = JSON.stringify(items);
+        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
+        wireDynamicSections();
+      });
+    });
+    document.querySelectorAll('[data-preview-talk]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-preview-talk'), 10);
+        const card = document.querySelector(`[data-talk-index="${idx}"]`);
+        const get = (f) => { const el = card.querySelector(`[data-talk-field="${f}"]`); return el ? el.value : ''; };
+        const preview = document.getElementById('talkPreview-' + idx);
+        const rows = [
+          ['Målgruppe', get('target_audience')],
+          ['Deltagernes udbytte', get('participant_outcomes')],
+          ['Centrale emner', get('topics')],
+          ['Varighed', get('duration')],
+          ['Format', get('format')]
+        ].filter(([, v]) => v && v.trim());
+        preview.innerHTML =
+          '<span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--copper);font-weight:600">Forhåndsvisning</span>' +
+          '<h4 style="font-family:var(--font-display);margin:8px 0 4px">' + escapeHtml(get('title') || '(ingen titel endnu)') + '</h4>' +
+          (get('subtitle') ? '<p style="color:#8a7c5f;margin-bottom:8px">' + escapeHtml(get('subtitle')) + '</p>' : '') +
+          '<p style="margin-bottom:8px">' + escapeHtml(get('excerpt')) + '</p>' +
+          (get('body') ? '<p style="margin-bottom:8px">' + escapeHtml(get('body')) + '</p>' : '') +
+          rows.map(([l, v]) => '<p><strong>' + l + ':</strong> ' + escapeHtml(v) + '</p>').join('');
+        preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
       });
     });
 
