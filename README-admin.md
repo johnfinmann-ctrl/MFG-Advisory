@@ -4,6 +4,35 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC15 — bekræftelse af admin-adgang + reel bug rettet
+
+**Baggrund:** Der blev spurgt, om admin-login overhovedet findes. Svar:
+Ja — se den fulde bekræftelse i chatten. Under verifikationen fandt jeg
+en reel bug: åbnes `admin.html` i en helt frisk browser (der aldrig har
+besøgt selve hjemmesiden), viste Foredrag-sektionen **0** rækker i
+stedet for de 7 standardforedrag, fordi den logik, der forudfylder dem
+("seeding"), kun lå i `content-loader.js` (indlæst på de offentlige
+sider) — ikke i selve adminpanelet.
+
+**Rettelsen:** Standardforedragene flyttet til én fælles, delt fil
+(`assets/js/default-talks.js`), som nu indlæses på **både** alle
+offentlige sider og admin.html. Adminpanelets egen opstartslogik tjekker
+nu selv, om foredrag mangler, og forudfylder dem uafhængigt af, om den
+offentlige side er besøgt først. Ingen datamodel, tekster eller
+funktionalitet er ændret — kun hvor standarddata bliver indlæst fra.
+
+**Testet:** En helt frisk browser-session, der åbner `admin.html` som
+allerførste side, viser nu korrekt 7 foredrag — bekræftet direkte. Den
+offentlige Foredrag-side er samtidig bekræftet at virke uændret. Fuld
+CRUD-cyklus (opret → udgiv → vises offentligt → slet → oprydning
+verificeret) testet igennem for **både** Cases og Foredrag. Alle 11
+sider bekræftet at loade uden fejl, Compass-modulet uændret.
+
+**Ændrede/nye filer:** Ny fil `assets/js/default-talks.js`. Ændret:
+`assets/js/admin.js`, `assets/js/content-loader.js`, samt ét nyt
+script-tag på alle 11 offentlige sider + admin.html (bekræftet ved diff
+— ingen andre ændringer i disse filer).
+
 ## RC14 — mere luft på de fire Compass-sider
 
 Ren spacing-justering på Mennesker, Ledelse, Kultur og Forretning.

@@ -1257,12 +1257,25 @@
     wireSettings();
   }
 
+  async function seedTalksIfNeeded() {
+    if (savedContent.talks) return;
+    if (!window.MFG_DEFAULT_TALKS) return;
+    const value = JSON.stringify(window.MFG_DEFAULT_TALKS);
+    try {
+      await window.MFGStore.setMany({ talks: value });
+    } catch (e) {
+      console.warn('MFG admin: could not save seeded talks, using them for this view only', e);
+    }
+    savedContent.talks = value;
+  }
+
   // ---------------- Boot ----------------
   async function boot() {
     document.getElementById('backendPill').textContent =
       window.MFGStore.backend() === 'supabase' ? 'Supabase' : 'LocalStorage (denne enhed)';
 
     savedContent = await window.MFGStore.getAll();
+    await seedTalksIfNeeded();
     await discoverFields();
     renderNav();
     renderAllSections();
