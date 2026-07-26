@@ -27,10 +27,13 @@ button{font-family:inherit;cursor:pointer}
 .login-box{background:#fff;padding:40px 36px;border-radius:8px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center}
 .login-box h1{font-size:1.3rem;margin-bottom:6px;color:var(--a-navy)}
 .login-box p{color:var(--a-text-mid);font-size:.85rem;margin-bottom:22px}
-.login-box input{width:100%;padding:12px 14px;border:1px solid var(--a-border);border-radius:6px;font-size:1rem;margin-bottom:14px;text-align:center;letter-spacing:.1em}
+.login-box input{width:100%;padding:12px 14px;border:1px solid var(--a-border);border-radius:6px;font-size:.95rem;margin-bottom:14px;text-align:left;letter-spacing:normal}
 .login-box button{width:100%;padding:12px;border:none;border-radius:6px;background:var(--a-navy);color:#fff;font-weight:600;font-size:.9rem}
 .login-box button:hover{background:var(--a-copper)}
 .login-error{color:var(--a-danger);font-size:.8rem;margin-top:10px;min-height:1em}
+.login-success{color:#2e7d32;font-size:.8rem;margin-top:10px}
+.login-link{background:none;border:none;color:var(--a-copper);font-size:.8rem;margin-top:16px;cursor:pointer;text-decoration:underline;padding:0}
+.login-link:hover{color:var(--a-navy)}
 .login-hint{margin-top:18px;font-size:.72rem;color:#9aa3b0;line-height:1.5}
 
 /* ---- App shell ---- */

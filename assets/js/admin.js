@@ -1,231 +1,210 @@
 /* =========================================================================
-   MFG Advisory — Admin Panel logic
+   MFG Advisory — Adminpanel (Fase 2: produktionsklar Supabase-version)
    =========================================================================
-   How field discovery works:
-   Rather than hand-maintaining a duplicate list of every editable field
-   (which would drift out of sync with the real pages), this script fetches
-   each public HTML page, parses it, and reads every [data-edit] /
-   [data-edit-href] element directly from the real markup. That list *is*
-   the source of truth — if a data-edit attribute exists on the site, it
-   automatically appears here; nothing more needs to be maintained by hand.
-
-   Cases and Testimonials are richer, repeatable content (title, industry,
-   challenge/solution/result, image, linked Compass direction) and are
-   managed as JSON arrays under the "cases" / "testimonials" keys, edited
-   here with add/remove row UIs — the same pattern as the simple fields,
-   just one level deeper.
+   Erstatter helt det tidligere PIN-baserede system. Login sker nu via
+   Supabase Authentication (e-mail + adgangskode), og adgang til selve
+   adminpanelet kræver derudover en godkendt række i "admin_users"-tabellen
+   — håndhævet af Row Level Security i databasen, ikke kun skjult i denne fil.
    ========================================================================= */
 
 (function () {
+  const sb = () => window.MFGSupabase;
+
+  let currentUser = null;
+  let isConfirmedAdmin = false;
+
   const PAGES = [
-    { file: 'index.html', section: 'home', label: 'Forside' },
-    { file: 'mennesker.html', section: 'mennesker', label: 'Mennesker' },
-    { file: 'ledelse.html', section: 'ledelse', label: 'Ledelse' },
-    { file: 'kultur.html', section: 'kultur', label: 'Kultur' },
-    { file: 'forretning.html', section: 'forretning', label: 'Forretning' },
-    { file: 'foredrag.html', section: 'foredrag', label: 'Foredrag' },
-    { file: 'cases.html', section: 'cases', label: 'Cases' },
-    { file: 'om-morten.html', section: 'om', label: 'Om Morten' },
-    { file: 'kontakt.html', section: 'kontakt', label: 'Kontakt' }
+    { key: 'index', label: 'Forside' },
+    { key: 'mennesker', label: 'Mennesker' },
+    { key: 'ledelse', label: 'Ledelse' },
+    { key: 'kultur', label: 'Kultur' },
+    { key: 'forretning', label: 'Forretning' },
+    { key: 'foredrag', label: 'Foredrag (tekster)' },
+    { key: 'cases', label: 'Cases (tekster)' },
+    { key: 'om-morten', label: 'Om Morten' },
+    { key: 'kontakt', label: 'Kontakt' },
+    { key: 'mfg-compass', label: 'The MFG Compass™ (side)' }
   ];
 
-  const GLOBAL_KEYS = ['contact-phone', 'contact-email', 'footer-cvr', 'footer-copyright', 'social-linkedin', 'nav-cta-text'];
-  const COMPASS_KEYS_PREFIX = ['compass-', 'teaser-'];
-
-  const NAV_ORDER = [
-    { section: 'dashboard', label: 'Dashboard' },
-    { section: 'home', label: 'Forside' },
-    { section: 'kompasset', label: 'The MFG Compass™' },
-    { section: 'mennesker', label: 'Mennesker' },
-    { section: 'ledelse', label: 'Ledelse' },
-    { section: 'kultur', label: 'Kultur' },
-    { section: 'forretning', label: 'Forretning' },
-    { section: 'foredrag', label: 'Foredrag' },
-    { section: 'cases', label: 'Cases' },
-    { section: 'testimonials', label: 'Testimonials' },
-    { section: 'om', label: 'Om Morten' },
-    { section: 'kontakt', label: 'Kontakt' },
-    { section: 'seo', label: 'SEO' },
-    { section: 'analytics', label: 'Analytics' },
-    { section: 'cookiebanner', label: 'Cookiebanner' },
-    { section: 'settings', label: 'Indstillinger' }
+  const TALK_CATEGORIES = [
+    { value: 'ledelse', label: 'Ledelse' },
+    { value: 'kultur', label: 'Kultur' },
+    { value: 'mennesker', label: 'Mennesker' },
+    { value: 'forretning', label: 'Forretningsudvikling' },
+    { value: 'psykologisk-tryghed', label: 'Psykologisk tryghed' },
+    { value: 'tilknytning', label: 'Tilknytning' },
+    { value: 'compass', label: 'The MFG Compass™' }
   ];
-
-  const DIRECTIONS = [
+  const CASE_CATEGORIES = [
     { value: 'mennesker', label: 'Mennesker' },
     { value: 'ledelse', label: 'Ledelse' },
     { value: 'kultur', label: 'Kultur' },
     { value: 'forretning', label: 'Forretning' }
   ];
 
-  let fieldsBySection = {};
-  let savedContent = {};
+  // ---------------- Helpers ----------------
+  function escapeHtml(s) { return (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+  function escapeAttr(s) { return (s == null ? '' : String(s)).replace(/"/g, '&quot;'); }
+  function humanLabel(key) { return key.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleString('da-DK', { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return iso; }
+  }
+
+  function toast(msg, kind) {
+    let el = document.getElementById('mfgToast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'mfgToast';
+      el.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:3000;padding:12px 18px;border-radius:8px;' +
+        'font-size:.85rem;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:opacity .3s;color:#fff';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.style.background = kind === 'error' ? '#7a2e2e' : '#2e7d32';
+    el.style.opacity = '1';
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.style.opacity = '0'; }, 3200);
+  }
 
   // ---------------- Auth ----------------
-  async function sha256Hex(text) {
-    const enc = new TextEncoder().encode(text);
-    const buf = await crypto.subtle.digest('SHA-256', enc);
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  function showLoginBox(which) {
+    document.getElementById('loginBox').style.display = which === 'login' ? 'block' : 'none';
+    document.getElementById('forgotBox').style.display = which === 'forgot' ? 'block' : 'none';
+    document.getElementById('notAdminBox').style.display = which === 'notadmin' ? 'block' : 'none';
   }
 
-  async function checkPin(pin) {
-    const stored = savedContent['admin-pin-hash'];
-    if (!stored) return pin === 'mfg2026';
-    return (await sha256Hex(pin)) === stored;
+  async function login() {
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const errorEl = document.getElementById('loginError');
+    errorEl.textContent = '';
+    if (!email || !password) { errorEl.textContent = 'Udfyld både e-mail og adgangskode.'; return; }
+    if (!sb()) { errorEl.textContent = 'Supabase er ikke konfigureret (se assets/js/supabase-config.js).'; return; }
+
+    const { data, error } = await sb().auth.signInWithPassword({ email, password });
+    if (error) {
+      errorEl.textContent = 'Forkert e-mail eller adgangskode.';
+      return;
+    }
+    await afterAuthResolved(data.user);
   }
 
-  async function setPin(newPin) {
-    const hash = await sha256Hex(newPin);
-    await window.MFGStore.setMany({ 'admin-pin-hash': hash });
-    savedContent['admin-pin-hash'] = hash;
+  async function checkAdminRole(user) {
+    const { data, error } = await sb().from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+    if (error) { console.warn('MFG admin: kunne ikke tjekke admin-rolle', error); return false; }
+    return !!data;
+  }
+
+  async function afterAuthResolved(user) {
+    currentUser = user;
+    isConfirmedAdmin = await checkAdminRole(user);
+    if (!isConfirmedAdmin) {
+      showLoginBox('notadmin');
+      return;
+    }
+    showApp();
+    document.getElementById('loggedInAsLabel').textContent = user.email;
+    boot();
+  }
+
+  async function logout() {
+    if (sb()) await sb().auth.signOut();
+    currentUser = null;
+    isConfirmedAdmin = false;
+    document.getElementById('adminApp').classList.remove('visible');
+    document.getElementById('loginScreen').style.display = 'flex';
+    showLoginBox('login');
+    document.getElementById('emailInput').value = '';
+    document.getElementById('passwordInput').value = '';
+  }
+
+  async function requestPasswordReset() {
+    const email = document.getElementById('forgotEmailInput').value.trim();
+    const errorEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+    errorEl.textContent = '';
+    successEl.style.display = 'none';
+    if (!email) { errorEl.textContent = 'Indtast din e-mail.'; return; }
+    if (!sb()) { errorEl.textContent = 'Supabase er ikke konfigureret.'; return; }
+
+    const redirectTo = window.location.origin + window.location.pathname.replace('admin.html', 'reset-password.html');
+    const { error } = await sb().auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) { errorEl.textContent = 'Kunne ikke sende link: ' + error.message; return; }
+    successEl.textContent = 'Hvis kontoen findes, er der sendt en mail med et nulstillingslink.';
+    successEl.style.display = 'block';
   }
 
   function showApp() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').classList.add('visible');
-    sessionStorage.setItem('mfg_admin_authed', '1');
   }
 
-  // ---------------- Helpers ----------------
-  function escapeHtml(s) { return (s || '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
-  function escapeAttr(s) { return (s || '').replace(/"/g, '&quot;'); }
-
-  function humanLabel(key) {
-    return key.replace(/^seo-/, 'SEO — ').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  // ---------------- Generic table CRUD ----------------
+  async function fetchAll(table, orderCol) {
+    let q = sb().from(table).select('*');
+    if (orderCol) q = q.order(orderCol, { ascending: true });
+    const { data, error } = await q;
+    if (error) throw error;
+    return data || [];
   }
 
-  function jsonArray(key, fallback) {
-    const raw = savedContent[key];
-    if (!raw) return fallback || [];
-    try {
-      const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : (fallback || []);
-    } catch (e) { return fallback || []; }
+  async function insertRow(table, row) {
+    row.created_by = currentUser.id;
+    row.updated_by = currentUser.id;
+    const { data, error } = await sb().from(table).insert(row).select().single();
+    if (error) throw error;
+    return data;
   }
 
-  // ---------------- Field discovery ----------------
-  function fieldTypeFor(tag, text) {
-    if (tag === 'img') return 'image';
-    if ((text || '').length > 70) return 'textarea';
-    return 'text';
+  async function updateRow(table, id, patch) {
+    patch.updated_by = currentUser.id;
+    const { error } = await sb().from(table).update(patch).eq('id', id);
+    if (error) throw error;
   }
 
-  async function discoverFields() {
-    fieldsBySection = {};
-    PAGES.forEach(p => { fieldsBySection[p.section] = []; });
-    fieldsBySection.seo = [];
-    fieldsBySection.kompasset = [];
-
-    const seen = new Set();
-
-    for (const page of PAGES) {
-      let html;
-      try {
-        html = await fetch(page.file).then(r => r.text());
-      } catch (e) {
-        console.warn('Admin: could not fetch', page.file, e);
-        continue;
-      }
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-
-      doc.querySelectorAll('[data-edit]').forEach(el => {
-        const key = el.getAttribute('data-edit');
-        if (seen.has(key)) return;
-        seen.add(key);
-
-        const tag = el.tagName.toLowerCase();
-        const defaultValue = tag === 'img' ? el.getAttribute('src')
-          : tag === 'meta' ? el.getAttribute('content')
-          : el.textContent.trim();
-
-        const field = { key, label: humanLabel(key), type: fieldTypeFor(tag, defaultValue), defaultValue, tag };
-
-        if (GLOBAL_KEYS.includes(key)) {
-          fieldsBySection.kontakt.push(field);
-        } else if (key.startsWith('seo-')) {
-          field.type = key.endsWith('description') ? 'textarea' : 'text';
-          fieldsBySection.seo.push(field);
-        } else if (COMPASS_KEYS_PREFIX.some(p => key.startsWith(p)) && page.section === 'home') {
-          fieldsBySection.kompasset.push(field);
-        } else {
-          fieldsBySection[page.section].push(field);
-        }
-      });
-
-      doc.querySelectorAll('[data-edit-href]').forEach(el => {
-        const key = el.getAttribute('data-edit-href');
-        if (seen.has(key)) return;
-        seen.add(key);
-        fieldsBySection.kontakt.push({ key, label: humanLabel(key), type: 'text', defaultValue: el.getAttribute('href'), tag: 'a-href' });
-      });
-    }
+  async function deleteRow(table, id) {
+    const { error } = await sb().from(table).delete().eq('id', id);
+    if (error) throw error;
   }
 
-  // ---------------- Simple field rendering ----------------
-  function fieldValue(field) {
-    return Object.prototype.hasOwnProperty.call(savedContent, field.key) ? savedContent[field.key] : field.defaultValue;
+  async function uploadFile(bucket, file) {
+    const path = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    const { error } = await sb().storage.from(bucket).upload(path, file, { upsert: false });
+    if (error) throw error;
+    const { data } = sb().storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
   }
 
-  function renderImageField(field) {
-    const val = fieldValue(field);
-    return `
-      <div class="field-card">
-        <label>${field.label} <span class="field-key">${field.key}</span></label>
-        <div class="img-field">
-          <img src="${val}" alt="">
-          <div class="img-controls">
-            <input type="file" accept="image/*" data-image-key="${field.key}">
-            <div class="field-note">Nyt billede erstatter det nuværende med det samme efter "Gem ændringer".</div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  function renderTextField(field) {
-    const val = fieldValue(field);
-    if (field.type === 'textarea') {
-      return `
-        <div class="field-card">
-          <label>${field.label} <span class="field-key">${field.key}</span></label>
-          <textarea data-field-key="${field.key}">${escapeHtml(val)}</textarea>
-        </div>`;
-    }
-    return `
-      <div class="field-card">
-        <label>${field.label} <span class="field-key">${field.key}</span></label>
-        <input type="text" data-field-key="${field.key}" value="${escapeAttr(val)}">
-      </div>`;
-  }
-
-  function renderSimpleFields(fields) {
-    return fields.map(f => f.type === 'image' ? renderImageField(f) : renderTextField(f)).join('');
-  }
-
-  function saveBar(section, label) {
-    return `
-      <div class="save-bar">
-        <span class="save-status" id="saveStatus-${section}"></span>
-        <button class="btn btn-primary" data-save-section="${section}">${label || 'Gem ændringer'}</button>
-      </div>`;
+  function slugify(s) {
+    return (s || '')
+      .toLowerCase()
+      .replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '') || ('item-' + Date.now());
   }
 
   // ---------------- Dashboard ----------------
-  function renderDashboard() {
-    const cases = jsonArray('cases');
-    const testimonials = jsonArray('testimonials');
-    const solutions = jsonArray('solutions');
-    const talks = jsonArray('talks');
-    const publishedTalks = talks.filter(t => t.status === 'published').length;
-    const backend = window.MFGStore.backend();
+  async function renderDashboard() {
+    const [cases, talks, testimonials] = await Promise.all([
+      fetchAll('cases'), fetchAll('talks'), fetchAll('testimonials')
+    ]);
+    const pubCases = cases.filter(c => c.status === 'published').length;
+    const pubTalks = talks.filter(t => t.status === 'published').length;
+    const pubTesti = testimonials.filter(t => t.status === 'published').length;
     return `
-      <p class="section-sub">Overblik over hjemmesidens indhold.</p>
+      <p class="section-sub">Overblik over hjemmesidens indhold — hentet direkte fra Supabase.</p>
       <div class="field-card">
         <label>Lagring</label>
-        <p>${backend === 'supabase' ? 'Supabase (delt på tværs af enheder)' : 'LocalStorage (kun denne browser/enhed)'}</p>
+        <p>Supabase PostgreSQL (delt på tværs af alle enheder og browsere)</p>
       </div>
       <div class="field-card">
         <label>Indhold</label>
-        <p>${cases.length} ekstra case(s) · ${testimonials.length} testimonial(s) · ${solutions.length} ekstra løsningskort · ${talks.length} foredrag (${publishedTalks} udgivet) — oprettet i adminpanelet.</p>
+        <p>${cases.length} case(s) (${pubCases} udgivet) · ${talks.length} foredrag (${pubTalks} udgivet) · ${testimonials.length} testimonial(s) (${pubTesti} udgivet)</p>
+      </div>
+      <div class="field-card">
+        <label>Logget ind som</label>
+        <p>${escapeHtml(currentUser.email)}</p>
       </div>
       <div class="field-card">
         <label>Genveje</label>
@@ -237,1080 +216,507 @@
     `;
   }
 
-  // ---------------- Cases (rich CRUD) ----------------
-  const TALK_CATEGORIES = [
-    { value: 'ledelse', label: 'Ledelse' },
-    { value: 'kultur', label: 'Kultur' },
-    { value: 'mennesker', label: 'Mennesker' },
-    { value: 'forretning', label: 'Forretningsudvikling' },
-    { value: 'psykologisk-tryghed', label: 'Psykologisk tryghed' },
-    { value: 'tilknytning', label: 'Tilknytning' },
-    { value: 'compass', label: 'The MFG Compass™' }
-  ];
+  // ---------------- Cases ----------------
+  let casesCache = [];
 
-  function talkCategoryOptions(selected) {
-    return TALK_CATEGORIES.map(c => `<option value="${c.value}" ${c.value === selected ? 'selected' : ''}>${c.label}</option>`).join('');
-  }
-
-  function renderForedragSection() {
-    const simple = fieldsBySection.foredrag || [];
-    let html = `<p class="section-sub">Faste tekster på Foredrag-siden (hero mv.), samt selve foredragene, som vises som kort på siden og fremhævet på forsiden.</p>`;
-    html += renderSimpleFields(simple);
-    html += saveBar('foredrag-simple', 'Gem tekster');
-
-    html += `<h3 style="margin:32px 0 6px">Foredrag</h3>
-      <p class="section-sub">Kun foredrag med status "Udgivet" er synlige for besøgende. Kun foredrag markeret som "Fremhævet" kan vises på forsiden.</p>
-      <div id="foredragList">${renderForedragRows(jsonArray('talks'))}</div>
-      <button class="btn btn-outline btn-sm" id="addForedragBtn">+ Tilføj foredrag</button>
-      ${saveBar('foredrag-list', 'Gem foredrag')}`;
-    return html;
-  }
-
-  function renderForedragRows(items) {
-    if (items.length === 0) return `<p class="section-sub">Ingen foredrag oprettet endnu.</p>`;
-    const sorted = items.map((t, i) => ({ t, i })).sort((a, b) => (a.t.sort_order || 0) - (b.t.sort_order || 0));
-    return sorted.map(({ t, i }, pos) => `
-      <div class="testi-card" data-talk-index="${i}">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-outline btn-sm" data-move-talk-up="${i}" ${pos === 0 ? 'disabled' : ''} title="Flyt op">↑</button>
-            <button class="btn btn-outline btn-sm" data-move-talk-down="${i}" ${pos === sorted.length - 1 ? 'disabled' : ''} title="Flyt ned">↓</button>
-            <button class="btn btn-outline btn-sm" data-preview-talk="${i}">Forhåndsvis</button>
-          </div>
-          <button class="btn btn-danger btn-sm" data-remove-talk="${i}">Slet</button>
-        </div>
-        <div class="testi-row">
-          <div>
-            <label>Titel</label>
-            <input type="text" data-talk-field="title" data-talk-index="${i}" value="${escapeAttr(t.title || '')}">
-          </div>
-          <div>
-            <label>Undertitel</label>
-            <input type="text" data-talk-field="subtitle" data-talk-index="${i}" value="${escapeAttr(t.subtitle || '')}">
-          </div>
-          <div>
-            <label>Kategori</label>
-            <select data-talk-field="category" data-talk-index="${i}">${talkCategoryOptions(t.category)}</select>
-          </div>
-          <div>
-            <label>Status</label>
-            <select data-talk-field="status" data-talk-index="${i}">
-              <option value="draft" ${t.status === 'draft' ? 'selected' : ''}>Kladde</option>
-              <option value="published" ${t.status === 'published' || !t.status ? 'selected' : ''}>Udgivet</option>
-              <option value="archived" ${t.status === 'archived' ? 'selected' : ''}>Afpubliceret</option>
-            </select>
-          </div>
-          <div>
-            <label>Sortering (lavest først)</label>
-            <input type="number" data-talk-field="sort_order" data-talk-index="${i}" value="${escapeAttr(String(t.sort_order != null ? t.sort_order : (i + 1)))}">
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
-            <input type="checkbox" style="width:auto" data-talk-field="is_featured" data-talk-index="${i}" ${t.is_featured ? 'checked' : ''} id="talkFeatured-${i}">
-            <label for="talkFeatured-${i}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Fremhævet (vises på forsiden)</label>
-          </div>
-          <div>
-            <label>Varighed</label>
-            <input type="text" data-talk-field="duration" data-talk-index="${i}" value="${escapeAttr(t.duration || '')}" placeholder="fx 60 minutter (valgfrit)">
-          </div>
-          <div>
-            <label>Format</label>
-            <input type="text" data-talk-field="format" data-talk-index="${i}" value="${escapeAttr(t.format || '')}" placeholder="fx Fysisk / online (valgfrit)">
-          </div>
-          <div>
-            <label>Billede</label>
-            <input type="file" accept="image/*" data-talk-image="${i}">
-            ${t.image_url ? '<div class="field-note">Der er allerede uploadet et billede.</div>' : ''}
-          </div>
-          <div>
-            <label>Video-link</label>
-            <input type="text" data-talk-field="video_url" data-talk-index="${i}" value="${escapeAttr(t.video_url || '')}" placeholder="valgfrit">
-          </div>
-          <div>
-            <label>PDF / program</label>
-            <input type="file" accept="application/pdf" data-talk-pdf="${i}">
-            ${t.document_url ? '<div class="field-note">Der er allerede uploadet en PDF.</div>' : ''}
-          </div>
-          <div>
-            <label>CTA-tekst</label>
-            <input type="text" data-talk-field="cta_text" data-talk-index="${i}" value="${escapeAttr(t.cta_text || 'Forespørg på foredraget')}">
-          </div>
-          <div>
-            <label>CTA-link</label>
-            <input type="text" data-talk-field="cta_url" data-talk-index="${i}" value="${escapeAttr(t.cta_url || 'kontakt.html')}">
-          </div>
-          <div class="full">
-            <label>Kort beskrivelse (vises på kortet)</label>
-            <textarea data-talk-field="excerpt" data-talk-index="${i}">${escapeHtml(t.excerpt || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Fuld beskrivelse (vises i detaljevisningen, valgfrit)</label>
-            <textarea data-talk-field="body" data-talk-index="${i}">${escapeHtml(t.body || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Målgruppe (valgfrit)</label>
-            <textarea data-talk-field="target_audience" data-talk-index="${i}">${escapeHtml(t.target_audience || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Deltagernes udbytte (valgfrit)</label>
-            <textarea data-talk-field="participant_outcomes" data-talk-index="${i}">${escapeHtml(t.participant_outcomes || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Centrale emner (valgfrit)</label>
-            <textarea data-talk-field="topics" data-talk-index="${i}">${escapeHtml(t.topics || '')}</textarea>
-          </div>
-        </div>
-        <div class="talk-preview" id="talkPreview-${i}" style="display:none;margin-top:16px;padding:16px;background:#f7f4ee;border-radius:8px"></div>
-      </div>`).join('');
-  }
-
-  function collectForedragFromDOM() {
-    const items = jsonArray('talks');
-    document.querySelectorAll('#foredragList .testi-card').forEach(card => {
-      const idx = parseInt(card.getAttribute('data-talk-index'), 10);
-      const item = items[idx] || {};
-      card.querySelectorAll('[data-talk-field]').forEach(inp => {
-        const field = inp.getAttribute('data-talk-field');
-        if (field === 'is_featured') item[field] = inp.checked;
-        else if (field === 'sort_order') item[field] = parseInt(inp.value, 10) || 0;
-        else item[field] = inp.value.trim();
-      });
-      if (!item.id) item.id = 'talk-' + Date.now() + '-' + idx;
-      if (!item.slug) item.slug = (item.title || 'foredrag').toLowerCase().replace(/[^a-z0-9æøå]+/g, '-').replace(/(^-|-$)/g, '');
-      items[idx] = item;
-    });
-    return items;
-  }
-
-  function renderCasesSection() {
-    const simple = fieldsBySection.cases || [];
-    let html = `<p class="section-sub">Faste tekster på Cases-siden, samt cases I selv opretter (uden kode).</p>`;
-    html += renderSimpleFields(simple);
-    html += saveBar('cases-simple', 'Gem tekster');
-
-    html += `<h3 style="margin:32px 0 6px">Cases (oprettet i admin)</h3>
-      <p class="section-sub">Vises automatisk nederst på Cases-siden.</p>
-      <div id="casesList">${renderCaseRows(jsonArray('cases'))}</div>
+  async function renderCasesSection() {
+    casesCache = await fetchAll('cases', 'sort_order');
+    return `
+      <p class="section-sub">Cases vist på Cases-siden. Kun status "Udgivet" er synlig for besøgende.</p>
+      <div id="casesList">${renderCaseRows()}</div>
       <button class="btn btn-outline btn-sm" id="addCaseBtn">+ Tilføj case</button>
-      ${saveBar('cases-list', 'Gem cases')}`;
-    return html;
+    `;
   }
 
-  function directionOptions(selected) {
-    return DIRECTIONS.map(d => `<option value="${d.value}" ${d.value === selected ? 'selected' : ''}>${d.label}</option>`).join('');
-  }
-
-  function directionOptionsOptional(selected) {
-    return '<option value="" ' + (!selected ? 'selected' : '') + '>— Ingen —</option>' + directionOptions(selected);
-  }
-
-  function renderCaseRows(items) {
-    if (items.length === 0) return `<p class="section-sub">Ingen cases oprettet endnu.</p>`;
-    return items.map((c, i) => {
-      const galleryCount = Array.isArray(c.gallery) ? c.gallery.length : 0;
-      return `
-      <div class="testi-card" data-case-index="${i}">
-        <button class="btn btn-danger btn-sm testi-remove" data-remove-case="${i}">Fjern</button>
-        <div class="testi-row">
-          <div>
-            <label>Titel</label>
-            <input type="text" data-case-field="title" data-case-index="${i}" value="${escapeAttr(c.title || '')}">
+  function renderCaseRows() {
+    if (!casesCache.length) return '<p class="section-sub">Ingen cases oprettet endnu.</p>';
+    return casesCache.map((c, pos) => `
+      <div class="testi-card" data-case-id="${c.id}">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="btn btn-outline btn-sm" data-case-move-up="${c.id}" ${pos === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn btn-outline btn-sm" data-case-move-down="${c.id}" ${pos === casesCache.length - 1 ? 'disabled' : ''}>↓</button>
+            <span class="field-note">Sidst opdateret: ${fmtDate(c.updated_at)}</span>
           </div>
-          <div>
-            <label>Branche</label>
-            <input type="text" data-case-field="industry" data-case-index="${i}" value="${escapeAttr(c.industry || '')}">
-          </div>
-          <div>
-            <label>Kunde</label>
-            <input type="text" data-case-field="customer" data-case-index="${i}" value="${escapeAttr(c.customer || '')}" placeholder="Kundens navn (valgfrit)">
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
-            <input type="checkbox" style="width:auto" data-case-field="hideCustomer" data-case-index="${i}" ${c.hideCustomer ? 'checked' : ''} id="hideCust-${i}">
-            <label for="hideCust-${i}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Skjul kundenavn på hjemmesiden</label>
-          </div>
-          <div>
-            <label>Primær Compass-retning</label>
-            <select data-case-field="direction" data-case-index="${i}">${directionOptions(c.direction)}</select>
-          </div>
-          <div>
-            <label>Sekundær Compass-retning</label>
-            <select data-case-field="direction2" data-case-index="${i}">${directionOptionsOptional(c.direction2)}</select>
-          </div>
-          <div>
-            <label>Billede</label>
-            <input type="file" accept="image/*" data-case-image="${i}">
-          </div>
-          <div>
-            <label>PDF (case-dokument)</label>
-            <input type="file" accept="application/pdf" data-case-pdf="${i}">
-            ${c.pdf ? '<div class="field-note">Der er allerede uploadet en PDF.</div>' : ''}
-          </div>
-          <div>
-            <label>CTA-tekst</label>
-            <input type="text" data-case-field="ctaText" data-case-index="${i}" value="${escapeAttr(c.ctaText || 'Book en samtale')}">
-          </div>
-          <div>
-            <label>CTA-link</label>
-            <input type="text" data-case-field="ctaLink" data-case-index="${i}" value="${escapeAttr(c.ctaLink || 'kontakt.html')}">
-          </div>
-          <div class="full">
-            <label>Galleri (flere billeder)</label>
-            <input type="file" accept="image/*" multiple data-case-gallery="${i}">
-            <div class="field-note">${galleryCount} billede(r) i galleriet nu. Vælger du nye filer, erstatter de hele galleriet.</div>
-          </div>
-          <div class="full">
-            <label>Udfordring</label>
-            <textarea data-case-field="challenge" data-case-index="${i}">${escapeHtml(c.challenge || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Løsning</label>
-            <textarea data-case-field="solution" data-case-index="${i}">${escapeHtml(c.solution || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Resultat</label>
-            <textarea data-case-field="result" data-case-index="${i}">${escapeHtml(c.result || '')}</textarea>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" data-case-save="${c.id}">Gem</button>
+            <button class="btn btn-danger btn-sm" data-case-delete="${c.id}">Slet</button>
           </div>
         </div>
-      </div>`;
-    }).join('');
+        <div class="testi-row">
+          <div><label>Titel</label><input type="text" data-cf="title" value="${escapeAttr(c.title)}"></div>
+          <div><label>Kategori</label><select data-cf="category">${CASE_CATEGORIES.map(cc => `<option value="${cc.value}" ${cc.value === c.category ? 'selected' : ''}>${cc.label}</option>`).join('')}</select></div>
+          <div><label>Status</label><select data-cf="status">
+            <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>Kladde</option>
+            <option value="published" ${c.status === 'published' ? 'selected' : ''}>Udgivet</option>
+          </select></div>
+          <div><label>Billede</label><input type="file" accept="image/*" data-cf-image="1">${c.image_path ? '<div class="field-note">Billede er uploadet.</div>' : ''}</div>
+          <div class="full"><label>Kort beskrivelse (teaser)</label><textarea data-cf="teaser">${escapeHtml(c.teaser)}</textarea></div>
+          <div class="full"><label>Udfordring</label><textarea data-cf="challenge">${escapeHtml(c.challenge)}</textarea></div>
+          <div class="full"><label>Vores ansvar</label><textarea data-cf="responsibility">${escapeHtml(c.responsibility)}</textarea></div>
+          <div class="full"><label>Tilgang</label><textarea data-cf="approach">${escapeHtml(c.approach)}</textarea></div>
+          <div class="full"><label>Resultat</label><textarea data-cf="result">${escapeHtml(c.result)}</textarea></div>
+          <div class="full"><label>Sådan hjalp MFG</label><textarea data-cf="mfg_help">${escapeHtml(c.mfg_help)}</textarea></div>
+          <div class="full"><label>Nøgletal (valgfrit)</label><textarea data-cf="key_figures">${escapeHtml(c.key_figures)}</textarea></div>
+        </div>
+      </div>
+    `).join('');
   }
 
-  function collectCasesFromDOM() {
-    const items = jsonArray('cases');
-    document.querySelectorAll('#casesList .testi-card').forEach(card => {
-      const idx = parseInt(card.getAttribute('data-case-index'), 10);
-      const item = items[idx] || {};
-      card.querySelectorAll('[data-case-field]').forEach(inp => {
-        const field = inp.getAttribute('data-case-field');
-        item[field] = inp.type === 'checkbox' ? inp.checked : inp.value.trim();
-      });
-      items[idx] = item;
+  function wireCases() {
+    const addBtn = document.getElementById('addCaseBtn');
+    if (addBtn) addBtn.addEventListener('click', async () => {
+      try {
+        const nextOrder = casesCache.length ? Math.max(...casesCache.map(c => c.sort_order || 0)) + 1 : 1;
+        await insertRow('cases', { slug: slugify('case-' + Date.now()), title: 'Ny case', category: 'mennesker', status: 'draft', sort_order: nextOrder });
+        toast('Case oprettet som kladde.');
+        await refreshSection('cases');
+      } catch (e) { toast('Kunne ikke oprette case: ' + e.message, 'error'); }
     });
-    return items;
+
+    document.querySelectorAll('[data-case-save]').forEach(btn => btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-case-save');
+      const card = document.querySelector(`.testi-card[data-case-id="${id}"]`);
+      const patch = {};
+      card.querySelectorAll('[data-cf]').forEach(inp => { patch[inp.getAttribute('data-cf')] = inp.value; });
+      if (patch.status === 'published') patch.published_at = new Date().toISOString();
+      try {
+        const fileInput = card.querySelector('[data-cf-image]');
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+          patch.image_path = await uploadFile('case-images', fileInput.files[0]);
+        }
+        await updateRow('cases', id, patch);
+        toast('Case gemt.');
+        await refreshSection('cases');
+      } catch (e) { toast('Kunne ikke gemme: ' + e.message, 'error'); }
+    }));
+
+    document.querySelectorAll('[data-case-delete]').forEach(btn => btn.addEventListener('click', async () => {
+      if (!confirm('Slet denne case permanent? Kan ikke fortrydes.')) return;
+      try {
+        await deleteRow('cases', btn.getAttribute('data-case-delete'));
+        toast('Case slettet.');
+        await refreshSection('cases');
+      } catch (e) { toast('Kunne ikke slette: ' + e.message, 'error'); }
+    }));
+
+    document.querySelectorAll('[data-case-move-up], [data-case-move-down]').forEach(btn => btn.addEventListener('click', async () => {
+      const up = btn.hasAttribute('data-case-move-up');
+      const id = btn.getAttribute(up ? 'data-case-move-up' : 'data-case-move-down');
+      const pos = casesCache.findIndex(c => c.id === id);
+      const swapWith = up ? pos - 1 : pos + 1;
+      if (swapWith < 0 || swapWith >= casesCache.length) return;
+      try {
+        const a = casesCache[pos], b = casesCache[swapWith];
+        await updateRow('cases', a.id, { sort_order: b.sort_order });
+        await updateRow('cases', b.id, { sort_order: a.sort_order });
+        await refreshSection('cases');
+      } catch (e) { toast('Kunne ikke ændre rækkefølge: ' + e.message, 'error'); }
+    }));
   }
 
-  // ---------------- Testimonials (rich CRUD) ----------------
-  function renderTestimonialsSection() {
-    let html = `
-      <div class="banner">Testimonials vises automatisk nederst på Cases-siden, når mindst én er oprettet.</div>
-      <div id="testimonialsList">${renderTestimonialRows(jsonArray('testimonials'))}</div>
+  // ---------------- Foredrag ----------------
+  let talksCache = [];
+
+  async function renderForedragSection() {
+    talksCache = await fetchAll('talks', 'sort_order');
+    return `
+      <p class="section-sub">Foredrag vist på foredrag.html og som "fremhævet" på forsiden. Kun status "Udgivet" er synlig for besøgende.</p>
+      <div id="foredragList">${renderTalkRows()}</div>
+      <button class="btn btn-outline btn-sm" id="addForedragBtn">+ Tilføj foredrag</button>
+    `;
+  }
+
+  function renderTalkRows() {
+    if (!talksCache.length) return '<p class="section-sub">Ingen foredrag oprettet endnu.</p>';
+    return talksCache.map((t, pos) => `
+      <div class="testi-card" data-talk-id="${t.id}">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="btn btn-outline btn-sm" data-talk-move-up="${t.id}" ${pos === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn btn-outline btn-sm" data-talk-move-down="${t.id}" ${pos === talksCache.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="btn btn-outline btn-sm" data-talk-preview="${t.id}">Forhåndsvis</button>
+            <span class="field-note">Opdateret: ${fmtDate(t.updated_at)}</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" data-talk-save="${t.id}">Gem</button>
+            <button class="btn btn-danger btn-sm" data-talk-delete="${t.id}">Slet</button>
+          </div>
+        </div>
+        <details>
+        <summary style="cursor:pointer;font-weight:600;margin-bottom:12px">${escapeHtml(t.title || '(uden titel)')}</summary>
+        <div class="testi-row">
+          <div><label>Titel</label><input type="text" data-tf="title" value="${escapeAttr(t.title)}"></div>
+          <div><label>Kategori</label><select data-tf="category">${TALK_CATEGORIES.map(cc => `<option value="${cc.value}" ${cc.value === t.category ? 'selected' : ''}>${cc.label}</option>`).join('')}</select></div>
+          <div><label>Status</label><select data-tf="status">
+            <option value="draft" ${t.status === 'draft' ? 'selected' : ''}>Kladde</option>
+            <option value="published" ${t.status === 'published' ? 'selected' : ''}>Udgivet</option>
+          </select></div>
+          <div><label>Sortering</label><input type="number" data-tf="sort_order" value="${t.sort_order || 0}"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
+            <input type="checkbox" style="width:auto" data-tf="is_featured" ${t.is_featured ? 'checked' : ''} id="tf-feat-${t.id}">
+            <label for="tf-feat-${t.id}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Fremhævet (forsiden)</label>
+          </div>
+          <div><label>Varighed</label><input type="text" data-tf="duration" value="${escapeAttr(t.duration)}" placeholder="valgfrit"></div>
+          <div><label>Format</label><input type="text" data-tf="format" value="${escapeAttr(t.format)}" placeholder="valgfrit"></div>
+          <div><label>Billede</label><input type="file" accept="image/*" data-tf-image="1">${t.image_path ? '<div class="field-note">Uploadet.</div>' : ''}</div>
+          <div><label>Video-link</label><input type="text" data-tf="video_url" value="${escapeAttr(t.video_url)}" placeholder="valgfrit"></div>
+          <div><label>PDF / program</label><input type="file" accept="application/pdf" data-tf-doc="1">${t.document_path ? '<div class="field-note">Uploadet.</div>' : ''}</div>
+          <div><label>CTA-tekst</label><input type="text" data-tf="cta_text" value="${escapeAttr(t.cta_text || 'Forespørg på foredraget')}"></div>
+          <div><label>CTA-link</label><input type="text" data-tf="cta_url" value="${escapeAttr(t.cta_url || 'kontakt.html')}"></div>
+          <div class="full"><label>Kort beskrivelse (teaser)</label><textarea data-tf="teaser">${escapeHtml(t.teaser)}</textarea></div>
+          <div class="full"><label>Fuld beskrivelse (valgfrit)</label><textarea data-tf="description">${escapeHtml(t.description)}</textarea></div>
+          <div class="full"><label>Målgruppe (valgfrit)</label><textarea data-tf="target_group">${escapeHtml(t.target_group)}</textarea></div>
+        </div>
+        <div class="talk-preview" id="talkPreview-${t.id}" style="display:none;margin-top:14px;padding:14px;background:#f7f4ee;border-radius:8px"></div>
+        </details>
+      </div>
+    `).join('');
+  }
+
+  function wireForedrag() {
+    const addBtn = document.getElementById('addForedragBtn');
+    if (addBtn) addBtn.addEventListener('click', async () => {
+      try {
+        const nextOrder = talksCache.length ? Math.max(...talksCache.map(t => t.sort_order || 0)) + 1 : 1;
+        await insertRow('talks', { slug: slugify('foredrag-' + Date.now()), title: 'Nyt foredrag', category: 'ledelse', status: 'draft', sort_order: nextOrder, is_featured: false, cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html' });
+        toast('Foredrag oprettet som kladde.');
+        await refreshSection('foredrag');
+      } catch (e) { toast('Kunne ikke oprette: ' + e.message, 'error'); }
+    });
+
+    document.querySelectorAll('[data-talk-save]').forEach(btn => btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-talk-save');
+      const card = document.querySelector(`.testi-card[data-talk-id="${id}"]`);
+      const patch = {};
+      card.querySelectorAll('[data-tf]').forEach(inp => {
+        const f = inp.getAttribute('data-tf');
+        if (f === 'is_featured') patch[f] = inp.checked;
+        else if (f === 'sort_order') patch[f] = parseInt(inp.value, 10) || 0;
+        else patch[f] = inp.value;
+      });
+      if (patch.status === 'published') patch.published_at = new Date().toISOString();
+      try {
+        const img = card.querySelector('[data-tf-image]');
+        if (img && img.files && img.files[0]) patch.image_path = await uploadFile('talk-images', img.files[0]);
+        const doc = card.querySelector('[data-tf-doc]');
+        if (doc && doc.files && doc.files[0]) patch.document_path = await uploadFile('talk-images', doc.files[0]);
+        await updateRow('talks', id, patch);
+        toast('Foredrag gemt.');
+        await refreshSection('foredrag');
+      } catch (e) { toast('Kunne ikke gemme: ' + e.message, 'error'); }
+    }));
+
+    document.querySelectorAll('[data-talk-delete]').forEach(btn => btn.addEventListener('click', async () => {
+      if (!confirm('Slet dette foredrag permanent? Kan ikke fortrydes.')) return;
+      try {
+        await deleteRow('talks', btn.getAttribute('data-talk-delete'));
+        toast('Foredrag slettet.');
+        await refreshSection('foredrag');
+      } catch (e) { toast('Kunne ikke slette: ' + e.message, 'error'); }
+    }));
+
+    document.querySelectorAll('[data-talk-move-up], [data-talk-move-down]').forEach(btn => btn.addEventListener('click', async () => {
+      const up = btn.hasAttribute('data-talk-move-up');
+      const id = btn.getAttribute(up ? 'data-talk-move-up' : 'data-talk-move-down');
+      const pos = talksCache.findIndex(t => t.id === id);
+      const swapWith = up ? pos - 1 : pos + 1;
+      if (swapWith < 0 || swapWith >= talksCache.length) return;
+      try {
+        const a = talksCache[pos], b = talksCache[swapWith];
+        await updateRow('talks', a.id, { sort_order: b.sort_order });
+        await updateRow('talks', b.id, { sort_order: a.sort_order });
+        await refreshSection('foredrag');
+      } catch (e) { toast('Kunne ikke ændre rækkefølge: ' + e.message, 'error'); }
+    }));
+
+    document.querySelectorAll('[data-talk-preview]').forEach(btn => btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-talk-preview');
+      const card = document.querySelector(`.testi-card[data-talk-id="${id}"]`);
+      const get = f => { const el = card.querySelector(`[data-tf="${f}"]`); return el ? el.value : ''; };
+      const box = document.getElementById('talkPreview-' + id);
+      box.innerHTML = `<strong>${escapeHtml(get('title'))}</strong><p>${escapeHtml(get('teaser'))}</p>${get('description') ? '<p>' + escapeHtml(get('description')) + '</p>' : ''}`;
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }));
+  }
+
+  // ---------------- Testimonials ----------------
+  let testiCache = [];
+
+  async function renderTestimonialsSection() {
+    testiCache = await fetchAll('testimonials', 'sort_order');
+    return `
+      <p class="section-sub">Kundeudtalelser vist på Cases-siden.</p>
+      <div id="testimonialsListEl">${renderTestiRows()}</div>
       <button class="btn btn-outline btn-sm" id="addTestiBtn">+ Tilføj testimonial</button>
-      ${saveBar('testimonials', 'Gem testimonials')}`;
-    return html;
+    `;
   }
 
-  function renderTestimonialRows(items) {
-    if (items.length === 0) return `<p class="section-sub">Ingen testimonials oprettet endnu.</p>`;
-    return items.map((t, i) => `
-      <div class="testi-card" data-testi-index="${i}">
-        <button class="btn btn-danger btn-sm testi-remove" data-remove-testi="${i}">Fjern</button>
+  function renderTestiRows() {
+    if (!testiCache.length) return '<p class="section-sub">Ingen testimonials oprettet endnu.</p>';
+    return testiCache.map(t => `
+      <div class="testi-card" data-testi-id="${t.id}">
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px">
+          <button class="btn btn-outline btn-sm" data-testi-save="${t.id}">Gem</button>
+          <button class="btn btn-danger btn-sm" data-testi-delete="${t.id}">Slet</button>
+        </div>
         <div class="testi-row">
-          <div>
-            <label>Navn</label>
-            <input type="text" data-testi-field="name" data-testi-index="${i}" value="${escapeAttr(t.name || '')}">
-          </div>
-          <div>
-            <label>Titel</label>
-            <input type="text" data-testi-field="title" data-testi-index="${i}" value="${escapeAttr(t.title || '')}">
-          </div>
-          <div>
-            <label>Firma</label>
-            <input type="text" data-testi-field="company" data-testi-index="${i}" value="${escapeAttr(t.company || '')}">
-          </div>
-          <div>
-            <label>Tilknyttet Compass-retning</label>
-            <select data-testi-field="direction" data-testi-index="${i}">${directionOptions(t.direction)}</select>
-          </div>
-          <div>
-            <label>Foto (person)</label>
-            <input type="file" accept="image/*" data-testi-image="${i}">
-          </div>
-          <div>
-            <label>Logo (firma)</label>
-            <input type="file" accept="image/*" data-testi-logo="${i}">
-          </div>
-          <div class="full">
-            <label>Citat</label>
-            <textarea data-testi-field="quote" data-testi-index="${i}">${escapeHtml(t.quote || '')}</textarea>
-          </div>
+          <div><label>Navn</label><input type="text" data-tef="name" value="${escapeAttr(t.name)}"></div>
+          <div><label>Titel/virksomhed</label><input type="text" data-tef="title_company" value="${escapeAttr(t.title_company)}"></div>
+          <div><label>Retning</label><select data-tef="direction">${CASE_CATEGORIES.map(cc => `<option value="${cc.value}" ${cc.value === t.direction ? 'selected' : ''}>${cc.label}</option>`).join('')}</select></div>
+          <div><label>Status</label><select data-tef="status">
+            <option value="draft" ${t.status === 'draft' ? 'selected' : ''}>Kladde</option>
+            <option value="published" ${t.status === 'published' ? 'selected' : ''}>Udgivet</option>
+          </select></div>
+          <div><label>Foto</label><input type="file" accept="image/*" data-tef-photo="1">${t.photo_path ? '<div class="field-note">Uploadet.</div>' : ''}</div>
+          <div class="full"><label>Citat</label><textarea data-tef="quote">${escapeHtml(t.quote)}</textarea></div>
         </div>
-      </div>`).join('');
+      </div>
+    `).join('');
   }
 
-  function collectTestimonialsFromDOM() {
-    const items = jsonArray('testimonials');
-    document.querySelectorAll('#testimonialsList .testi-card').forEach(card => {
-      const idx = parseInt(card.getAttribute('data-testi-index'), 10);
-      const item = items[idx] || {};
-      card.querySelectorAll('[data-testi-field]').forEach(inp => {
-        item[inp.getAttribute('data-testi-field')] = inp.value.trim();
-      });
-      items[idx] = item;
+  function wireTestimonials() {
+    const addBtn = document.getElementById('addTestiBtn');
+    if (addBtn) addBtn.addEventListener('click', async () => {
+      try {
+        const nextOrder = testiCache.length ? Math.max(...testiCache.map(t => t.sort_order || 0)) + 1 : 1;
+        await insertRow('testimonials', { name: 'Nyt navn', quote: '', direction: 'mennesker', status: 'draft', sort_order: nextOrder });
+        toast('Testimonial oprettet som kladde.');
+        await refreshSection('testimonials');
+      } catch (e) { toast('Kunne ikke oprette: ' + e.message, 'error'); }
     });
-    return items;
+
+    document.querySelectorAll('[data-testi-save]').forEach(btn => btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-testi-save');
+      const card = document.querySelector(`.testi-card[data-testi-id="${id}"]`);
+      const patch = {};
+      card.querySelectorAll('[data-tef]').forEach(inp => { patch[inp.getAttribute('data-tef')] = inp.value; });
+      if (patch.status === 'published') patch.published_at = new Date().toISOString();
+      try {
+        const photo = card.querySelector('[data-tef-photo]');
+        if (photo && photo.files && photo.files[0]) patch.photo_path = await uploadFile('editorial-images', photo.files[0]);
+        await updateRow('testimonials', id, patch);
+        toast('Testimonial gemt.');
+        await refreshSection('testimonials');
+      } catch (e) { toast('Kunne ikke gemme: ' + e.message, 'error'); }
+    }));
+
+    document.querySelectorAll('[data-testi-delete]').forEach(btn => btn.addEventListener('click', async () => {
+      if (!confirm('Slet denne testimonial permanent?')) return;
+      try {
+        await deleteRow('testimonials', btn.getAttribute('data-testi-delete'));
+        toast('Testimonial slettet.');
+        await refreshSection('testimonials');
+      } catch (e) { toast('Kunne ikke slette: ' + e.message, 'error'); }
+    }));
   }
 
-  // ---------------- Om Morten: competencies / certifications ----------------
-  function renderCredListEditor(key, title) {
-    const items = jsonArray(key);
-    let html = `<div class="field-card"><label>${title}</label>`;
-    html += `<div id="credList-${key}">`;
-    items.forEach((v, i) => {
-      html += `<div style="display:flex;gap:8px;margin-bottom:8px">
-        <input type="text" data-cred-key="${key}" data-cred-index="${i}" value="${escapeAttr(v)}" style="flex:1">
-        <button class="btn btn-danger btn-sm" data-remove-cred="${key}:${i}">Fjern</button>
-      </div>`;
-    });
-    html += `</div>
-      <button class="btn btn-outline btn-sm" data-add-cred="${key}">+ Tilføj</button>
-    </div>`;
-    return html;
-  }
+  // ---------------- Sidetekster (page_content) ----------------
+  let pageContentCache = {};
 
-  function collectCredListFromDOM(key) {
-    const items = [];
-    document.querySelectorAll(`[data-cred-key="${key}"]`).forEach(inp => {
-      if (inp.value.trim()) items.push(inp.value.trim());
-    });
-    return items;
-  }
-
-  // ---------------- Om Morten section (simple fields + cred lists) ----------------
-  function renderOmSection() {
-    let html = renderSimpleFields(fieldsBySection.om || []);
-    html += renderCredListEditor('om-competencies', 'Kompetencer');
-    html += renderCredListEditor('om-certifications', 'Certificeringer');
-    html += saveBar('om', 'Gem ændringer');
-    return html;
-  }
-
-  // ---------------- Solution cards ("løsningskort") — per direction, no-code CRUD ----------------
-  const ICON_OPTIONS = ['i-people', 'i-leadership', 'i-culture', 'i-growth', 'i-phone', 'i-mail', 'i-message', 'i-arrow'];
-
-  function iconOptions(selected) {
-    return ICON_OPTIONS.map(i => `<option value="${i}" ${i === selected ? 'selected' : ''}>${i}</option>`).join('');
-  }
-
-  function solutionsForDirection(direction) {
-    const all = jsonArray('solutions');
-    return all.map((s, i) => ({ s, i })).filter(x => x.s.direction === direction);
-  }
-
-  function renderSolutionsManager(direction) {
-    const indexed = solutionsForDirection(direction);
-    let html = `<h3 style="margin:36px 0 6px">Ekstra løsningskort (${DIRECTIONS.find(d => d.value === direction).label})</h3>
-      <p class="section-sub">Vises automatisk under de faste løsningskort ovenfor på ${direction}.html. Oprettes uden kode.</p>
-      <div id="solutionsList-${direction}">${renderSolutionRows(direction, indexed)}</div>
-      <button class="btn btn-outline btn-sm" data-add-solution="${direction}">+ Tilføj løsningskort</button>
-      ${saveBar('solutions-' + direction, 'Gem løsningskort')}`;
-    return html;
-  }
-
-  function renderSolutionRows(direction, indexed) {
-    if (indexed.length === 0) return `<p class="section-sub">Ingen ekstra løsningskort oprettet endnu for denne retning.</p>`;
-    return indexed.map(({ s, i }) => {
-      return `
-      <div class="testi-card" data-solution-index="${i}">
-        <button class="btn btn-danger btn-sm testi-remove" data-remove-solution="${i}">Fjern</button>
-        <div class="testi-row">
-          <div>
-            <label>Titel</label>
-            <input type="text" data-sol-field="title" data-sol-index="${i}" value="${escapeAttr(s.title || '')}">
-          </div>
-          <div>
-            <label>Kort teaser</label>
-            <input type="text" data-sol-field="teaser" data-sol-index="${i}" value="${escapeAttr(s.teaser || '')}">
-          </div>
-          <div>
-            <label>Ikon</label>
-            <select data-sol-field="icon" data-sol-index="${i}">${iconOptions(s.icon)}</select>
-          </div>
-          <div>
-            <label>Billede</label>
-            <input type="file" accept="image/*" data-sol-image="${i}">
-          </div>
-          <div>
-            <label>Relateret case (link/anker)</label>
-            <input type="text" data-sol-field="relatedCase" data-sol-index="${i}" value="${escapeAttr(s.relatedCase || '')}" placeholder="fx #case-${direction} eller cases.html">
-          </div>
-          <div>
-            <label>Vis som</label>
-            <select data-sol-field="displayMode" data-sol-index="${i}">
-              <option value="accordion" ${s.displayMode !== 'link' ? 'selected' : ''}>Accordion (udfold på siden)</option>
-              <option value="link" ${s.displayMode === 'link' ? 'selected' : ''}>Link (til CTA-link)</option>
-            </select>
-          </div>
-          <div>
-            <label>CTA-tekst</label>
-            <input type="text" data-sol-field="ctaText" data-sol-index="${i}" value="${escapeAttr(s.ctaText || 'Book en samtale')}">
-          </div>
-          <div>
-            <label>CTA-link</label>
-            <input type="text" data-sol-field="ctaLink" data-sol-index="${i}" value="${escapeAttr(s.ctaLink || 'kontakt.html')}">
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:22px">
-            <input type="checkbox" style="width:auto" data-sol-field="published" data-sol-index="${i}" ${s.published !== false ? 'checked' : ''} id="solPub-${i}">
-            <label for="solPub-${i}" style="margin:0;text-transform:none;font-weight:400;font-size:.82rem">Publiceret (vis på hjemmesiden)</label>
-          </div>
-          <div class="full">
-            <label>Lang beskrivelse</label>
-            <textarea data-sol-field="long" data-sol-index="${i}">${escapeHtml(s.long || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Typiske udfordringer</label>
-            <textarea data-sol-field="challenges" data-sol-index="${i}">${escapeHtml(s.challenges || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>MFG's tilgang</label>
-            <textarea data-sol-field="approach" data-sol-index="${i}">${escapeHtml(s.approach || '')}</textarea>
-          </div>
-          <div class="full">
-            <label>Forventede resultater</label>
-            <textarea data-sol-field="results" data-sol-index="${i}">${escapeHtml(s.results || '')}</textarea>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  function collectSolutionsFromDOM(direction) {
-    const all = jsonArray('solutions');
-    document.querySelectorAll(`#solutionsList-${direction} .testi-card`).forEach(card => {
-      const idx = parseInt(card.getAttribute('data-solution-index'), 10);
-      const item = all[idx] || { direction };
-      card.querySelectorAll('[data-sol-field]').forEach(inp => {
-        const field = inp.getAttribute('data-sol-field');
-        item[field] = inp.type === 'checkbox' ? inp.checked : inp.value.trim();
-      });
-      all[idx] = item;
-    });
-    return all;
-  }
-
-  function renderKompassetSection() {
-    const fields = fieldsBySection.kompasset || [];
-    let html = `
-      <div class="banner">
-        <strong>The MFG Compass™-billedet er Mortens officielle grafik</strong> (<code>assets/images/mfg-compass-original.jpg</code>),
-        brugt pixelkorrekt — selve billedet redigeres ikke via tekstfelter. Teksten, der folder ud, når en besøgende
-        klikker på en retning i kompasset, kan du derimod redigere lige her.
-      </div>`;
-    html += renderSimpleFields(fields);
-    html += saveBar('kompasset');
-    html += `
-      <div class="field-card">
-        <label>Sådan opdaterer du selve grafikken</label>
-        <p class="field-note">Udskift filen <code>assets/images/mfg-compass-original.jpg</code> i projektet med en ny
-        version i samme billedformat og -forhold — grafikken indeholder ikke længere Mennesker/Ledelse/Kultur/
-        Forretning-teksterne (kun titlen, selve kompasset og bundcitatet). De fire retningsnavne og deres
-        undertekster er nu rigtige HTML-elementer (<code>.compass-direction</code> i <code>index.html</code> og
-        <code>assets/css/style.css</code>), ikke en del af billedet — de kan derfor ikke redigeres via CMS'et endnu,
-        men kræver en kodeændring.</p>
-      </div>
-      <div class="field-card">
-        <label>"Læs mere"-mål</label>
-        <p>Mennesker → <code>mennesker.html</code> · Ledelse → <code>ledelse.html</code> · Kultur → <code>kultur.html</code> · Forretning → <code>forretning.html</code></p>
-      </div>
-    `;
-    return html;
-  }
-
-  // ---------------- Settings ----------------
-  function renderAnalyticsSection() {
-    const projectId = (window.MFG_CLARITY_PROJECT_ID || '').trim();
-    const isInstalled = projectId.length > 0;
-    return `
-      <p class="section-sub">MFG Advisory bruger Microsoft Clarity — gratis, ingen egen statistikdatabase. Der bruges ikke Plausible eller Google Analytics.</p>
-      <div class="field-card">
-        <label>Microsoft Clarity</label>
-        <p style="margin-bottom:10px">
-          <strong>Status:</strong>
-          ${isInstalled
-            ? '<span style="color:#2e7d32">● Installeret</span>'
-            : '<span style="color:#b23b3b">● Ikke konfigureret</span>'}
-        </p>
-        <p style="margin-bottom:10px"><strong>Projekt-ID:</strong> ${isInstalled ? `<code>${escapeAttr(projectId)}</code>` : '<em>intet indsat endnu</em>'}</p>
-        <p class="field-note" style="margin-bottom:14px">
-          Projekt-ID'et indsættes ét sted i koden: <code>assets/js/clarity-config.js</code>.
-          Det kan ikke redigeres her i adminpanelet — se
-          <code>docs/ANALYTICS.md</code> for en trin-for-trin-guide.
-        </p>
-        <a class="btn btn-outline btn-sm" href="https://clarity.microsoft.com/" target="_blank" rel="noopener">Åbn Clarity Dashboard →</a>
-      </div>
-    `;
-  }
-
-  function renderCookiebannerSection() {
-    return `
-      <p class="section-sub">Cookiebanneret vises automatisk ved første besøg med to valg: "Kun nødvendige" og "Accepter alle". Valget gemmes i besøgendes browser, så banneret ikke gentages.</p>
-      <div class="field-card">
-        <label>Status</label>
-        <p>Aktivt på alle offentlige sider (assets/js/cookie-consent.js). Analytics indlæses udelukkende ved "Accepter alle" — se Analytics-fanen for udbyder/ID.</p>
-      </div>
-    `;
-  }
-
-  function renderSettingsSection() {
-    const backend = window.MFGStore.backend();
-    const formEndpoint = savedContent['config-form-endpoint'] || '';
-    const faviconImg = savedContent['favicon-img'] || 'assets/images/favicon-32.png';
-
-    return `
-      <div class="banner">
-        Aktiv lagring: <strong>${backend === 'supabase' ? 'Supabase' : 'LocalStorage (kun denne enhed)'}</strong>.
-        Udfyld <code>assets/js/supabase-config.js</code> for at slå Supabase til.
-      </div>
-
-      <div class="field-card">
-        <label>Kontaktformular — mailservice-endpoint</label>
-        <p class="field-note" style="margin-bottom:10px">
-          Indsæt dit Formspree- eller Resend-endpoint (fx <code>https://formspree.io/f/xxxxabcd</code>).
-          Er feltet tomt, bruger formularen fortsat den nuværende mailto-løsning. Ingen nøgler er hårdkodet.
-        </p>
-        <input type="text" id="formEndpointInput" placeholder="https://formspree.io/f/xxxxabcd" value="${escapeAttr(formEndpoint)}">
-        <button class="btn btn-outline btn-sm" id="saveFormEndpointBtn" style="margin-top:10px">Gem endpoint</button>
-      </div>
-
-      <div class="field-card">
-        <label>Favicon</label>
-        <div class="img-field">
-          <img src="${faviconImg}" alt="">
-          <div class="img-controls">
-            <input type="file" accept="image/*" id="faviconInput">
-            <div class="field-note">Erstatter faviconen på alle sider med det samme efter gem (kræver at siden køres over http/https).</div>
-          </div>
-        </div>
-        <button class="btn btn-outline btn-sm" id="saveFaviconBtn" style="margin-top:10px">Gem favicon</button>
-      </div>
-
-      <div class="field-card">
-        <label>Skift admin-kode</label>
-        <input type="password" id="newPin1" placeholder="Ny kode" style="margin-bottom:8px">
-        <input type="password" id="newPin2" placeholder="Gentag ny kode">
-        <div class="field-note" id="pinChangeMsg"></div>
-        <button class="btn btn-outline btn-sm" id="changePinBtn" style="margin-top:10px">Gem ny kode</button>
-      </div>
-
-      <div class="field-card">
-        <label>Backup</label>
-        <p class="field-note" style="margin-bottom:10px">Eksportér alt gemt indhold som en JSON-fil, eller genindlæs en tidligere eksport.</p>
-        <button class="btn btn-outline btn-sm" id="exportBtn">Eksportér JSON</button>
-        <input type="file" id="importFile" accept="application/json" style="display:none">
-        <button class="btn btn-outline btn-sm" id="importBtn">Importér JSON</button>
-      </div>
-
-      <div class="field-card">
-        <label>Nulstil</label>
-        <p class="field-note" style="margin-bottom:10px">Fjerner alle gemte ændringer og viser hjemmesidens oprindelige standardtekster igen.</p>
-        <button class="btn btn-danger btn-sm" id="resetBtn">Nulstil alt indhold</button>
-      </div>
-    `;
-  }
-
-  // ---------------- Section dispatch ----------------
-  function renderSection(section, label) {
-    if (section === 'dashboard') return `<h2>${label}</h2>` + renderDashboard();
-    if (section === 'cases') return `<h2>${label}</h2>` + renderCasesSection();
-    if (section === 'foredrag') return `<h2>${label}</h2>` + renderForedragSection();
-    if (section === 'testimonials') return `<h2>${label}</h2>` + renderTestimonialsSection();
-    if (section === 'om') return `<h2>${label}</h2>` + renderOmSection();
-    if (section === 'analytics') return `<h2>${label}</h2>` + renderAnalyticsSection();
-    if (section === 'cookiebanner') return `<h2>${label}</h2>` + renderCookiebannerSection();
-    if (section === 'settings') return `<h2>${label}</h2>` + renderSettingsSection();
-    if (section === 'kompasset') return `<h2>${label}</h2>` + renderKompassetSection();
-
-    let html = `<h2>${label}</h2>`;
-    if (section === 'home') html += `<p class="section-sub">Hero-tekst og forsidens CTA.</p>`;
-    if (section === 'seo') html += `<p class="section-sub">Titel og meta-beskrivelse for hver side (vises i Google og faneblade).</p>`;
-    if (section === 'kontakt') html += `<p class="section-sub">Kontaktside-tekster, samt telefon/e-mail/CVR/LinkedIn/adresse — sidstnævnte bruges automatisk alle steder på hjemmesiden.</p>`;
-
-    const fields = fieldsBySection[section] || [];
-    if (fields.length === 0 && DIRECTIONS.some(d => d.value === section) === false) html += `<p class="section-sub">Ingen felter fundet.</p>`;
-    html += renderSimpleFields(fields);
-    html += saveBar(section);
-
-    if (DIRECTIONS.some(d => d.value === section)) {
-      html += renderSolutionsManager(section);
+  async function renderPageTextSection(pageKey) {
+    const { data, error } = await sb().from('page_content').select('*').eq('page', pageKey).order('section');
+    if (error) throw error;
+    pageContentCache[pageKey] = data || [];
+    if (!data || !data.length) {
+      return `<p class="section-sub">Ingen tekstfelter fundet for "${escapeHtml(pageKey)}" endnu. Kør seed-filen, eller opret felter direkte i Supabase.</p>`;
     }
+    const bySection = {};
+    data.forEach(row => { (bySection[row.section] = bySection[row.section] || []).push(row); });
+
+    let html = `<p class="section-sub">Tekster på denne side. Ændringer er synlige for besøgende, så snart du gemmer.</p>`;
+    Object.keys(bySection).forEach(section => {
+      html += `<h3 style="margin:24px 0 8px;font-size:1rem;color:var(--a-text-mid)">${humanLabel(section)}</h3>`;
+      bySection[section].forEach(row => {
+        const isLong = (row.value || '').length > 90;
+        html += `
+          <div class="field-card">
+            <label>${humanLabel(row.field)}</label>
+            ${isLong
+              ? `<textarea data-pc-id="${row.id}">${escapeHtml(row.value)}</textarea>`
+              : `<input type="text" data-pc-id="${row.id}" value="${escapeAttr(row.value)}">`}
+          </div>`;
+      });
+    });
+    html += `<button class="btn btn-primary" id="savePageText-${pageKey}" data-save-page-text="${pageKey}">Gem tekster</button>
+             <span class="field-note" id="pageTextStatus-${pageKey}" style="margin-left:12px"></span>`;
     return html;
   }
 
-  // ---------------- Save logic ----------------
-  async function saveSection(section, btn) {
-    const statusEl = document.getElementById('saveStatus-' + section);
-    btn.disabled = true;
-    const originalLabel = btn.textContent;
-    btn.textContent = 'Gemmer …';
+  function wirePageText(pageKey) {
+    const btn = document.querySelector(`[data-save-page-text="${pageKey}"]`);
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const statusEl = document.getElementById('pageTextStatus-' + pageKey);
+      statusEl.textContent = 'Gemmer …';
+      const rows = pageContentCache[pageKey] || [];
+      try {
+        for (const row of rows) {
+          const inp = document.querySelector(`[data-pc-id="${row.id}"]`);
+          if (!inp) continue;
+          if (inp.value !== row.value) {
+            await updateRow('page_content', row.id, { value: inp.value });
+          }
+        }
+        statusEl.textContent = 'Gemt ✓ (' + new Date().toLocaleTimeString('da-DK') + ')';
+        toast('Tekster gemt.');
+      } catch (e) {
+        statusEl.textContent = '';
+        toast('Kunne ikke gemme: ' + e.message, 'error');
+      }
+    });
+  }
 
+  // ---------------- SEO ----------------
+  async function renderSeoSection() {
+    const { data, error } = await sb().from('seo_metadata').select('*').order('page');
+    if (error) throw error;
+    if (!data || !data.length) return '<p class="section-sub">Ingen SEO-data fundet. Kør seed-filen.</p>';
+    return `
+      <p class="section-sub">Title og meta-beskrivelse pr. side. Adskilt fra almindelige sidetekster.</p>
+      ${data.map(row => `
+        <div class="field-card" data-seo-id="${row.id}">
+          <label>${humanLabel(row.page)} — Title</label>
+          <input type="text" data-seof="title" value="${escapeAttr(row.title)}">
+          <label style="margin-top:12px">Meta-beskrivelse</label>
+          <textarea data-seof="meta_description">${escapeHtml(row.meta_description)}</textarea>
+          <button class="btn btn-outline btn-sm" style="margin-top:10px" data-seo-save="${row.id}">Gem</button>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  function wireSeo() {
+    document.querySelectorAll('[data-seo-save]').forEach(btn => btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-seo-save');
+      const card = document.querySelector(`[data-seo-id="${id}"]`);
+      const patch = {};
+      card.querySelectorAll('[data-seof]').forEach(inp => { patch[inp.getAttribute('data-seof')] = inp.value; });
+      try {
+        await updateRow('seo_metadata', id, patch);
+        toast('SEO gemt.');
+      } catch (e) { toast('Kunne ikke gemme: ' + e.message, 'error'); }
+    }));
+  }
+
+  // ---------------- Indstillinger ----------------
+  async function renderSettingsSection() {
+    return await renderPageTextSectionForKey('settings');
+  }
+
+  async function renderPageTextSectionForKey(pageKey) {
+    return await renderPageTextSection(pageKey);
+  }
+
+  // ---------------- Navigation / boot ----------------
+  const SECTION_RENDERERS = {
+    dashboard: renderDashboard,
+    cases: renderCasesSection,
+    foredrag: renderForedragSection,
+    testimonials: renderTestimonialsSection,
+    seo: renderSeoSection,
+    settings: renderSettingsSection
+  };
+  const SECTION_WIRERS = {
+    cases: wireCases,
+    foredrag: wireForedrag,
+    testimonials: wireTestimonials,
+    seo: wireSeo,
+    settings: () => wirePageText('settings')
+  };
+
+  function navItems() {
+    return [{ key: 'dashboard', label: 'Dashboard' }]
+      .concat(PAGES.map(p => ({ key: p.key, label: p.label, isPage: true })))
+      .concat([
+        { key: 'foredrag', label: 'Foredrag (indhold)' },
+        { key: 'cases', label: 'Cases (indhold)' },
+        { key: 'testimonials', label: 'Testimonials' },
+        { key: 'seo', label: 'SEO' },
+        { key: 'settings', label: 'Indstillinger' }
+      ]);
+  }
+
+  async function renderSection(key, isPage) {
     try {
-      if (section.startsWith('solutions-')) {
-        const direction = section.replace('solutions-', '');
-        const items = collectSolutionsFromDOM(direction);
-        for (const inp of Array.from(document.querySelectorAll(`#solutionsList-${direction} [data-sol-image]`))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-sol-image'), 10);
-            items[idx].image = await window.MFGStore.uploadImage(inp.files[0]);
-          }
-        }
-        await window.MFGStore.setMany({ solutions: JSON.stringify(items) });
-        savedContent['solutions'] = JSON.stringify(items);
-        document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
-        wireDynamicSections();
-      } else if (section === 'testimonials') {
-        const items = collectTestimonialsFromDOM();
-        for (const inp of Array.from(document.querySelectorAll('[data-testi-image]'))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-testi-image'), 10);
-            items[idx].image = await window.MFGStore.uploadImage(inp.files[0]);
-          }
-        }
-        for (const inp of Array.from(document.querySelectorAll('[data-testi-logo]'))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-testi-logo'), 10);
-            items[idx].logo = await window.MFGStore.uploadImage(inp.files[0]);
-          }
-        }
-        await window.MFGStore.setMany({ testimonials: JSON.stringify(items) });
-        savedContent['testimonials'] = JSON.stringify(items);
-        document.getElementById('section-testimonials').innerHTML = renderSection('testimonials', 'Testimonials');
-        wireDynamicSections();
-      } else if (section === 'foredrag-list') {
-        const items = collectForedragFromDOM();
-        for (const inp of Array.from(document.querySelectorAll('[data-talk-image]'))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-talk-image'), 10);
-            items[idx].image_url = await window.MFGStore.uploadImage(inp.files[0]);
-          }
-        }
-        for (const inp of Array.from(document.querySelectorAll('[data-talk-pdf]'))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-talk-pdf'), 10);
-            items[idx].document_url = await window.MFGStore.uploadImage(inp.files[0]); // works for any file type
-          }
-        }
-        await window.MFGStore.setMany({ talks: JSON.stringify(items) });
-        savedContent['talks'] = JSON.stringify(items);
-        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
-        wireDynamicSections();
-      } else if (section === 'cases-list') {
-        const items = collectCasesFromDOM();
-        for (const inp of Array.from(document.querySelectorAll('[data-case-image]'))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-case-image'), 10);
-            items[idx].image = await window.MFGStore.uploadImage(inp.files[0]);
-          }
-        }
-        for (const inp of Array.from(document.querySelectorAll('[data-case-pdf]'))) {
-          if (inp.files && inp.files[0]) {
-            const idx = parseInt(inp.getAttribute('data-case-pdf'), 10);
-            items[idx].pdf = await window.MFGStore.uploadImage(inp.files[0]); // uploadImage works for any file type
-          }
-        }
-        for (const inp of Array.from(document.querySelectorAll('[data-case-gallery]'))) {
-          if (inp.files && inp.files.length > 0) {
-            const idx = parseInt(inp.getAttribute('data-case-gallery'), 10);
-            const urls = [];
-            for (const file of Array.from(inp.files)) {
-              urls.push(await window.MFGStore.uploadImage(file));
-            }
-            items[idx].gallery = urls;
-          }
-        }
-        await window.MFGStore.setMany({ cases: JSON.stringify(items) });
-        savedContent['cases'] = JSON.stringify(items);
-        document.getElementById('section-cases').innerHTML = renderSection('cases', 'Cases');
-        wireDynamicSections();
-      } else if (section === 'om') {
-        const updates = {};
-        document.querySelectorAll('#section-om [data-field-key]').forEach(inp => { updates[inp.getAttribute('data-field-key')] = inp.value; });
-        const imgInputs = document.querySelectorAll('#section-om [data-image-key]');
-        for (const inp of imgInputs) {
-          if (inp.files && inp.files[0]) updates[inp.getAttribute('data-image-key')] = await window.MFGStore.uploadImage(inp.files[0]);
-        }
-        updates['om-competencies'] = JSON.stringify(collectCredListFromDOM('om-competencies'));
-        updates['om-certifications'] = JSON.stringify(collectCredListFromDOM('om-certifications'));
-        await window.MFGStore.setMany(updates);
-        Object.assign(savedContent, updates);
-      } else {
-        const sectionKey = section === 'cases-simple' ? 'cases' : (section === 'foredrag-simple' ? 'foredrag' : section);
-        const container = document.getElementById('section-' + sectionKey) || document.querySelector(`[data-save-section="${section}"]`).closest('.admin-section');
-        const updates = {};
-        container.querySelectorAll('[data-field-key]').forEach(inp => { updates[inp.getAttribute('data-field-key')] = inp.value; });
-        const imageInputs = container.querySelectorAll('[data-image-key]');
-        for (const inp of imageInputs) {
-          if (inp.files && inp.files[0]) updates[inp.getAttribute('data-image-key')] = await window.MFGStore.uploadImage(inp.files[0]);
-        }
-        await window.MFGStore.setMany(updates);
-        Object.assign(savedContent, updates);
-      }
-
-      // Re-query the status element: for cases/testimonials/om we just replaced
-      // the section's innerHTML above, which detaches the original statusEl.
-      const freshStatusEl = document.getElementById('saveStatus-' + section) || statusEl;
-      if (freshStatusEl) {
-        freshStatusEl.textContent = 'Gemt ✓';
-        freshStatusEl.style.color = '';
-        setTimeout(() => { freshStatusEl.textContent = ''; }, 3000);
-      }
+      if (isPage) return await renderPageTextSection(key);
+      if (SECTION_RENDERERS[key]) return await SECTION_RENDERERS[key]();
+      return '<p class="section-sub">Ukendt sektion.</p>';
     } catch (e) {
-      console.error(e);
-      const freshStatusEl = document.getElementById('saveStatus-' + section) || statusEl;
-      if (freshStatusEl) { freshStatusEl.textContent = 'Fejl ved gem — se konsollen.'; freshStatusEl.style.color = '#b3402f'; }
-    } finally {
-      const freshBtn = document.querySelector(`[data-save-section="${section}"]`);
-      if (freshBtn) { freshBtn.disabled = false; freshBtn.textContent = originalLabel; }
+      return `<p class="section-sub" style="color:#b23b3b">Kunne ikke hente data: ${escapeHtml(e.message)}</p>`;
     }
   }
 
-  // ---------------- Dynamic list wiring (cases / testimonials / cred lists / solutions) ----------------
-  function wireDynamicSections() {
-    document.querySelectorAll('[data-add-solution]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const direction = btn.getAttribute('data-add-solution');
-        const items = jsonArray('solutions');
-        items.push({ direction, title: '', teaser: '', long: '', challenges: '', approach: '', results: '', image: '', icon: 'i-people', relatedCase: `#case-${direction}`, ctaText: 'Book en samtale', ctaLink: 'kontakt.html', published: true, displayMode: 'accordion' });
-        savedContent['solutions'] = JSON.stringify(items);
-        document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
-        wireDynamicSections();
-      });
-    });
-    document.querySelectorAll('[data-remove-solution]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.getAttribute('data-remove-solution'), 10);
-        const items = jsonArray('solutions');
-        const direction = items[idx] ? items[idx].direction : null;
-        items.splice(idx, 1);
-        savedContent['solutions'] = JSON.stringify(items);
-        if (direction) {
-          document.getElementById('section-' + direction).innerHTML = renderSection(direction, NAV_ORDER.find(n => n.section === direction).label);
-        }
-        wireDynamicSections();
-      });
-    });
-
-    const addForedragBtn = document.getElementById('addForedragBtn');
-    if (addForedragBtn) {
-      addForedragBtn.addEventListener('click', () => {
-        const items = jsonArray('talks');
-        const nextOrder = items.length ? Math.max(...items.map(t => t.sort_order || 0)) + 1 : 1;
-        items.push({ id: 'talk-' + Date.now(), slug: '', title: '', subtitle: '', category: 'ledelse', excerpt: '', body: '', target_audience: '', participant_outcomes: '', topics: '', duration: '', format: '', image_url: '', video_url: '', document_url: '', cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: nextOrder, is_featured: false, status: 'draft' });
-        savedContent['talks'] = JSON.stringify(items);
-        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
-        wireDynamicSections();
-      });
-    }
-    document.querySelectorAll('[data-remove-talk]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (!confirm('Er du sikker på, at du vil slette dette foredrag? Det kan ikke fortrydes, når du gemmer.')) return;
-        const items = jsonArray('talks');
-        items.splice(parseInt(btn.getAttribute('data-remove-talk'), 10), 1);
-        savedContent['talks'] = JSON.stringify(items);
-        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
-        wireDynamicSections();
-      });
-    });
-    document.querySelectorAll('[data-move-talk-up], [data-move-talk-down]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const isUp = btn.hasAttribute('data-move-talk-up');
-        const idx = parseInt(btn.getAttribute(isUp ? 'data-move-talk-up' : 'data-move-talk-down'), 10);
-        const items = jsonArray('talks');
-        const sorted = items.map((t, i) => ({ t, i })).sort((a, b) => (a.t.sort_order || 0) - (b.t.sort_order || 0));
-        const pos = sorted.findIndex(x => x.i === idx);
-        const swapWith = isUp ? pos - 1 : pos + 1;
-        if (swapWith < 0 || swapWith >= sorted.length) return;
-        const a = sorted[pos].t.sort_order || 0;
-        const b = sorted[swapWith].t.sort_order || 0;
-        sorted[pos].t.sort_order = b;
-        sorted[swapWith].t.sort_order = a;
-        savedContent['talks'] = JSON.stringify(items);
-        document.getElementById('section-foredrag').innerHTML = renderSection('foredrag', 'Foredrag');
-        wireDynamicSections();
-      });
-    });
-    document.querySelectorAll('[data-preview-talk]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.getAttribute('data-preview-talk'), 10);
-        const card = document.querySelector(`[data-talk-index="${idx}"]`);
-        const get = (f) => { const el = card.querySelector(`[data-talk-field="${f}"]`); return el ? el.value : ''; };
-        const preview = document.getElementById('talkPreview-' + idx);
-        const rows = [
-          ['Målgruppe', get('target_audience')],
-          ['Deltagernes udbytte', get('participant_outcomes')],
-          ['Centrale emner', get('topics')],
-          ['Varighed', get('duration')],
-          ['Format', get('format')]
-        ].filter(([, v]) => v && v.trim());
-        preview.innerHTML =
-          '<span style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--copper);font-weight:600">Forhåndsvisning</span>' +
-          '<h4 style="font-family:var(--font-display);margin:8px 0 4px">' + escapeHtml(get('title') || '(ingen titel endnu)') + '</h4>' +
-          (get('subtitle') ? '<p style="color:#8a7c5f;margin-bottom:8px">' + escapeHtml(get('subtitle')) + '</p>' : '') +
-          '<p style="margin-bottom:8px">' + escapeHtml(get('excerpt')) + '</p>' +
-          (get('body') ? '<p style="margin-bottom:8px">' + escapeHtml(get('body')) + '</p>' : '') +
-          rows.map(([l, v]) => '<p><strong>' + l + ':</strong> ' + escapeHtml(v) + '</p>').join('');
-        preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
-      });
-    });
-
-    const addCaseBtn = document.getElementById('addCaseBtn');
-    if (addCaseBtn) {
-      addCaseBtn.addEventListener('click', () => {
-        const items = jsonArray('cases');
-        items.push({ title: '', industry: '', customer: '', hideCustomer: false, challenge: '', solution: '', result: '', direction: 'mennesker', direction2: '', image: '', pdf: '', gallery: [], ctaText: 'Book en samtale', ctaLink: 'kontakt.html' });
-        savedContent['cases'] = JSON.stringify(items);
-        document.getElementById('section-cases').innerHTML = renderSection('cases', 'Cases');
-        wireDynamicSections();
-      });
-    }
-    document.querySelectorAll('[data-remove-case]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const items = jsonArray('cases');
-        items.splice(parseInt(btn.getAttribute('data-remove-case'), 10), 1);
-        savedContent['cases'] = JSON.stringify(items);
-        document.getElementById('section-cases').innerHTML = renderSection('cases', 'Cases');
-        wireDynamicSections();
-      });
-    });
-
-    const addTestiBtn = document.getElementById('addTestiBtn');
-    if (addTestiBtn) {
-      addTestiBtn.addEventListener('click', () => {
-        const items = jsonArray('testimonials');
-        items.push({ name: '', title: '', company: '', quote: '', direction: 'mennesker', image: '', logo: '' });
-        savedContent['testimonials'] = JSON.stringify(items);
-        document.getElementById('section-testimonials').innerHTML = renderSection('testimonials', 'Testimonials');
-        wireDynamicSections();
-      });
-    }
-    document.querySelectorAll('[data-remove-testi]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const items = jsonArray('testimonials');
-        items.splice(parseInt(btn.getAttribute('data-remove-testi'), 10), 1);
-        savedContent['testimonials'] = JSON.stringify(items);
-        document.getElementById('section-testimonials').innerHTML = renderSection('testimonials', 'Testimonials');
-        wireDynamicSections();
-      });
-    });
-
-    document.querySelectorAll('[data-add-cred]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const key = btn.getAttribute('data-add-cred');
-        const items = collectCredListFromDOM(key);
-        items.push('');
-        savedContent[key] = JSON.stringify(items);
-        document.getElementById('section-om').innerHTML = renderSection('om', 'Om Morten');
-        wireDynamicSections();
-      });
-    });
-    document.querySelectorAll('[data-remove-cred]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const [key, idxStr] = btn.getAttribute('data-remove-cred').split(':');
-        const items = collectCredListFromDOM(key);
-        items.splice(parseInt(idxStr, 10), 1);
-        savedContent[key] = JSON.stringify(items);
-        document.getElementById('section-om').innerHTML = renderSection('om', 'Om Morten');
-        wireDynamicSections();
-      });
-    });
-
-    wireSaveButtons();
-    wireImagePreviews();
+  async function refreshSection(key, isPage) {
+    const container = document.getElementById('section-' + key);
+    if (!container) return;
+    container.innerHTML = `<h2>${container.querySelector('h2') ? container.querySelector('h2').textContent : ''}</h2>` + await renderSection(key, isPage);
+    if (isPage) wirePageText(key);
+    else if (SECTION_WIRERS[key]) SECTION_WIRERS[key]();
   }
 
-  function wireSaveButtons() {
-    document.querySelectorAll('[data-save-section]').forEach(btn => {
-      const clone = btn.cloneNode(true);
-      btn.replaceWith(clone);
-    });
-    document.querySelectorAll('[data-save-section]').forEach(btn => {
-      btn.addEventListener('click', () => saveSection(btn.getAttribute('data-save-section'), btn));
-    });
-  }
-
-  function wireImagePreviews() {
-    document.querySelectorAll('[data-image-key]').forEach(inp => {
-      inp.addEventListener('change', () => {
-        if (inp.files && inp.files[0]) {
-          const reader = new FileReader();
-          reader.onload = () => { inp.closest('.img-field').querySelector('img').src = reader.result; };
-          reader.readAsDataURL(inp.files[0]);
-        }
-      });
-    });
-  }
-
-  // ---------------- Settings actions ----------------
-  function wireSettings() {
-    const changePinBtn = document.getElementById('changePinBtn');
-    if (changePinBtn) {
-      changePinBtn.addEventListener('click', async () => {
-        const p1 = document.getElementById('newPin1').value;
-        const p2 = document.getElementById('newPin2').value;
-        const msg = document.getElementById('pinChangeMsg');
-        if (p1.length < 4) { msg.textContent = 'Koden skal være mindst 4 tegn.'; msg.style.color = '#b3402f'; return; }
-        if (p1 !== p2) { msg.textContent = 'De to koder er ikke ens.'; msg.style.color = '#b3402f'; return; }
-        await setPin(p1);
-        msg.textContent = 'Ny kode gemt.'; msg.style.color = '#2e7d4f';
-        document.getElementById('newPin1').value = '';
-        document.getElementById('newPin2').value = '';
-      });
-    }
-
-    const saveFormEndpointBtn = document.getElementById('saveFormEndpointBtn');
-    if (saveFormEndpointBtn) {
-      saveFormEndpointBtn.addEventListener('click', async () => {
-        const val = document.getElementById('formEndpointInput').value.trim();
-        await window.MFGStore.setMany({ 'config-form-endpoint': val });
-        savedContent['config-form-endpoint'] = val;
-        saveFormEndpointBtn.textContent = 'Gemt ✓';
-        setTimeout(() => { saveFormEndpointBtn.textContent = 'Gem endpoint'; }, 2000);
-      });
-    }
-
-    const faviconInput = document.getElementById('faviconInput');
-    if (faviconInput) {
-      faviconInput.addEventListener('change', () => {
-        if (faviconInput.files && faviconInput.files[0]) {
-          const reader = new FileReader();
-          reader.onload = () => { faviconInput.closest('.img-field').querySelector('img').src = reader.result; };
-          reader.readAsDataURL(faviconInput.files[0]);
-        }
-      });
-    }
-    const saveFaviconBtn = document.getElementById('saveFaviconBtn');
-    if (saveFaviconBtn) {
-      saveFaviconBtn.addEventListener('click', async () => {
-        if (!faviconInput.files || !faviconInput.files[0]) { return; }
-        saveFaviconBtn.disabled = true; saveFaviconBtn.textContent = 'Gemmer …';
-        const url = await window.MFGStore.uploadImage(faviconInput.files[0]);
-        await window.MFGStore.setMany({ 'favicon-img': url });
-        savedContent['favicon-img'] = url;
-        saveFaviconBtn.disabled = false; saveFaviconBtn.textContent = 'Gemt ✓';
-        setTimeout(() => { saveFaviconBtn.textContent = 'Gem favicon'; }, 2000);
-      });
-    }
-
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', async () => {
-        const all = await window.MFGStore.getAll();
-        const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'mfg-advisory-content-backup.json';
-        a.click();
-      });
-    }
-
-    const importBtn = document.getElementById('importBtn');
-    const importFile = document.getElementById('importFile');
-    if (importBtn) {
-      importBtn.addEventListener('click', () => importFile.click());
-      importFile.addEventListener('change', async () => {
-        const file = importFile.files[0];
-        if (!file) return;
-        const text = await file.text();
-        try {
-          const obj = JSON.parse(text);
-          await window.MFGStore.setMany(obj);
-          alert('Indhold importeret. Siden genindlæses.');
-          location.reload();
-        } catch (e) {
-          alert('Kunne ikke læse filen som gyldig JSON.');
-        }
-      });
-    }
-
-    const resetBtn = document.getElementById('resetBtn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', async () => {
-        if (!confirm('Er du sikker? Alle gemte ændringer fjernes, og hjemmesiden viser igen standardteksterne.')) return;
-        await window.MFGStore.resetAll();
-        alert('Nulstillet. Siden genindlæses.');
-        location.reload();
-      });
-    }
-  }
-
-  // ---------------- Navigation & layout ----------------
   function renderNav() {
     const nav = document.getElementById('adminNav');
-    nav.innerHTML = NAV_ORDER.map((s, i) =>
-      `<button data-section-btn="${s.section}" class="${i === 0 ? 'active' : ''}">${s.label}</button>`
+    const items = navItems();
+    nav.innerHTML = items.map((s, i) =>
+      `<button data-section-btn="${s.key}" data-is-page="${!!s.isPage}" class="${i === 0 ? 'active' : ''}">${s.label}</button>`
     ).join('');
-
     nav.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         nav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        const key = btn.getAttribute('data-section-btn');
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('section-' + btn.getAttribute('data-section-btn')).classList.add('active');
+        document.getElementById('section-' + key).classList.add('active');
       });
     });
   }
 
-  function renderAllSections() {
+  async function renderAllSections() {
     const container = document.getElementById('sectionsContainer');
-    container.innerHTML = NAV_ORDER.map((s, i) =>
-      `<div class="admin-section ${i === 0 ? 'active' : ''}" id="section-${s.section}">${renderSection(s.section, s.label)}</div>`
-    ).join('');
+    const items = navItems();
+    container.innerHTML = items.map((s, i) => `<div class="admin-section ${i === 0 ? 'active' : ''}" id="section-${s.key}"><h2>${s.label}</h2><div class="loading-row">Indlæser …</div></div>`).join('');
 
-    wireDynamicSections();
-    wireSettings();
-  }
-
-  async function seedTalksIfNeeded() {
-    if (savedContent.talks) return;
-    if (!window.MFG_DEFAULT_TALKS) return;
-    const value = JSON.stringify(window.MFG_DEFAULT_TALKS);
-    try {
-      await window.MFGStore.setMany({ talks: value });
-    } catch (e) {
-      console.warn('MFG admin: could not save seeded talks, using them for this view only', e);
+    for (const s of items) {
+      const html = await renderSection(s.key, s.isPage);
+      const sectionEl = document.getElementById('section-' + s.key);
+      sectionEl.innerHTML = `<h2>${s.label}</h2>` + html;
+      if (s.isPage) wirePageText(s.key);
+      else if (SECTION_WIRERS[s.key]) SECTION_WIRERS[s.key]();
     }
-    savedContent.talks = value;
   }
 
-  // ---------------- Boot ----------------
   async function boot() {
-    document.getElementById('backendPill').textContent =
-      window.MFGStore.backend() === 'supabase' ? 'Supabase' : 'LocalStorage (denne enhed)';
-
-    savedContent = await window.MFGStore.getAll();
-    await seedTalksIfNeeded();
-    await discoverFields();
     renderNav();
-    renderAllSections();
+    await renderAllSections();
   }
 
-  document.getElementById('pinSubmit').addEventListener('click', submitPin);
-  document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') submitPin(); });
+  // ---------------- Wire up login screen ----------------
+  document.getElementById('loginSubmit').addEventListener('click', login);
+  document.getElementById('passwordInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  document.getElementById('emailInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  document.getElementById('forgotPasswordLink').addEventListener('click', () => showLoginBox('forgot'));
+  document.getElementById('backToLoginLink').addEventListener('click', () => showLoginBox('login'));
+  document.getElementById('forgotSubmit').addEventListener('click', requestPasswordReset);
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  document.getElementById('notAdminLogoutBtn').addEventListener('click', logout);
 
-  async function submitPin() {
-    const pin = document.getElementById('pinInput').value;
-    const errEl = document.getElementById('loginError');
-    errEl.textContent = 'Tjekker …';
-    if (!savedContent || Object.keys(savedContent).length === 0) {
-      savedContent = await window.MFGStore.getAll();
-    }
-    const ok = await checkPin(pin);
-    if (ok) {
-      errEl.textContent = '';
-      showApp();
-      boot();
-    } else {
-      errEl.textContent = 'Forkert kode.';
-    }
-  }
-
+  // ---------------- Session check on load ----------------
   (async function initialLoad() {
-    savedContent = await window.MFGStore.getAll();
-    if (sessionStorage.getItem('mfg_admin_authed') === '1') {
-      showApp();
-      boot();
+    if (!window.MFGSupabase) {
+      document.getElementById('loginError').textContent = 'Supabase er ikke konfigureret endnu — se README-admin.md.';
+      return;
     }
+    const { data } = await window.MFGSupabase.auth.getSession();
+    if (data && data.session && data.session.user) {
+      await afterAuthResolved(data.session.user);
+    }
+    window.MFGSupabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        document.getElementById('adminApp').classList.remove('visible');
+        document.getElementById('loginScreen').style.display = 'flex';
+        showLoginBox('login');
+      }
+    });
   })();
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('mfg_admin_authed');
-    location.reload();
-  });
 })();
