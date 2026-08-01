@@ -285,15 +285,12 @@
     container.innerHTML = items.map((t, idx) => {
       const cat = talkCategoryMeta(t.category);
       const img = t.image_url ? '<img src="' + t.image_url + '" alt="' + escapeHtml(t.title || '') + '" loading="lazy">' : '';
-      const metaBits = [t.target_audience, t.format].filter(v => v && String(v).trim().length > 0);
-      const metaLine = metaBits.length ? '<p class="talk-card-meta">' + escapeHtml(metaBits.join(' · ')) + '</p>' : '';
       return (
-        '<div class="case-teaser talk-card">' +
+        '<div class="case-teaser talk-card" data-talk-category="' + escapeHtml(t.category || '') + '">' +
           img +
           '<span class="ct-tag"><svg class="icon"><use href="#' + cat.icon + '"/></svg> ' + cat.label + '</span>' +
           '<h4>' + escapeHtml(t.title || '') + '</h4>' +
-          '<p>' + escapeHtml(t.excerpt || '') + '</p>' +
-          metaLine +
+          '<p>' + escapeHtml(t.teaser || '') + '</p>' +
           '<div class="talk-card-actions">' +
             '<button class="ct-link" type="button" data-open-talk="' + idx + '" data-clarity-event="talk_read_more_click">Læs mere →</button>' +
             '<a class="btn btn-ghost btn-sm" href="' + talkInquiryLink(t) + '" data-clarity-event="talk_inquiry_click">Forespørg</a>' +
@@ -306,6 +303,28 @@
       btn.addEventListener('click', () => {
         openTalkModal(talkModalData[parseInt(btn.getAttribute('data-open-talk'), 10)]);
         if (window.clarity) { try { window.clarity('event', 'talk_card_click'); } catch (e) {} }
+      });
+    });
+
+    initTalkFilters();
+  }
+
+  function initTalkFilters() {
+    const filterBar = document.getElementById('talkFilters');
+    if (!filterBar) return;
+    if (filterBar.dataset.wired) return;
+    filterBar.dataset.wired = '1';
+    filterBar.querySelectorAll('.talk-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBar.querySelectorAll('.talk-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const wanted = btn.getAttribute('data-filter');
+        document.querySelectorAll('.talk-card').forEach(card => {
+          const cat = card.getAttribute('data-talk-category');
+          const show = wanted === 'alle' || cat === wanted;
+          card.classList.toggle('is-hidden-by-filter', !show);
+        });
+        if (window.clarity) { try { window.clarity('event', 'talk_filter_' + wanted + '_click'); } catch (e) {} }
       });
     });
   }
@@ -330,7 +349,7 @@
         '<a class="case-teaser talk-card" href="foredrag.html">' +
           '<span class="ct-tag"><svg class="icon"><use href="#' + cat.icon + '"/></svg> ' + cat.label + '</span>' +
           '<h4>' + escapeHtml(t.title || '') + '</h4>' +
-          '<p>' + escapeHtml(t.excerpt || '') + '</p>' +
+          '<p>' + escapeHtml(t.teaser || '') + '</p>' +
         '</a>'
       );
     }).join('');
@@ -341,21 +360,14 @@
     if (!modal || !t) return;
     const cat = talkCategoryMeta(t.category);
     const img = t.image_url ? '<img src="' + t.image_url + '" alt="' + escapeHtml(t.title || '') + '" class="case-modal-img" loading="lazy">' : '';
-    const subtitle = t.subtitle ? '<p class="case-customer">' + escapeHtml(t.subtitle) + '</p>' : '';
-    const full = t.body ? '<p style="margin-top:16px">' + escapeHtml(t.body) + '</p>' : '';
 
-    const metaRows = [
-      ['Målgruppe', t.target_audience],
-      ['Deltagernes udbytte', t.participant_outcomes],
-      ['Centrale emner', t.topics],
-      ['Varighed', t.duration],
-      ['Format', t.format]
-    ].filter(([, v]) => v && String(v).trim().length > 0);
+    const focusList = Array.isArray(t.focus) && t.focus.length
+      ? '<h4 style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Foredraget sætter fokus på</h4>' +
+        '<ul class="talk-focus-list">' + t.focus.map(f => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>'
+      : '';
 
-    const metaHtml = metaRows.length
-      ? '<div class="case-steps" style="margin-top:20px">' +
-          metaRows.map(([label, v]) => '<div class="case-step"><span class="k">' + label + '</span><p>' + escapeHtml(v) + '</p></div>').join('') +
-        '</div>'
+    const takeawayHtml = t.takeaway
+      ? '<div class="talk-takeaway"><span class="k">Deltagerne får med sig</span>' + escapeHtml(t.takeaway) + '</div>'
       : '';
 
     const videoHtml = t.video_url
@@ -369,10 +381,9 @@
       img +
       '<span class="ct-tag"><svg class="icon"><use href="#' + cat.icon + '"/></svg> ' + cat.label + '</span>' +
       '<h3>' + escapeHtml(t.title || '') + '</h3>' +
-      subtitle +
-      '<p class="case-modal-industry">' + escapeHtml(t.excerpt || '') + '</p>' +
-      full +
-      metaHtml +
+      '<p class="case-modal-industry">' + escapeHtml(t.teaser || '') + '</p>' +
+      focusList +
+      takeawayHtml +
       videoHtml +
       '<div class="case-modal-footer">' +
         (docHtml || '<span></span>') +

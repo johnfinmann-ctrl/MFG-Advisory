@@ -4,6 +4,111 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC19 — "Læs mere"-modal gennemgået og styrket
+
+Bygget videre på RC18 (GitHub-versionen), som bekræftet. Ingen Supabase-,
+database- eller Vercel-arbejde genoptaget.
+
+**Baggrund:** De fleste af de efterspurgte elementer (billede, kategori,
+teaser, fokuspunkter, udbyttetekst, forespørgselsknap) var allerede en
+del af RC18's kode — men for at være helt sikker, gennemgik jeg hvert
+eneste punkt igen, for **alle 12 foredrag hver for sig** (ikke kun en
+enkelt stikprøve), og strammede desuden op de steder, hvor det gav
+mening:
+
+- **Mobilbredde:** Øget fra ~88% til ~95% af skærmbredden, så modalen nu
+  tydeligere fylder "næsten hele mobilens bredde".
+- **Billedet:** Gjort mere fremtrædende (større højde på desktop, 240px)
+  og sikret at det altid vises som blok (ikke klemt af omkringliggende tekst).
+- **Tydeligere sektioner:** Tilføjet en synlig skillelinje før
+  "Foredraget sætter fokus på", så teaser, fokuspunkter og udbytte
+  fremstår som klart adskilte afsnit, ikke én lang tekstblok.
+
+**Punkt-for-punkt bekræftet (108 automatiserede tjek, alle 12 foredrag
+testet individuelt, ikke kun ét):**
+- ✅ Kategori, titel, teaser, billede, "Foredraget sætter fokus på" + 4
+  punkter, "Deltagerne får med sig" + udbytte, og "Forespørg på
+  foredraget"-knap — til stede i **alle 12** modaler.
+- ✅ Billedet er synligt og responsivt (bekræftet på både desktop og mobil).
+- ✅ På mobil (390×700, en bevidst kort skærmhøjde for at fremtvinge
+  overløb): modalens indhold **scroller internt** i kortet
+  (`overflow-y:auto` på selve panelet) — og siden bagved scroller
+  bekræftet **ikke** med.
+- ✅ Modalens z-index (3000) ligger sikkert over den mobile
+  sticky-bookingknap (1500) — dækker den aldrig.
+- ✅ Luk fungerer via krydset, via klik uden for kortet (baggrunden) og
+  via Escape-tasten — alle tre testet separat.
+- ✅ Den mørke baggrunds-overlay er bevaret uændret.
+- ✅ Det korte foredragskort på oversigten viser fortsat **kun** den korte
+  teaser — bekræftet, at fokuspunkter og udbyttetekst ikke er synlige,
+  før der klikkes "Læs mere".
+- ✅ Testet på tablet (768px) og desktop (1440px) — ingen horisontal
+  scroll noget sted.
+
+**Indhold:** Genbruger de 12 foredrag fra de to PowerPoint-filer, som
+allerede blev lagt ind i RC18 — intet indhold er ændret i denne omgang,
+kun selve modal-visningen.
+
+**Ændrede filer (kun disse to):** `assets/css/style.css`,
+`assets/js/content-loader.js`. Alle øvrige sider, Compass-modulet og
+funktioner er bekræftet uændrede ved diff og regressionstest.
+
+## RC18 — Foredragssiden udvidet til 12 foredrag med filtre
+
+Bygget videre på RC17. Ingen Supabase-, Vercel- eller databaseændringer.
+
+**Indhold:** Alle 12 foredrag fra de to PowerPoint-filer er lagt ind
+(erstatter de tidligere 7). Billederne i PowerPoints var fulde
+slide-baggrunde med indlejret tekst/branding — ikke enkeltstående
+foto-emner — så jeg har genereret 12 nye, selvstændige placeholder-billeder
+(ét pr. foredrag, navy/guld, MFG Advisory-mærket) i stedet for at
+genbruge dem, for at undgå tekst, der bliver ulæselig på mobil, præcis
+som krævet.
+
+**Struktur:**
+- **Fælles introduktion:** Ny overskrift og to intro-afsnit, plus CTA
+  "Forespørg på et foredrag".
+- **"Det kan I forvente":** Ny sektion med de to afsnit og de fire punkter,
+  vist som en 2×2-gitter med afkrydsningsikon.
+- **Kategorifiltre:** "Alle / Mennesker / Ledelse / Kultur / Forretning"
+  som klikbare faner over foredragsoversigten. Fordeling: 3 Mennesker,
+  3 Ledelse, 2 Kultur, 4 Forretning (The MFG Compass™-foredraget er
+  placeret under Forretning, da dets indhold handler om strategisk
+  navigation på tværs af forretningen).
+- **Kort:** Kategori, titel, teaser, billede, "Læs mere" og "Forespørg" —
+  ét fælles design for alle 12, som krævet. Den fulde tekst (de fire
+  fokuspunkter + "Deltagerne får med sig") vises først i en modal efter
+  klik på "Læs mere" — bekræftet ikke synlig på selve kortet.
+- **Skræddersyet foredrag:** Ny sektion nederst med den angivne tekst.
+  CTA'en "Tal med mig om et særligt foredrag" fører til kontaktformularen
+  med "Forespørgsel på skræddersyet foredrag" forudfyldt.
+- **Booking:** Hvert foredrags egen "Forespørg"-knap forudfylder fortsat
+  "Forespørgsel på foredrag: [titel]" — testet for flere forskellige
+  foredrag, ikke kun det første.
+
+**Sprog:** Gennemgået for "vi/vores/os". Ét foredrags titel indeholder
+bevidst "vi" ("Kultur – det vi gør, accepterer og gentager") — det er den
+eksakte, angivne titel, og det er en generel sandhed om organisationskultur
+(ligesom det tidligere bevarede "hvordan vi gør her" på selve
+Kultur-siden), ikke MFG Advisory, der taler om sig selv. Ellers er al ny
+tekst skrevet i "jeg/mig/min/mine".
+
+**Ændrede/nye filer:** `foredrag.html`, `assets/js/default-talks.js`
+(fuldt genskrevet med de 12 foredrag), `assets/js/content-loader.js`
+(nye felter: teaser/fokus/deltagerudbytte, samt filter-logik),
+`assets/css/style.css`, samt ny mappe `assets/images/foredrag/` med 12
+placeholder-billeder. Alle øvrige sider er bekræftet urørt (verificeret
+ved diff).
+
+**Testet:** 375px, 390px, 768px, 1024px, 1440px — 46 automatiserede tjek:
+alle 12 foredrag til stede med korrekte titler, filtrene giver præcis
+den rigtige optælling pr. kategori på alle testede bredder, "Læs mere"
+åbner korrekt med fokuspunkter og udbytte, to forskellige
+kontaktformular-forudfyldninger (individuelt foredrag og skræddersyet),
+alle billeder indlæst med ensartet højde og meningsfuld alt-tekst, ingen
+horisontal scroll, forsidens fremhævede foredrag og Compass-modulet
+uændrede, admin viser nu automatisk 12 foredrag.
+
 ## RC17 — navigationsfix, læsbart kompas, "jeg"-sprog, foredragsbilleder
 
 Bygget videre på RC15 (den sidst fuldt selvstændige version uden
