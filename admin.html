@@ -13,32 +13,15 @@
 </head>
 <body>
 
-<!-- ===== LOGIN GATE (Supabase Authentication) ===== -->
+<!-- ===== LOGIN GATE ===== -->
 <div class="login-screen" id="loginScreen">
-  <div class="login-box" id="loginBox">
+  <div class="login-box">
     <h1>MFG Advisory</h1>
-    <p>Adminpanel — log ind med din e-mail og adgangskode</p>
-    <input type="email" id="emailInput" autocomplete="email" placeholder="din@email.dk" autofocus>
-    <input type="password" id="passwordInput" autocomplete="current-password" placeholder="Adgangskode">
-    <button class="btn btn-primary" id="loginSubmit" style="width:100%">Log ind</button>
+    <p>Adminpanel — indtast kode for at fortsætte</p>
+    <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" placeholder="••••••" autofocus>
+    <button class="btn btn-primary" id="pinSubmit" style="width:100%">Log ind</button>
     <div class="login-error" id="loginError"></div>
-    <button class="login-link" id="forgotPasswordLink" type="button">Glemt adgangskode?</button>
-  </div>
-
-  <div class="login-box" id="forgotBox" style="display:none">
-    <h1>Nulstil adgangskode</h1>
-    <p>Indtast din e-mail. Vi sender et link, du kan bruge til at vælge en ny adgangskode.</p>
-    <input type="email" id="forgotEmailInput" autocomplete="email" placeholder="din@email.dk">
-    <button class="btn btn-primary" id="forgotSubmit" style="width:100%">Send nulstillingslink</button>
-    <div class="login-error" id="forgotError"></div>
-    <div class="login-success" id="forgotSuccess" style="display:none"></div>
-    <button class="login-link" id="backToLoginLink" type="button">← Tilbage til login</button>
-  </div>
-
-  <div class="login-box" id="notAdminBox" style="display:none">
-    <h1>Ingen adgang</h1>
-    <p>Du er logget ind, men din konto er ikke registreret som administrator for MFG Advisory. Kontakt den, der administrerer Supabase-projektet, for at få tilføjet adgang.</p>
-    <button class="btn btn-outline" id="notAdminLogoutBtn" style="width:100%">Log ud</button>
+    <div class="login-hint">Standardkode: <code>mfg2026</code> — skift den under "Indstillinger" efter første login.</div>
   </div>
 </div>
 
@@ -47,10 +30,9 @@
   <div class="admin-header">
     <div>
       <h1 style="display:inline">MFG Advisory · Admin</h1>
-      <span class="backend-pill" id="backendPill">Supabase</span>
+      <span class="backend-pill" id="backendPill">—</span>
     </div>
     <div class="admin-header-actions">
-      <span id="loggedInAsLabel" style="font-size:.8rem;color:#8592a8;margin-right:10px"></span>
       <a href="index.html" target="_blank" rel="noopener">Se hjemmesiden ↗</a>
       <button class="btn btn-ghost btn-sm" id="logoutBtn">Log ud</button>
     </div>
@@ -63,15 +45,16 @@
 
     <main class="admin-main">
       <div id="sectionsContainer">
-        <div class="loading-row">Indlæser indhold fra Supabase …</div>
+        <div class="loading-row">Indlæser indhold fra hjemmesidens sider …</div>
       </div>
     </main>
   </div>
 </div>
 
+<script src="assets/js/clarity-config.js"></script>
 <script src="assets/js/supabase-config.js"></script>
-<script src="assets/js/vendor/supabase.js"></script>
-<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/content-store.js"></script>
+<script src="assets/js/default-talks.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>
 </html>

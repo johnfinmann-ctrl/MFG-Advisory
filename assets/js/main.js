@@ -98,9 +98,9 @@
 
       let endpoint = '';
       try {
-        if (window.MFGPublicData) {
-          const settings = await window.MFGPublicData.getPageContent('settings');
-          endpoint = settings['config-form-endpoint'] || '';
+        if (window.MFGStore) {
+          const content = await window.MFGStore.getAll();
+          endpoint = content['config-form-endpoint'] || '';
         }
       } catch (err) { /* fall through to mailto */ }
 

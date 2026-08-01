@@ -29,7 +29,7 @@
     const bar = document.createElement('div');
     bar.className = 'cookie-banner';
     bar.innerHTML =
-      '<p>Vi bruger nødvendige cookies for at hjemmesiden fungerer, og — kun med dit samtykke — analytics-cookies for at forstå trafik. Læs mere på <a href="kontakt.html">kontaktsiden</a>.</p>' +
+      '<p>Jeg bruger nødvendige cookies for at hjemmesiden fungerer, og — kun med dit samtykke — analytics-cookies for at forstå trafik. Læs mere på <a href="kontakt.html">kontaktsiden</a>.</p>' +
       '<div class="cookie-banner-actions">' +
         '<button class="btn btn-ghost btn-sm" id="cookieNecessaryBtn">Kun nødvendige</button>' +
         '<button class="btn btn-copper btn-sm" id="cookieAcceptBtn">Accepter alle</button>' +

@@ -1,124 +1,87 @@
 # MFG Advisory — Adminpanel
 
-Denne mappe indeholder et komplet admin-CMS oven på den statiske MFG
-Advisory-hjemmeside. Fra og med Fase 2 er admin bygget på **Supabase**
-(rigtig database, rigtig login, rigtige adgangsregler) i stedet for den
-tidligere lokale prototype.
+Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
+MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
+tilføjer kun et redigeringslag ovenpå.
 
-## Fase 2 er implementeret — sådan kommer du i gang
+## RC17 — navigationsfix, læsbart kompas, "jeg"-sprog, foredragsbilleder
 
-Alt kode er skrevet og testet så grundigt, det er muligt uden et rigtigt
-Supabase-projekt (se testafsnittet nedenfor). Følg disse trin for at gøre
-det til virkelighed:
+Bygget videre på RC15 (den sidst fuldt selvstændige version uden
+Supabase-afhængighed), som eksplicit bedt om. Ingen database-, Supabase-
+eller Vercel-ændringer.
 
-### Trin 1 — Opret Supabase-projektet
+### 1. Desktop-menu rettet
+Jeg kunne ikke reproducere den præcise "rside"/"Konta"-afskæring i mit
+testmiljø (kan ikke hente den rigtige Google Font DM Sans der), men
+målingerne viste, at den tidligere løsning kun havde nul til få pixels
+margin ved almindelige desktopbredder — for tæt på kanten uanset
+skrifttype. Løst mere robust ved at: forenkle den tidligere skrøbelige
+3-trins skriftstørrelse til én konsekvent størrelse, og frigøre plads fra
+telefonnummer/bookingknap-området (mindre mellemrum, lidt mindre
+knap-padding — kun i navigationen, ikke globalt). Verificeret med 45
+automatiserede tjek ved 960-1920px: alle 9 menupunkter korrekt stavet og
+fuldt synlige, intet overlap, telefonnummer og bookingknap altid synlige.
+Mobilmenuen er kun testet, ikke ændret.
 
-1. Gå til **https://supabase.com** → **"New project"**.
-2. Vælg en organisation (opret evt. en ny gratis), giv projektet et navn
-   (fx `mfg-advisory`), og vælg en adgangskode til databasen (gem den et
-   sikkert sted — det er IKKE den samme som Mortens login-adgangskode).
-3. Vælg en region tæt på Danmark (fx Frankfurt/EU).
-4. Vent til projektet er oprettet (tager typisk 1-2 minutter).
+### 2. "SKAB RETNING" gjort læsbar
+Årsagen: teksten brugte en sand/gylden farve (`#cbb892`), næsten
+identisk med selve kompasstjernens guldfarve. Rettet til hvid tekst,
+skriftvægt øget fra 600 til 800, kraftigere tekstskygge, samt en
+diskret mørk baggrund bag teksten. Kompasgrafikken, farverne og den
+øvrige tekst er uændret. Bekræftet på både desktop og mobil.
 
-### Trin 2 — Kør migrationerne
+### 3. "Vi" → "jeg" gennemgået manuelt (ikke blind søg-og-erstat)
+Gennemgået linje for linje på Forside, Mennesker, Ledelse, Kultur,
+Forretning, Foredrag, Kontakt og The MFG Compass™-siden, samt
+cookiebanner-teksten. Cases og Om Morten indeholdt ingen "vi" i forvejen
+(Om Morten er allerede skrevet i tredje person). Metadata/SEO-tekster
+var allerede fri for "vi".
 
-1. Gå til **SQL Editor** i venstremenuen → **"New query"**.
-2. Åbn `supabase/migration_v2_production.sql` fra dette projekt, kopiér
-   **hele** indholdet, indsæt det i SQL Editor, og klik **Run**.
-3. Opret en ny query igen, gør det samme med
-   `supabase/seed_v2_production.sql`, og klik **Run**.
-4. Begge filer kan køres igen uden problemer (ingen dubletter opstår).
+**Bevidst IKKE ændret** (efter instruksen om kunde-/fællesskabs-undtagelser):
+- Kultur-siden: "Sammen skaber vi tydeligere fælles standarder" — eksplicit
+  fælles formulering ("sammen").
+- Kultur-siden: "hvordan vi gør her" — et citat, der illustrerer kundens
+  egen interne forvirring, ikke MFG Advisory, der taler om sig selv.
 
-### Trin 3 — Find dine nøgler og indsæt dem
+Fandt og rettede undervejs en egen grammatikfejl ("mit rådgivning" skulle
+have været "min rådgivning", da "rådgivning" er et fælleskønsord).
 
-1. Gå til **Project Settings → API**.
-2. Kopiér **Project URL** ind i `assets/js/supabase-config.js` som
-   `MFG_SUPABASE_URL`.
-3. Kopiér **anon public**-nøglen ind som `MFG_SUPABASE_ANON_KEY`.
-   (Se `.env.example` og afsnittet om Vercel nedenfor, hvis du hellere vil
-   indsætte dem som miljøvariabler ved deployment.)
+### 4. Teaser og billede til hvert foredrag
+Hvert af de 7 foredrag havde allerede en kort teaser (feltet `excerpt`).
+Det manglende var billeder. Tilføjet:
+- **7 selvstændige placeholder-billeder** (ikke én delt fil), i
+  `assets/images/foredrag/[foredragets-slug].jpg` — ét pr. foredrag, så
+  Morten senere kan udskifte ét enkelt billede uden at røre de andre.
+  Neutral, brand-tilpasset navy/guld-grafik med MFG Advisory-mærke.
+- `image_url` tilføjet i `assets/js/default-talks.js` (samme simple
+  datafil-tilgang som resten af foredrags-systemet — ingen admin- eller
+  databaseændring).
+- Rettet manglende alt-tekst (var tom `alt=""`) til at bruge foredragets
+  titel, både på kortet og i detaljevisningen.
+- Genbruger eksisterende `.case-teaser img`-styling: fast 140px højde,
+  `object-fit:cover` (ingen forvrænget beskæring), samme afrundede
+  hjørner som resten af siden, fuldt responsivt. Verificeret med 18 tjek
+  ved 375/768/1440px: alle 7 billeder indlæses, ensartet højde, korrekt
+  alt-tekst, ingen layoutforskydning.
 
-### Trin 4 — Opret Mortens administrator-bruger
+### Billedfiler Morten senere skal levere
+De 7 filer i `assets/images/foredrag/` (navngivet efter foredragets
+emne) er placeholders. Til rigtige billeder: behold samme filnavne og
+samme liggende 900×560-format (eller tættere på), så de passer ind uden
+kodeændringer — blot upload de rigtige filer med de samme filnavne.
 
-Dette er det ene trin, jeg **ikke** kan gøre for dig, fordi det kræver en
-rigtig e-mailadresse og adgang til dit Supabase-dashboard:
+### Kvalitetstest
+375px, 768px, 1440px — alle 11 sider, 36 regressions-tjek: ingen
+horisontal scroll, interne links (Compass, Foredrag-nav) fungerer,
+admin-login fungerer uændret, ingen konsolfejl.
 
-1. Gå til **Authentication → Users → "Add user"**.
-2. Indtast Mortens e-mail og en midlertidig adgangskode (han kan skifte
-   den bagefter via "Glemt adgangskode?" i adminpanelet).
-3. Kopiér den nye brugers **User UID** (vises i brugerlisten).
-4. Gå til **Table Editor → admin_users → Insert row**, og indsæt:
-   - `user_id`: UID'et fra trin 3
-   - `full_name`: "Morten Foged Guglielmetti" (valgfrit)
-5. Morten kan nu logge ind på `admin.html` med sin e-mail og adgangskode.
-
-**Vigtigt:** Uden dette trin kan INGEN logge ind som administrator — det
-er meningen, og det er derfor sikkert at lade koden ligge offentligt
-tilgængelig, mens du gør dette klar.
-
-### Trin 5 (valgfrit) — Storage-buckets, hvis de ikke blev oprettet automatisk
-
-Migrationsfilen forsøger at oprette tre Storage-buckets automatisk
-(`case-images`, `talk-images`, `editorial-images`). Hvis det fejler i din
-Supabase-version (nogle versioner tillader ikke bucket-oprettelse fra SQL
-Editor), så opret dem manuelt under **Storage**:
-- Klik **"New bucket"** for hver af de tre, med **præcis** disse navne,
-  og markér dem som **Public**.
-- RLS-politikkerne fra migrationsfilen gælder stadig, uanset om bucketten
-  blev oprettet af SQL'en eller manuelt.
-
-## Felter, du selv skal udfylde/indsætte i Supabase (opsummeret)
-
-| Hvad | Hvor | Påkrævet? |
-|---|---|---|
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | `assets/js/supabase-config.js` (eller Vercel miljøvariabler) | Ja |
-| Mortens e-mail + adgangskode | Supabase → Authentication → Users | Ja |
-| Mortens `user_id` | Supabase → Table Editor → `admin_users` | Ja |
-| Storage-buckets (hvis auto-oprettelse fejlede) | Supabase → Storage | Kun hvis nødvendigt |
-
-## Deployment (Vercel) — forberedelse
-
-Fase 2 opretter **ikke** selve Vercel-projektet endnu (det kommer i en
-senere fase), men koden er klar til det:
-
-- `scripts/inject-env.js` læser `SUPABASE_URL`/`SUPABASE_ANON_KEY` fra
-  miljøvariabler og skriver dem ind i `supabase-config.js` ved deployment.
-- Sæt Vercels **Build Command** til: `node scripts/inject-env.js`
-- Sæt **Output Directory** til: `.` (projektets rod)
-- Indsæt `SUPABASE_URL` og `SUPABASE_ANON_KEY` under Vercels
-  **Environment Variables** — aldrig direkte i koden.
-
-## Hvad er testet — og hvordan
-
-Der er **intet rigtigt Supabase-projekt** tilgængeligt i det miljø, koden
-er udviklet i. Alt er derfor testet så grundigt som muligt uden ét:
-
-- **SQL-korrekthed:** Begge migrationsfiler er valideret med `pglast` —
-  en ægte PostgreSQL-grammatik-parser (samme fortolker, Postgres selv
-  bruger), ikke kun et overfladisk tekst-tjek.
-- **Klientbibliotek:** Den vendorede Supabase JS-klient
-  (`assets/js/vendor/supabase.js`) er testet og bekræftet at fungere.
-- **Hele admin-logikken:** Testet med en simuleret Supabase-klient (i
-  `testing/`-mappen — indgår ikke i selve sitet), der efterligner den
-  rigtige klients adfærd. 29 automatiserede tjek, herunder:
-  login (afvist ved forkert kodeord, afvist ved gyldig-men-ikke-admin
-  bruger, accepteret for godkendt admin), fuld opret→gem→slet-cyklus for
-  Cases og Foredrag, ombestilling, testimonials, sidetekst-redigering,
-  SEO-redigering, billed-upload, log ud, glemt adgangskode, og at
-  sessionen består efter en sideopdatering.
-- **Den offentlige side:** Testet med samme simulerede klient — Cases og
-  Foredrag vises korrekt, fremhævede foredrag vises korrekt på forsiden,
-  og **vigtigst**: hvis Supabase slet ikke kan nås, forbliver siden synlig
-  med sit statiske standardindhold i stedet for at blive tom.
-
-**Det, der KUN kan bekræftes, når du har oprettet det rigtige
-Supabase-projekt** (se test-listen i chatten for den fulde, nummererede
-liste): at Row Level Security reelt blokerer anonyme skriveforsøg og
-kladde-læsning i en ægte database; at ændringer i admin på ét sted i
-verden faktisk dukker op på en helt anden enhed et andet sted (den
-egentlige browser A/B-test); at Mortens rigtige e-mail-login og
-glemt-adgangskode-mails reelt bliver leveret af Supabase.
-
+**Ændrede/nye filer:** `assets/css/style.css`,
+`assets/js/content-loader.js`, `assets/js/cookie-consent.js`,
+`assets/js/default-talks.js`, `index.html`, `mennesker.html`,
+`ledelse.html`, `kultur.html`, `forretning.html`, `foredrag.html`,
+`kontakt.html`, `mfg-compass.html`, samt ny mappe
+`assets/images/foredrag/` (7 billeder). Cases og Om Morten er urørt
+(bekræftet ved diff — ingen "vi" fandtes der i forvejen).
 
 ## RC15 — bekræftelse af admin-adgang + reel bug rettet
 
