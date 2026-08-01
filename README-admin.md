@@ -4,6 +4,34 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC20 — de rigtige billeder fra PowerPoint indsat
+
+Bygget videre på RC19. Kun billedfilerne er ændret — ingen kode, ingen
+andre sider.
+
+**Baggrund:** Ved nærmere undersøgelse af de to PowerPoint-filer viste
+det sig, at hvert af de 12 slides faktisk indeholder sit eget unikke
+billede (`image2.png` til `image7.png` i hver fil — ikke kun det
+genbrugte logo). Farvekompleksitets-analyse af alle 12 billeder (tusindvis
+af unikke farver i selv små stikprøver, i alle regioner af billedet)
+bekræftede, at der er tale om rigtige fotografiske/grafiske billeder uden
+indlejret tekst — ikke tekst-tunge slide-baggrunde. De er derfor
+velegnede til brug, som du bad om.
+
+**Gjort:** Udtrukket det korrekte billede fra det korrekte slide for
+hvert af de 12 foredrag (kortlagt via slidets faktiske titeltekst, ikke
+gættet ud fra rækkefølge), og erstattet de tidligere placeholder-billeder
+1:1 — samme filnavne som i RC18/19, så ingen kode skulle ændres.
+
+**Verificeret:** Alle 12 billeder indlæser korrekt, ensartet
+kort-højde bevaret, alt-tekst intakt, og — vigtigst — hver "Læs
+mere"-modal viser nu bekræftet **det samme billede** som det
+tilhørende kort (testet enkeltvis for alle 12, ikke kun stikprøve).
+Fuld regression af mobil/tablet/desktop og alle øvrige sider bekræftet
+uændret.
+
+**Ændrede filer:** Kun de 12 billeder i `assets/images/foredrag/`.
+
 ## RC19 — "Læs mere"-modal gennemgået og styrket
 
 Bygget videre på RC18 (GitHub-versionen), som bekræftet. Ingen Supabase-,
