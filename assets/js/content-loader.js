@@ -412,14 +412,25 @@
   }
 
   const DEFAULT_TALKS = window.MFG_DEFAULT_TALKS || [];
+  const TALKS_DATA_VERSION = 'v2-12talks-focus-takeaway';
 
   async function seedTalksIfNeeded(content) {
-    if (content.talks) return content;
+    const storedVersion = content['talks_data_version'];
+    const hasCurrentData = content.talks && storedVersion === TALKS_DATA_VERSION;
+    if (hasCurrentData) return content;
+
+    // Enten er der slet ingen foredrag gemt endnu, ELLER det, der ligger i
+    // browserens gemte data, er fra en ældre version af datamodellen (fx det
+    // tidligere 7-foredrags-skema uden felterne "focus"/"takeaway"). I begge
+    // tilfælde overskriver vi med den aktuelle standarddata, så alle 12
+    // foredrag altid vises med fuldt indhold — uanset hvad der måtte ligge
+    // tilbage fra tidligere besøg på sitet.
     if (!window.MFGStore) return content;
     try {
       const value = JSON.stringify(DEFAULT_TALKS);
-      await window.MFGStore.setMany({ talks: value });
+      await window.MFGStore.setMany({ talks: value, 'talks_data_version': TALKS_DATA_VERSION });
       content.talks = value;
+      content['talks_data_version'] = TALKS_DATA_VERSION;
     } catch (e) {
       console.warn('MFG content-loader: could not seed default talks', e);
       content.talks = JSON.stringify(DEFAULT_TALKS);

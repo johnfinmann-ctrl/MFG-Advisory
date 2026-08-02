@@ -1257,16 +1257,20 @@
     wireSettings();
   }
 
+  const TALKS_DATA_VERSION = 'v2-12talks-focus-takeaway';
+
   async function seedTalksIfNeeded() {
-    if (savedContent.talks) return;
+    const hasCurrentData = savedContent.talks && savedContent['talks_data_version'] === TALKS_DATA_VERSION;
+    if (hasCurrentData) return;
     if (!window.MFG_DEFAULT_TALKS) return;
     const value = JSON.stringify(window.MFG_DEFAULT_TALKS);
     try {
-      await window.MFGStore.setMany({ talks: value });
+      await window.MFGStore.setMany({ talks: value, 'talks_data_version': TALKS_DATA_VERSION });
     } catch (e) {
       console.warn('MFG admin: could not save seeded talks, using them for this view only', e);
     }
     savedContent.talks = value;
+    savedContent['talks_data_version'] = TALKS_DATA_VERSION;
   }
 
   // ---------------- Boot ----------------

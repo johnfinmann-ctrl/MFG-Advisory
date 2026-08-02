@@ -4,6 +4,65 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC21 — den præcise fejlårsag fundet og rettet
+
+**Den præcise fejlårsag:** `seedTalksIfNeeded()` i både
+`assets/js/content-loader.js` og `assets/js/admin.js` tjekkede kun
+`if (content.talks) return` — altså "findes der overhovedet allerede
+foredragsdata i browseren?". Hvis svaret var ja, blev den nye
+12-foredrags-datamodel **aldrig indlæst**, uanset hvor gammel eller
+forældet den eksisterende data var.
+
+Enhver browser, der havde besøgt en tidligere version af sitet
+(RC15–RC17, som brugte et andet dataskema med 7 foredrag og feltnavne
+som `excerpt`/`body` i stedet for de nuværende `teaser`/`focus`/
+`takeaway`), ville derfor blive "fanget" med den gamle data for altid.
+Da modal-visningen i RC18-RC20 korrekt leder efter `t.teaser`, `t.focus`
+og `t.takeaway` — felter, der **slet ikke findes** på den gamle,
+fastlåste data — blev disse sektioner naturligt tomme. Det er ikke en
+fejl i selve rendering-koden (feltnavnene har hele tiden matchet
+korrekt, bekræftet ved direkte gennemgang af begge filer), men i
+betingelsen for, HVORNÅR data bliver opdateret i browserens gemte lager.
+
+**Rettelsen:** Indført en versioneret seed-mekanisme
+(`talks_data_version`). Hvis den gemte version ikke matcher den
+nuværende (`v2-12talks-focus-takeaway`), overskrives browserens gemte
+data automatisk med den aktuelle 12-foredrags-model — uanset hvad der
+lå der i forvejen. Dette er verificeret med en test, der specifikt
+genskaber scenariet: en frisk browser med forudindsat, forældet
+1-foredrags-data injiceret **før** noget som helst af sidens eget
+script kører (præcis som en reelt forældet browser ville opføre sig) —
+efter rettelsen viser siden korrekt alle 12 aktuelle foredrag.
+
+**Om cache/service worker (punkt 6-7 i din forespørgsel):** Dette
+projekt har **ingen** service worker og har aldrig haft det — bekræftet
+ved eftersøgning i hele projektet. Den reelle årsag var som beskrevet
+ovenfor: forældet data i browserens LocalStorage, ikke en
+service-worker-cache. For alligevel at sikre, at GitHub Pages/browseren
+ikke viser gamle **filer** efter en deployment, er alle lokale
+JS/CSS-referencer på samtlige 12 sider nu forsynet med en
+versionsstreng (`?v=rc21`), så browseren tvinges til at hente friske
+filer, næste gang du deployer en ny version.
+
+**Bekræftelse:** Tekst og billede vises nu sammen for alle 12 foredrag —
+testet enkeltvis for hvert af dem (ikke stikprøve): kategori, titel,
+teaser, billede, "Foredraget sætter fokus på" med præcis 4 punkter,
+"Deltagerne får med sig" med udbyttetekst, og "Forespørg på
+foredraget"-knappen. Specifikt bekræftet for de tre navngivne foredrag
+("Ledelse – fra retning til resultater", "Tilknytning – det, der får
+mennesker til at vælge jer igen", "The MFG Compass™ – navigation under
+pres") i et scenarie, der aktivt genskaber den forældede databug.
+
+**Ændrede kodefiler:** `assets/js/content-loader.js`,
+`assets/js/admin.js` (den reelle rettelse), samt alle 12 HTML-filer
+(kun tilføjet `?v=rc21` på script-/stylesheet-referencer — ingen andet
+indhold ændret i disse filer).
+
+**Vigtigt forbehold:** Min billedvisning fungerede desværre slet ikke i
+denne session (bekræftet ved gentagne forsøg), så jeg kunne ikke selv se
+skærmbillederne af de tre modaler. De er vedhæftet separat til din egen
+visuelle kontrol.
+
 ## RC20 — de rigtige billeder fra PowerPoint indsat
 
 Bygget videre på RC19. Kun billedfilerne er ændret — ingen kode, ingen
