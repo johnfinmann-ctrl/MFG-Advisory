@@ -1258,6 +1258,7 @@
   }
 
   const TALKS_DATA_VERSION = 'v2-12talks-focus-takeaway';
+  const CASES_DATA_VERSION = 'v3-11cases-full';
 
   async function seedTalksIfNeeded() {
     const hasCurrentData = savedContent.talks && savedContent['talks_data_version'] === TALKS_DATA_VERSION;
@@ -1273,6 +1274,20 @@
     savedContent['talks_data_version'] = TALKS_DATA_VERSION;
   }
 
+  async function seedCasesIfNeeded() {
+    const hasCurrentData = savedContent.cases && savedContent['cases_data_version'] === CASES_DATA_VERSION;
+    if (hasCurrentData) return;
+    if (!window.MFG_DEFAULT_CASES) return;
+    const value = JSON.stringify(window.MFG_DEFAULT_CASES);
+    try {
+      await window.MFGStore.setMany({ cases: value, 'cases_data_version': CASES_DATA_VERSION });
+    } catch (e) {
+      console.warn('MFG admin: could not save seeded cases, using them for this view only', e);
+    }
+    savedContent.cases = value;
+    savedContent['cases_data_version'] = CASES_DATA_VERSION;
+  }
+
   // ---------------- Boot ----------------
   async function boot() {
     document.getElementById('backendPill').textContent =
@@ -1280,6 +1295,7 @@
 
     savedContent = await window.MFGStore.getAll();
     await seedTalksIfNeeded();
+    await seedCasesIfNeeded();
     await discoverFields();
     renderNav();
     renderAllSections();

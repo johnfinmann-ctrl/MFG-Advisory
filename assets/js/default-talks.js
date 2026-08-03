@@ -13,6 +13,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't1', slug: 'mennesker-fra-potentiale-til-performance',
     title: 'Mennesker – fra potentiale til performance', category: 'mennesker',
+    subtitle: '– fra potentiale til performance',
     teaser: 'Et foredrag om at se hele mennesket bag adfærden og skabe rammer, relationer og motivation, der gør potentiale synligt i handling.',
     focus: [
       'Forstå forskellen på adfærd, mønstre, behov og potentiale.',
@@ -27,6 +28,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't2', slug: 'tilknytning-vaelge-jer-igen',
     title: 'Tilknytning – det, der får mennesker til at vælge jer igen', category: 'mennesker',
+    subtitle: '– det, der får mennesker til at vælge jer igen',
     teaser: 'Opsigelsen er slutpunktet – ikke begyndelsen. Tilknytning skabes længe før medarbejderen overvejer at forlade virksomheden.',
     focus: [
       'Skeln mellem tilfredshed, engagement, commitment og tilknytning.',
@@ -41,6 +43,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't3', slug: 'psykologisk-tryghed-sandheden-i-tide',
     title: 'Psykologisk tryghed – når sandheden kommer frem i tide', category: 'mennesker',
+    subtitle: '– når sandheden kommer frem i tide',
     teaser: 'Tryghed er ikke fravær af krav. Det er modet til at sige det vigtige, dele fejl og udfordre beslutninger, før tavshed bliver dyr.',
     focus: [
       'Skeln mellem komfort, frygt og læring med høje standarder.',
@@ -55,6 +58,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't4', slug: 'ledelse-fra-retning-til-resultater',
     title: 'Ledelse – fra retning til resultater', category: 'ledelse',
+    subtitle: '– fra retning til resultater',
     teaser: 'Et foredrag om den daglige ledelsesadfærd, der gør retning tydelig, ansvar muligt og opfølgning til læring i stedet for kontrol.',
     focus: [
       'Led fra situationen – ikke automatisk fra din vane.',
@@ -69,6 +73,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't5', slug: 'ledelse-uden-formel-magt',
     title: 'Ledelse uden formel magt – fra position til indflydelse', category: 'ledelse',
+    subtitle: '– fra position til indflydelse',
     teaser: 'Hvordan skaber du retning, ejerskab og resultater, når du ikke kan bestemme – over partnere, kolleger eller selvstændige ejere?',
     focus: [
       'Skeln mellem formel magt, faglighed, relation og troværdighed.',
@@ -83,6 +88,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't6', slug: 'lederen-som-flaskehals',
     title: 'Når lederen bliver organisationens flaskehals', category: 'ledelse',
+    subtitle: 'organisationens flaskehals',
     teaser: 'Overinvolvering, uklare mandater og for mange eskalationer gør organisationen langsom og afhængig – også når intentionen er god.',
     focus: [
       'Genkend ventetid, beslutningskøer og skjult afhængighed.',
@@ -97,6 +103,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't7', slug: 'kultur-det-vi-goer-accepterer-gentager',
     title: 'Kultur – det vi gør, accepterer og gentager', category: 'kultur',
+    subtitle: '– det vi gør, accepterer og gentager',
     teaser: 'Et foredrag om det usynlige system, der former adfærd, samarbejde, beslutninger og resultater – også når ingen leder følger med.',
     focus: [
       'Afdæk kultur gennem ord, adfærd, belønning og tolerance.',
@@ -111,6 +118,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't8', slug: 'kundeoplevelsen-ikke-kun-kundeservice',
     title: 'Kundeoplevelsen er ikke kundeservices ansvar', category: 'kultur',
+    subtitle: 'kundeservices ansvar',
     teaser: 'Kunden møder én virksomhed. Foredraget viser, hvordan oplevelsen skabes før, under og efter købet – af ledelse, mennesker, systemer og overleveringer.',
     focus: [
       'Se kunderejsen på tværs af touchpoints og interne siloer.',
@@ -125,6 +133,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't9', slug: 'forretningsudvikling-vaerdien-bliver-virkelig',
     title: 'Forretningsudvikling – når værdien bliver virkelig', category: 'forretning',
+    subtitle: '– når værdien bliver virkelig',
     teaser: 'Et praksisnært foredrag om at skabe sammenhæng mellem kundebehov, strategi, salg og drift – på tværs af B2C, B2B og B2G.',
     focus: [
       'Identificér kundens reelle behov og den værdi, kunden køber.',
@@ -139,9 +148,10 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't10', slug: 'fra-6-til-37-mio-kr',
     title: 'Fra 6 til 37 mio. kr. – sammen med ejeren', category: 'forretning',
+    subtitle: '– sammen med ejeren',
     teaser: 'En dokumenteret vækstrejse fra lokal butik til stærk forretning – bygget på kundebehov, nye markedsspor, B2B og en konsekvent kommerciel rytme.',
     focus: [
-      'Kundebehov og service som differentiering – blandt andet hotline 08–22.',
+      'Kundebehov og service som differentiering – bl.a. hotline 08–22.',
       'Website og Norge gjorde markedet større end lokalområdet.',
       'B2B-partnerskaber, pipeline og proaktiv aktivitetsudvikling.',
       'Ejerens rolle, sparringens rolle og disciplineret opfølgning.'
@@ -153,6 +163,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't11', slug: 'strategi-virker-mandag-morgen',
     title: 'Strategi virker først, når den kan ses mandag morgen', category: 'forretning',
+    subtitle: 'når den kan ses mandag morgen',
     teaser: 'Et foredrag om at oversætte strategiske ambitioner til prioriteringer, mandater, adfærd og synlige resultater i hverdagen.',
     focus: [
       'Find bruddet mellem beslutning og virkelighed.',
@@ -167,6 +178,7 @@ window.MFG_DEFAULT_TALKS = [
   {
     id: 't12', slug: 'mfg-compass-navigation-under-pres',
     title: 'The MFG Compass™ – navigation under pres', category: 'forretning',
+    subtitle: '– navigation under pres',
     teaser: 'Du kan ikke styre vejret. Men du kan styre navigationen, når data bliver tvetydige, tempoet stiger og organisationen mister kursen.',
     focus: [
       'Læs fire signaler: mennesker, ledelse, kultur og forretning.',

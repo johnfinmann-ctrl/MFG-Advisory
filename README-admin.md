@@ -4,6 +4,186 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC23 — Cases-siden genopbygget med alle 11 cases
+
+Bygget videre på RC22 (Foredrag-verifikationen). Ingen ændringer i
+Supabase, Vercel, Google Analytics, Foredrag, Compass eller
+kontaktoplysninger.
+
+### Liste over alle 11 cases (kategori · sort_order)
+
+1. **Mennesker** — Fra høj personaleomsætning til en onboarding, der skabte tilknytning
+2. **Mennesker** — Retail Academy gjorde læring til en del af driften
+3. **Mennesker** — Fra reaktiv kundeservice til fælles ansvar for kundeoplevelsen
+4. **Ledelse** — Én ledelsesrytme på tværs af 32 butikker
+5. **Ledelse** — Ledelse gennem indflydelse – ikke organisationsdiagram
+6. **Ledelse** — Lokalt mandat uden at miste den fælles retning
+7. **Kultur** — Kundeløftet blev gjort til adfærd – ikke en plakat
+8. **Kultur** — Fra lokale sandheder til en åben performancekultur
+9. **Forretning** — Fra uensartet drift til målbar kommerciel fremdrift
+10. **Forretning** — Fra 6 til 37 mio. kr. i årlig omsætning
+11. **Forretning** — 15 nøgleforretninger skabte 32 procent vækst
+
+Fordeling: 3 Mennesker, 3 Ledelse, 2 Kultur, 3 Forretning — som krævet.
+
+### Indsigter hentet fra 8-case-filen (kun hvor de klart matcher)
+
+| Case | Indsigt |
+|---|---|
+| 1. Onboarding/tilknytning | "Tilknytning skabes længe før opsigelsen" |
+| 2. Retail Academy | "Træning skal kunne bruges mandag morgen" |
+| 3. Kundeservice på tværs | "Kunden ser én virksomhed – ikke jeres siloer" |
+| 4. Ledelsesrytme | "Strategi skaber først værdi, når den får en rytme" |
+| 5. Ledelse gennem indflydelse | "Du kan ikke kommandere dig til ejerskab" |
+| 6. Lokalt mandat | "Frihed virker bedst med en fælles retning" |
+| 7. Kundeløftet som adfærd | "Tydelighed gør ansvar muligt" |
+| 8. Åben performancekultur | "Åbenhed er også sund forretning" |
+| 10. Fra 6 til 37 mio. | "Vækst kræver flere ben på taburetten" |
+
+Case 9 og 11 fik **ingen** ekstra indsigt — der var ikke et tydeligt nok
+match blandt de foretrukne eksempler, og opgaven bad om at bruge dem
+"kun, når de klart matcher". Ingen case har mere end én indsigt (under
+den tilladte grænse på to).
+
+### Tal harmoniseret (11-case-filen vandt, som krævet)
+
+Ingen reelle uoverensstemmelser blev fundet mellem de to filers *tal* —
+8-case-filen bruger stort set de samme nøgletal. Der var dog stilistiske
+forskelle (fx "55 procentpoint / næsten 79 % relativ reduktion" i
+8-case-filen for personaleomsætning), som **ikke** er brugt — kun
+11-case-filens egne formuleringer ("70 % til 15 %", "+15 pp") indgår.
+Alle tal på siden stammer udelukkende fra 11-case-filen: ca. 30 ledere,
+32 butikker, NPS +10 pp, eNPS +15 pp, personaleomsætning 70 %→15 %, 6 år
+for udviklingen fra 6 til 37 mio. kr., og "flere opnåede TOP50" (ikke at
+alle 15 gjorde det).
+
+### Fortrolighed — bekræftet
+
+Side 15 i 11-case-filen (mærket "INTERNT – SKAL IKKE UPLOADES") er
+**ikke** brugt til noget som helst. Den blev udelukkende brugt til at
+lokalisere og udelukke sig selv fra al videre læsning. Der er kørt en
+eksplicit søgning gennem hele projektmappen efter "SENG", "Bang &
+Olufsen"/"Bang og Olufsen" og "Randers" — ingen af delene findes noget
+sted i de leverede filer (det ene "286"-hit, som blev fundet, er en
+kommentar i koden, der forklarer, HVORFOR den case bevidst er udeladt —
+ikke selve indholdet). Case-emnet "286 % vækst på ét år" fra
+8-case-filen er ikke oprettet som case 12 eller nogen andre steder.
+
+### Sprog
+
+Kildeteksten fra 11-case-filen bruger allerede konsekvent "jeg" for
+Mortens egne, individuelle handlinger ("Jeg etablerede…", "Mit
+ansvar…") og "vi" specifikt, når det beskriver en fælles indsats sammen
+med det daværende team ("Vi fulgte udviklingen…", "Vi indførte
+SLA'er…") — præcis det mønster, opgaven bad om at bevare. Der er derfor
+**ikke** foretaget blind søg-og-erstat; den oprindelige, korrekte
+sprogbrug er bevaret uændret.
+
+### Struktur og filtrering
+
+Løsning valgt: **modal** (samme arkitektur som Foredrag-siden, for
+konsistens og for at undgå unødig kompleksitet). Hvert kort viser
+kategori, titel, teaser, op til 3 nøgletal, "Læs hele casen" og "Book en
+samtale". Fuld case ved klik: kategori, organisationstype/omfang, titel,
+teaser, Udfordringen, Mit ansvar, Sådan greb jeg det an, nøgletal,
+Resultatet, central indsigt (hvor relevant), Sådan kan MFG Advisory
+hjælpe, og CTA. Filtrene (Alle/Mennesker/Ledelse/Kultur/Forretning) er
+testet med præcis optælling ved alle bredder.
+
+### Forside
+
+Tre fremhævede cases, der repræsenterer tre forskellige retninger
+(Mennesker, Ledelse, Forretning), med link til hele Cases-siden.
+
+### Billeder
+
+11 selvstændige placeholder-billeder (ét pr. case, ikke delt), i
+`assets/images/cases/`, samme navy/guld-stil som Foredrag-billederne, så
+Morten senere kan udskifte ét ad gangen.
+
+### Test gennemført
+
+79 automatiserede tjek: alle 11 cases til stede med korrekt titel,
+kategori, teaser; filtrenes præcise optælling (3/3/2/3); ingen
+horisontal scroll ved 375/390/768/1024/1440px; mobil-modal med internt
+scroll bekræftet; forsidens 3 fremhævede cases; admin viser nu 11 cases;
+Foredrag, Compass og kontaktoplysninger bekræftet uændrede. Manuel
+gennemgang af de fire specifikt efterspurgte cases (01/04/08/10) med
+skærmbilleder af både fuld oversigt og hver enkelt åbne case.
+
+**Ændrede/nye filer:** Ny fil `assets/js/default-cases.js` (alle 11
+cases), ny mappe `assets/images/cases/` (11 billeder). Ændret:
+`cases.html` (ny intro, filtre, fjernet de fire gamle
+eksempel-case-teasere), `index.html` (ny fremhævet cases-sektion),
+`assets/js/content-loader.js` (fuldt genskrevet case-rendering + filtre
++ seeding), `assets/js/admin.js` (tilsvarende seeding-logik),
+`assets/css/style.css` (disclaimer- og nøgletal-styling), samt
+script-tags på alle 11 offentlige sider + admin.html.
+
+## RC22 — fuld verifikation mod PowerPoint-facittet
+
+Gennemført en systematisk, feltvis sammenligning af alle 12 foredrag mod
+de to originale PowerPoint-filer (ikke stikprøve — alle felter for alle
+12). Sammenligningen blev lavet programmatisk (Python + python-pptx),
+ikke ved øjemål, for at undgå transskriptionsfejl.
+
+### Verifikationstabel (alle 12 foredrag, alle felter)
+
+| Foredrag | Titel | Undertitel | Teaser | 4 fokuspunkter | Udbytte | Billede | Kategori | Link |
+|---|---|---|---|---|---|---|---|---|
+| Mennesker – fra potentiale til performance | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Mennesker | ✅ |
+| Tilknytning – det, der får mennesker til at vælge jer igen | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Mennesker | ✅ |
+| Psykologisk tryghed – når sandheden kommer frem i tide | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Mennesker | ✅ |
+| Ledelse – fra retning til resultater | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Ledelse | ✅ |
+| Ledelse uden formel magt – fra position til indflydelse | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Ledelse | ✅ |
+| Når lederen bliver organisationens flaskehals | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Ledelse | ✅ |
+| Kultur – det vi gør, accepterer og gentager | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Kultur | ✅ |
+| Kundeoplevelsen er ikke kundeservices ansvar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Kultur | ✅ |
+| Forretningsudvikling – når værdien bliver virkelig | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Forretning | ✅ |
+| Fra 6 til 37 mio. kr. – sammen med ejeren | ✅* | ✅ | ✅ | ✅* | ✅ | ✅ | ✅ Forretning | ✅ |
+| Strategi virker først, når den kan ses mandag morgen | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Forretning | ✅ |
+| The MFG Compass™ – navigation under pres | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Forretning | ✅ |
+
+**\* Én afvigelse fundet og rettet:** I foredraget "Fra 6 til 37 mio. kr."
+stod der i den tidligere version "– blandt andet hotline 08–22" i det
+første fokuspunkt. PowerPoint-kilden bruger forkortelsen "– bl.a. hotline
+08–22". Rettet til at matche kildeteksten ordret.
+
+**Nyt felt tilføjet:** Hver titel i PowerPoint-filerne viste sig at være
+opdelt i to linjer (fx "Forretningsudvikling" + "– når værdien bliver
+virkelig"). Den fulde titel (begge linjer) var allerede korrekt bevaret
+som `title` fra tidligere runder, men undertitlen (linje 2) var ikke
+gemt som et selvstændigt, kontrollerbart felt. Tilføjet som `subtitle`
+til alle 12 foredrag, udtrukket ord for ord fra kilden, og vist tydeligt
+i modalen lige under titlen.
+
+**Billeder:** Bekræftet uændrede fra RC20 — stadig det korrekte,
+unikke billede fra det matchende slide for hvert af de 12 foredrag.
+
+**Kategori og forespørgselslink:** Alle 12 bekræftet korrekt kategoriseret
+(3 Mennesker, 3 Ledelse, 2 Kultur, 4 Forretning) og alle forespørgselslinks
+peger korrekt på `kontakt.html` med foredragets titel forudfyldt.
+
+### Test af mobil-scroll og tekstafskæring
+
+Testet specifikt for ét foredrag i hver kategori (Mennesker, Ledelse,
+Kultur, Forretning) ved 375px bredde: ingen tekst er beskåret vandret i
+noget element, modalens panel er scrollbart (`overflow-y:auto`), og —
+vigtigst — efter at have scrollet til bunden af modal-panelet bliver
+"Forespørg på foredraget"-knappen bekræftet fuldt synlig og korrekt
+positioneret. Screenshots taget af både desktop og mobil for alle fire
+kategorier.
+
+**Ændrede filer (kun disse to):** `assets/js/default-talks.js` (én
+tekstrettelse + `subtitle`-felt på alle 12), `assets/js/content-loader.js`
+(viser nu undertitlen i modalen). Alle øvrige sider og funktioner
+bekræftet uændrede.
+
+**Vigtigt forbehold:** Min billedvisning virkede desværre stadig ikke i
+denne session, så jeg kunne ikke selv se de otte skærmbilleder (4
+desktop + 4 mobil). De er vedhæftet separat til din egen visuelle
+kontrol.
+
 ## RC21 — den præcise fejlårsag fundet og rettet
 
 **Den præcise fejlårsag:** `seedTalksIfNeeded()` i både
