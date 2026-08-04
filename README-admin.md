@@ -4,6 +4,20 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC26 — officiel review-version
+
+Dette er den officielle review-version, klar til levering. Bygget på
+RC25 (som allerede indeholdt det ægte, PowerPoint-udtrukne billede til
+det 13. foredrag "Når løftet møder hverdagen" — bevaret uændret her, da
+det er en bekræftet forbedring, ikke noget der skulle rulles tilbage).
+Ingen kodeændringer i denne runde — kun denne changelog-opdatering.
+
+### Kendte udeståender
+
+- Cases anvender midlertidige placeholder-billeder.
+- Endelige premium-billeder indsættes i næste release.
+- Ingen øvrige funktionelle mangler.
+
 ## RC25 — det rigtige billede indsat, Foredrag-siden 100 % færdig
 
 Ren finpudsning af RC24, som eksplicit bedt om. Kun Foredrag-siden er
