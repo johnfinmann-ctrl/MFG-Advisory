@@ -4,6 +4,73 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC25 — det rigtige billede indsat, Foredrag-siden 100 % færdig
+
+Ren finpudsning af RC24, som eksplicit bedt om. Kun Foredrag-siden er
+rørt, og kun de filer, der var nødvendige.
+
+### 1. Det rigtige billede
+
+Udtrukket direkte fra den vedhæftede PowerPoint-fil
+("MFGAdvisory - Hjemmesideforside - Når løftet møder hverdagen.pptx").
+Slidet indeholdt to billeder — et 256×256 MFG-logo (samme mønster som de
+øvrige 12 foredrags-slides) og selve forsidebilledet i fuld opløsning
+(1672×929). Sidstnævnte er udtrukket og gemt under samme filnavn og
+kvalitetsindstilling (JPEG, kvalitet 88) som de øvrige 12 foredragsbilleder
+— ingen placeholder, intet logo, ingen midlertidig grafik.
+
+Verificeret direkte: kortets billede har `naturalWidth: 1672,
+naturalHeight: 929` — den faktiske PowerPoint-eksport, ikke den tidligere
+900×560 genererede placeholder. Samme beskæring (`object-fit:cover`,
+140px kort-højde) og samme visning i både kort og modal som de øvrige 12.
+
+### 2-3. Korthøjde og knapper
+
+Allerede løst og verificeret i RC24 (flex-column-layout, knap-række med
+`margin-top:auto`, samt CSS-specificitetsrettelsen, der fik filtrering
+til at fungere korrekt sammen med højde-fixet). Genverificeret i denne
+runde med det rigtige billede indsat: alle 13 korts billeder har
+identisk 140px højde, og knapperne er pixel-præcist justeret på tværs af
+alle rækker, inklusive rækken med det nye foredrag.
+
+### 4. Kultur-filter
+
+Bekræftet ved faktisk synlighedstest: filteret viser præcis disse tre,
+ikke flere, ikke færre:
+- Kultur – det vi gør, accepterer og gentager
+- Kundeoplevelsen er ikke kundeservices ansvar
+- Når løftet møder hverdagen
+
+### 5. Modal
+
+Identisk opbygget med de øvrige 12: billede, kategori, titel, teaser,
+"Foredraget sætter fokus på" (4 punkter), "Deltagerne får med sig",
+CTA-knap. Ingen layoutforskelle — samme kode, samme CSS-klasser.
+
+### 6. Ikke ændret
+
+Cases, Forsiden, Mennesker, Ledelse, Kultur (siden), Forretning, Om
+Morten, Kontakt — bekræftet ved diff mod RC24: **kun** billedfilen
+`assets/images/foredrag/naar-loftet-moder-hverdagen.jpg` er ændret.
+Ingen anden fil i hele projektet er rørt i denne runde.
+
+### 7. Test — verificeret både automatisk og visuelt
+
+30 automatiserede tjek, herunder eksplicit kontrol af, at billedets
+faktiske pixel-dimensioner matcher den ægte PowerPoint-eksport (ikke
+placeholderen). Derudover verificeret **visuelt** ved at se de faktiske
+skærmbilleder (ikke kun stole på automatiske tjek) — herunder fandt jeg
+undervejs to fejl i min egen testscript (ikke i selve sitet: en
+element-reference, der var blevet forældet efter en sidegenindlæsning,
+og en cookiebanner, der blokerede et klik) og rettede dem, før jeg
+konkluderede noget.
+
+Testet på desktop (1400px), tablet (768px) og mobil (375px): ingen
+horisontal scroll, alle 13 foredrag til stede, ingen konsolfejl, ingen
+JavaScript-fejl.
+
+**Eneste ændrede fil:** `assets/images/foredrag/naar-loftet-moder-hverdagen.jpg`
+
 ## RC24 — kort-højdejustering + 13. foredrag under Kultur
 
 ### Vigtigt forbehold om billedet
