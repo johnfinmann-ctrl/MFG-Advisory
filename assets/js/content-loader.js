@@ -485,7 +485,7 @@
   }
 
   const DEFAULT_TALKS = window.MFG_DEFAULT_TALKS || [];
-  const TALKS_DATA_VERSION = 'v2-12talks-focus-takeaway';
+  const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
   const DEFAULT_CASES = window.MFG_DEFAULT_CASES || [];
   const CASES_DATA_VERSION = 'v3-11cases-full';
 

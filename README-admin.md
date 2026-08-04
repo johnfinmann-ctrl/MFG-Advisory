@@ -4,6 +4,81 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC24 — kort-højdejustering + 13. foredrag under Kultur
+
+### Vigtigt forbehold om billedet
+
+Filen "MFGAdvisory - Hjemmesideforside - Når løftet møder hverdagen.pptx"
+var **ikke** vedhæftet i beskeden, jeg modtog. Jeg har derfor brugt et
+placeholder-billede (samme navy/guld-stil som de øvrige 12 foredrag,
+`assets/images/foredrag/naar-loftet-moder-hverdagen.jpg`), så resten af
+arbejdet ikke blev blokeret. Send den rigtige PowerPoint-fil, så
+udskifter jeg billedet — filstien og alt kode omkring det er allerede på
+plads, så det kun kræver at erstatte selve billedfilen.
+
+### 1. Kort-højdejustering
+
+Løst med `display:flex;flex-direction:column` på kortet og
+`margin-top:auto` på knap-rækken, scopet **udelukkende** til
+`#foredrag-oversigt` (Foredrag-siden), så Cases-siden — som deler samme
+CSS-klasse til sine kort — ikke påvirkes.
+
+**En reel fejl fundet og rettet undervejs:** Den nye, ID-scopede regel
+havde højere CSS-specificitet end den eksisterende
+`.talk-card.is-hidden-by-filter{display:none}`-regel, som filtrene
+bruger til at skjule kort. Det betød, at filtreringen holdt op med at
+virke **visuelt**, selvom mit første automatiske tjek (fejlagtigt) bestod,
+fordi det kun tjekkede CSS-klassen og ikke den faktiske synlighed. Fanget
+ved at faktisk se på et skærmbillede af det filtrerede resultat — rettet
+ved at gøre skjule-reglen til `!important`, og mine tests er efterfølgende
+skærpet til at tjekke `getComputedStyle().display` i stedet for kun
+klassen, så denne fejltype ikke kan glide igennem stille igen.
+
+Verificeret med præcise pixel-målinger: kort i samme række har nu
+identisk højde (fx 443px/443px/443px), og knapperne flugter vandret på
+pixel (samme `top`-position på tværs af alle kort i rækken). På mobil
+har kort naturlig højde, men knap-rækken ligger stadig nederst i hvert
+enkelt kort.
+
+### 2. Nyt foredrag under Kultur
+
+"Når løftet møder hverdagen" tilføjet med præcis den angivne tekst
+(teaser, 4 fokuspunkter, udbyttetekst), kategori Kultur, sort_order 13.
+
+### 3. Kategoritælling
+
+Alle: 13 · Mennesker: 3 · Ledelse: 3 · Kultur: 3 · Forretning: 4 —
+bekræftet ved faktisk synlighedstest af hvert filter.
+
+### 4. Seeding/versionering
+
+`talks_data_version` bumpet fra `v2-12talks-focus-takeaway` til
+`v3-13talks-kultur-loftet` i både `content-loader.js` og `admin.js`.
+Testet specifikt: en browser med gammel v2-data i LocalStorage bliver
+automatisk opgraderet til de 13 aktuelle foredrag ved næste besøg.
+
+Cache-busting bumpet til `?v=rc24` for de filer, der faktisk ændrede sig
+(`style.css`, `default-talks.js`, `content-loader.js`, `admin.js`) på
+alle 12 sider. Øvrige, uændrede filers versionsnumre er ikke rørt.
+
+### Test gennemført
+
+33 automatiserede tjek: alle 13 foredrag til stede, filtrenes præcise
+optælling (verificeret via faktisk CSS-synlighed), det nye foredrags
+modal med korrekt billede og fuldt indhold, knap-flugtning testet med
+pixel-præcision på tværs af flere rækker, ingen tekstafskæring, ingen
+horisontal scroll ved mobil/tablet/desktop, stale-data-opgradering
+bekræftet, og ingen regression på Cases (stadig 11 cases), Compass,
+kontakt eller øvrige sider.
+
+**Ændrede/nye filer:** `assets/js/default-talks.js` (nyt foredrag),
+`assets/js/content-loader.js` og `assets/js/admin.js` (version bumpet),
+`assets/css/style.css` (højde-fix + specificitetsrettelse), ny billedfil
+`assets/images/foredrag/naar-loftet-moder-hverdagen.jpg`, samt
+version-bump på script-/style-referencer på alle 12 sider (kun
+versionsnummer ændret — bekræftet ved diff, ingen indholdsændringer på
+Cases eller de øvrige sider).
+
 ## RC23 — Cases-siden genopbygget med alle 11 cases
 
 Bygget videre på RC22 (Foredrag-verifikationen). Ingen ændringer i

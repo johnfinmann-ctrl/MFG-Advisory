@@ -451,7 +451,7 @@
   .talk-filter{border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:8px 20px;font-size:.82rem;color:#c7cedb;background:transparent;cursor:pointer;transition:var(--transition)}
   .talk-filter:hover{border-color:var(--copper-light);color:var(--copper-light)}
   .talk-filter.active{background:var(--copper);border-color:var(--copper);color:var(--navy);font-weight:600}
-  .talk-card.is-hidden-by-filter{display:none}
+  .talk-card.is-hidden-by-filter{display:none !important}
 
   /* ===== FOREDRAG: detail modal focus list ===== */
   .talk-focus-list{list-style:none;padding:0;margin:16px 0}
@@ -470,6 +470,17 @@
   .talk-card-actions button.ct-link{background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:.85rem}
   .talk-card-actions .btn-ghost{border-color:rgba(255,255,255,.3);color:#fff;padding:9px 18px;font-size:.82rem}
   .talk-card-actions .btn-ghost:hover{border-color:var(--copper-light);color:var(--copper-light)}
+
+  /* Foredrag-siden: kortene i #foredrag-oversigt bliver flex-kolonner, så
+     "Læs mere"/"Forespørg" altid ligger nederst i kortet, uanset hvor lange
+     titel og teaser er — uden en fast højde, der ville skære indhold af.
+     Scopet til KUN #foredrag-oversigt, så Cases-sidens kort (som deler
+     samme .talk-card-klasse) og forsidens fremhævede foredrag ikke
+     påvirkes. */
+  #foredrag-oversigt .talk-card{display:flex;flex-direction:column;height:100%}
+  #foredrag-oversigt .talk-card-actions{margin-top:auto;padding-top:8px}
+  #foredrag-oversigt .cases-grid{align-items:stretch}
+  #foredrag-oversigt .talk-card-meta{margin-top:0}
   #foredrag-oversigt .container{max-width:1180px}
   @media(min-width:1024px){#foredrag-oversigt .container{max-width:1320px}}
   @media(min-width:1200px){#foredrag-oversigt .cases-grid{grid-template-columns:repeat(3,1fr);gap:26px}}

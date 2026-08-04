@@ -189,5 +189,20 @@ window.MFG_DEFAULT_TALKS = [
     takeaway: 'Et fælles navigationssprog til at handle roligt, samlet og rettidigt under pres.',
     image_url: 'assets/images/foredrag/mfg-compass-navigation-under-pres.jpg',
     cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 12, is_featured: true, status: 'published'
+  },
+  {
+    id: 't13', slug: 'naar-loftet-moder-hverdagen',
+    title: 'Når løftet møder hverdagen', category: 'kultur',
+    subtitle: '',
+    teaser: 'Et foredrag om, hvordan troværdighed skabes – eller mistes – i mødet mellem det, virksomheden lover, og det medarbejderne oplever.',
+    focus: [
+      'Find bruddet mellem løftet og den oplevede hverdag.',
+      'Gør klarhed, adfærd og opfølgning til samme bevægelse.',
+      'Skift fastlåste relationer til ansvar og handlekraft.',
+      'Styrk tilknytning ved at gøre løftet synligt i hverdagen.'
+    ],
+    takeaway: 'Konkrete greb, der gør løftet troværdigt og mærkbart i hverdagen.',
+    image_url: 'assets/images/foredrag/naar-loftet-moder-hverdagen.jpg',
+    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 13, is_featured: false, status: 'published'
   }
 ];

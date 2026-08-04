@@ -1257,7 +1257,7 @@
     wireSettings();
   }
 
-  const TALKS_DATA_VERSION = 'v2-12talks-focus-takeaway';
+  const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
   const CASES_DATA_VERSION = 'v3-11cases-full';
 
   async function seedTalksIfNeeded() {
