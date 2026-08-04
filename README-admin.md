@@ -4,6 +4,76 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC27 — Cases fuldstændigt erstattet med de 8 nye, godkendte cases
+
+**Skriftlig godkendelse:** Morten har bekræftet, at "CASES til WEB (2)
+erstat" er den nye, eneste offentlige kilde til Cases, og at
+virksomhedsnavnene SENG og Bang & Olufsen må vises åbent på
+hjemmesiden.
+
+### Den faktiske fejl
+
+Det tidligere 11-case-datasæt var stadig aktivt i `default-cases.js`.
+"Alle"-visningen så ud til at virke, fordi den nye kode teknisk set
+kunne rendere data — men da intet nyt datasæt var indsat endnu, var der
+reelt ingen fejl i selve filterlogikken at finde; opgaven var at
+**erstatte datakilden**, hvilket nu er gjort fuldstændigt.
+
+### Ændringer
+
+- **`assets/js/default-cases.js`:** Fuldstændigt genskrevet. Alle 11
+  gamle cases er fjernet permanent — titler, tekster, id'er og billeder.
+  Kun de 8 nye cases fra erstatningsfilen findes nu, ordret fra kilden
+  (situation → Udfordringen, retning → Mit ansvar, handling → Sådan
+  greb jeg det an, resultat → Resultatet, begge indsigter pr. case).
+- **Kategori "Forretningsudvikling":** Tilføjet som ny nøgle
+  (`forretningsudvikling`) i `content-loader.js`'s kategorivisning,
+  brugt konsekvent i data, filterknap (`cases.html`) og visning. Den
+  tidligere `forretning`-nøgle er bevaret uændret ved siden af (bruges
+  stadig af testimonials' retningsfelt et andet sted i koden — fjernet
+  ikke for ikke at risikere at ødelægge noget urelateret).
+- **`cases_data_version`:** Bumpet fra `v3-11cases-full` til
+  `v4-8cases-seng-bo` i både `content-loader.js` og `admin.js`, så
+  browsere med det gamle 11-case-datasæt i LocalStorage automatisk
+  opgraderes ved næste besøg.
+- **Introtekst og disclaimer på `cases.html`:** Rettet "11 eksempler" →
+  "8 eksempler", og disclaimeren er opdateret fra "anonymiserede
+  organisationer" til korrekt at nævne SENG og Bang & Olufsen ved navn
+  — det ville ellers have modsagt sig selv på siden.
+- **Billeder:** De 11 gamle placeholder-billeder er slettet permanent.
+  8 nye placeholder-filer under de nye slugs er oprettet (samme
+  midlertidige navy/guld-grafik som hidtil, jf. instruks — endelige
+  billeder kommer i næste release).
+- **Cache-busting:** `?v=rc27` på `default-cases.js`, `content-loader.js`
+  og `admin.js` på alle 12 sider.
+
+**Bemærket, men ikke rettet (uden for denne opgaves omfang):** Admin
+panelets case-editor (`renderCaseRows` i `admin.js`) bruger stadig et
+ældre feltskema (`industry`, `customer`, `direction`/`direction2`,
+`gallery`) fra før case-omlægningen i RC23 og er ikke i sync med det
+nuværende, rigere datamodel. Det påvirker ikke den offentlige side, som
+udelukkende bruger `content-loader.js`, men bør rettes i en senere
+runde, hvis Morten ønsker at redigere cases i adminpanelet.
+
+### Test — verificeret automatisk og visuelt
+
+41 automatiserede tjek: præcis 8 cases under "Alle", alle 11 gamle
+titler bekræftet væk, alle 4 filtre viser præcis 2 cases hver (tjekket
+via reel CSS-synlighed, ikke kun klassenavn), "Forretningsudvikling"
+bekræftet som både filterværdi og visningstekst, forsidens 3
+fremhævede cases fra det nye datasæt, en simuleret browser med gammel
+v3-data opgraderes automatisk til de 8 nye, mobiltest af Kultur- og
+Forretningsudviklings-filtre, og nul regression på Foredrag (fortsat 13
+foredrag), Compass, Kontakt og øvrige sider.
+
+Verificeret visuelt med skærmbilleder af "Alle" og alle fire filtre.
+
+**Ændrede/nye filer:** `assets/js/default-cases.js` (fuldt genskrevet),
+`assets/js/content-loader.js`, `assets/js/admin.js`, `cases.html`
+(introtekst, disclaimer, filterknap), ny mappe med 8 billedfiler i
+`assets/images/cases/` (11 gamle slettet), samt cache-busting
+versionsbump på alle 12 sider.
+
 ## RC26 — officiel review-version
 
 Dette er den officielle review-version, klar til levering. Bygget på

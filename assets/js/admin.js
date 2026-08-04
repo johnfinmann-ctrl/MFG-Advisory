@@ -1258,7 +1258,7 @@
   }
 
   const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
-  const CASES_DATA_VERSION = 'v3-11cases-full';
+  const CASES_DATA_VERSION = 'v4-8cases-seng-bo';
 
   async function seedTalksIfNeeded() {
     const hasCurrentData = savedContent.talks && savedContent['talks_data_version'] === TALKS_DATA_VERSION;

@@ -19,7 +19,8 @@
     mennesker:  { icon: 'i-people',     label: 'Mennesker' },
     ledelse:    { icon: 'i-leadership', label: 'Ledelse' },
     kultur:     { icon: 'i-culture',    label: 'Kultur' },
-    forretning: { icon: 'i-growth',     label: 'Forretning' }
+    forretning: { icon: 'i-growth',     label: 'Forretning' },
+    forretningsudvikling: { icon: 'i-growth', label: 'Forretningsudvikling' }
   };
 
   function applyValue(el, value) {
@@ -487,7 +488,7 @@
   const DEFAULT_TALKS = window.MFG_DEFAULT_TALKS || [];
   const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
   const DEFAULT_CASES = window.MFG_DEFAULT_CASES || [];
-  const CASES_DATA_VERSION = 'v3-11cases-full';
+  const CASES_DATA_VERSION = 'v4-8cases-seng-bo';
 
   async function seedTalksIfNeeded(content) {
     const storedVersion = content['talks_data_version'];

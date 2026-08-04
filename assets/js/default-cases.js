@@ -3,304 +3,209 @@
    der endnu ikke er gemt nogen cases i content-store'en).
    Delt mellem content-loader.js (offentlige sider) og admin.js
    (adminpanelet), så begge altid viser det samme, uanset hvilken side
-   der besøges først i en frisk browser. Samme mønster som
-   default-talks.js.
+   der besøges først i en frisk browser.
 
-   Indhold: de 11 cases fra MFG_Advisory_Websitecases_11_cases_v1.docx
-   (facit for antal, kategorier, titler, teasere, struktur, nøgletal og
-   anonymisering). Enkelte formuleringer ("indsigter") er hentet fra
-   CASES_til_WEB_word.docx, kun hvor de klart matcher en case herunder,
-   højst to pr. case — jf. de fem foretrukne eksempler, opgaven angav.
-   Alle organisationer er anonymiseret efter type, som i kildematerialet.
-   Case-emnet "286 % vækst på ét år" fra supplementfilen er bevidst IKKE
-   medtaget her, jf. opgavens instruks.
+   ERSTATNING (2026): Dette datasæt erstatter fuldstændigt det tidligere
+   11-case-datasæt. Indhold er hentet ordret fra
+   "CASES_til_WEB__2__erstat.docx" — den eneste kilde til Cases.
+   Virksomhedsnavnene SENG og Bang & Olufsen er eksplicit godkendt
+   skriftligt af Morten til offentlig visning på hjemmesiden.
+
+   Kategori "forretningsudvikling" bruges konsekvent (ikke "forretning")
+   i data, filter og visning, jf. eksplicit instruks.
    ========================================================================= */
 
 window.MFG_DEFAULT_CASES = [
   {
-    id: 'case1', slug: 'fra-hoej-personaleomsaetning-til-tilknytning',
-    title: 'Fra høj personaleomsætning til en onboarding, der skabte tilknytning',
+    id: 'case1', slug: 'seng-personaleomsaetning-70-til-15',
+    title: 'SENG: Personaleomsætning fra 70 % til 15 %',
     category: 'mennesker',
-    org_type: 'Landsdækkende retailkæde · 32 butikker · 100+ medarbejdere',
-    teaser: 'Personaleomsætningen blev reduceret fra cirka 70 til 15 procent som del af en samlet indsats med onboarding, lederansvar, træning og konsekvent opfølgning.',
-    challenge: 'Organisationen havde en meget høj personaleomsætning, og nye medarbejdere fik ikke en ensartet start. Introduktionen afhang i høj grad af den enkelte leder og den aktuelle travlhed i butikken. Det betød forskelle i oplæring, forventninger og tempo – og en dyr gentagelse af rekruttering og oplæring.',
-    responsibility: 'Som Head of Retail & Customer Service havde jeg ansvar for cirka 30 ledere, mere end 100 medarbejdere og P&L på cirka 250 mio. kr. Min opgave var både at stabilisere driften og skabe et mere professionelt forløb fra ansættelse til selvstændig performance.',
+    org_type: 'SENG · Landsdækkende retailkæde',
+    teaser: 'Åbenhed, oprigtig interesse og større forståelse for virksomhedens virkelighed skabte markant stærkere tilknytning blandt medarbejderne.',
+    challenge: 'SENG havde en personaleomsætning på cirka 70 %. Det udfordrede kontinuiteten, relationerne og muligheden for at opbygge en stærk fælles kultur.',
+    responsibility: 'Medarbejderne skulle ikke blot kende virksomhedens mål. De skulle forstå virkeligheden bag dem, opleve sig inddraget og mærke en oprigtig interesse for dem som mennesker.',
     approach: [
-      'Jeg etablerede et samlet 0-12 måneders onboardingforløb med tydelige milepæle, forventninger og opfølgningspunkter.',
-      'Lederens ansvar blev konkretiseret før opstart, i introduktionen, i den praktiske oplæring og i de løbende samtaler.',
-      'Produktviden, kundeoplevelse, salgstræning, leverandør- og fabriksbesøg samt læring i hverdagen blev samlet i ét forløb.',
-      'Vi fulgte udviklingen gennem samtaler, trivselsdata og personaleomsætning og brugte tilbagemeldinger til at justere forløbet.'
+      'Jeg skabte større åbenhed og dialog og prioriterede relationen til den enkelte medarbejder.',
+      'Samtidig etablerede jeg en struktureret træningskalender, et fælles årshjul og leverandørbesøg i udlandet.',
+      'Medarbejderne fik større indsigt i virksomhedens virkelighed, mål og resultater samt mere systematisk træning, udvikling og opfølgning.',
+      'Indsatsen bestod ikke af ét enkelt tiltag, men af en række sammenhængende greb, der skabte mening, involvering og tilknytning.'
     ],
     key_figures: [
       { value: '70 % til 15 %', label: 'Personaleomsætning' },
-      { value: '+15 pp', label: 'eNPS / trivsel' },
-      { value: '0-12 mdr.', label: 'Fælles onboarding' }
+      { value: '55 pp', label: 'Forbedring' },
+      { value: '+11 pp', label: 'Medarbejdertrivsel' }
     ],
-    result: 'Personaleomsætningen blev reduceret fra cirka 70 til 15 procent på under to år, mens eNPS steg med 15 procentpoint. Resultatet kan ikke tilskrives onboarding alene. Det blev skabt gennem en kombination af bedre introduktion, tydeligere ledelse, kompetenceudvikling, performanceopfølgning og et stærkere fokus på tilknytning.',
-    insights: ['Tilknytning skabes længe før opsigelsen'],
-    mfg_help: 'MFG Advisory kan kortlægge medarbejderrejsen og udvikle et konkret onboarding- og opfølgningsforløb, som lederne kan gennemføre i en travl hverdag.',
-    image_url: 'assets/images/cases/case-01-onboarding-tilknytning.jpg',
+    result: 'Personaleomsætningen blev reduceret fra cirka 70 % til 15 % — en forbedring på 55 procentpoint og en relativ reduktion på næsten 79 %. Samtidig steg medarbejdertrivslen med 11 procentpoint.',
+    insights: ['Tilknytning skabes længe før opsigelsen', 'Åbenhed er også sund forretning'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/seng-personaleomsaetning-70-til-15.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
     sort_order: 1, is_featured: true, status: 'published'
   },
   {
-    id: 'case2', slug: 'retail-academy-laering-del-af-driften',
-    title: 'Retail Academy gjorde læring til en del af driften',
+    id: 'case2', slug: 'bo-udvikling-140-franchisepartnere',
+    title: 'Bang & Olufsen: Udvikling af 140 franchisepartnere',
     category: 'mennesker',
-    org_type: 'Retailorganisation · Kompetenceudvikling · Kundeoplevelse',
-    teaser: 'Et fælles læringssystem for ledere og medarbejdere koblede produktviden, kundeoplevelse, salg og opfølgning tættere sammen.',
-    challenge: 'Træning blev tidligere gennemført som enkeltstående aktiviteter, ofte i forbindelse med kampagner eller produktlanceringer. Det gjorde det vanskeligt at sikre en fælles standard, følge læringen til dørs og omsætte den til ny adfærd i butikkerne.',
-    responsibility: 'Jeg havde ansvaret for at skabe en mere systematisk læringsstruktur på tværs af butikkerne og gøre lederne til aktive medspillere i udviklingen af deres egne teams.',
+    org_type: 'Bang & Olufsen · Fem nordiske markeder',
+    teaser: 'Kompetenceudvikling blev omsat til praktiske værktøjer, som den enkelte franchisepartner kunne anvende direkte i sin lokale forretning.',
+    challenge: 'Cirka 140 franchisepartnere på tværs af Danmark, Norge, Sverige, Finland og Island havde forskellige markeder, kompetencer og kommercielle udfordringer.',
+    responsibility: 'Udviklingen skulle tage udgangspunkt i den enkelte partners virkelighed og samtidig understøtte en fælles premiumoplevelse og tydelig kommerciel retning.',
     approach: [
-      'Jeg etablerede Retail Academy som en fælles ramme for produktviden, salg, kundeoplevelse og ledelse.',
-      'Træningen blev samlet i et årshjul og koblet til kampagner, sortiment, kunderejse og de vigtigste kommercielle prioriteter.',
-      'Lederne fik ansvar for at træne videre lokalt, observere adfærd og følge op i den daglige drift.',
-      'Fabriks- og leverandørbesøg, sidemandsoplæring og fælles videndeling gjorde læringen mere konkret og anvendelig.'
+      'Jeg kombinerede individuel sparring med Nordic Retail Academy, Train the Trainer, deling af best practice og konkrete værktøjer til pipeline, salgsaktiviteter og opfølgning.',
+      'Udviklingen blev koblet direkte til partnerens egen forretning, så ny viden kunne omsættes til konkrete handlinger i hverdagen.'
     ],
     key_figures: [
-      { value: '+25 %', label: 'Konvertering' },
-      { value: '+10 pp', label: 'NPS' },
-      { value: '32', label: 'Butikker' }
+      { value: '140', label: 'Franchisepartnere' },
+      { value: '5', label: 'Nordiske markeder' }
     ],
-    result: 'I perioden steg konverteringen med 25 procent, og NPS blev forbedret med 10 procentpoint. Retail Academy var en del af en større kommerciel og organisatorisk transformation og kan derfor ikke stå som en isoleret forklaring. Dens væsentligste bidrag var at gøre læring gentagelig, ledelsesforankret og tættere knyttet til den ønskede kundeoplevelse.',
-    insights: ['Træning skal kunne bruges mandag morgen'],
-    mfg_help: 'MFG Advisory kan udvikle et praksisnært academy, træningsårshjul eller lederdrevet læringsforløb, hvor kompetenceudvikling kobles direkte til adfærd, kundeoplevelse og de resultater, virksomheden ønsker at forbedre.',
-    image_url: 'assets/images/cases/case-02-retail-academy.jpg',
+    result: 'Partnerne fik et stærkere kommercielt værktøjssæt og bedre forudsætninger for at omsætte den overordnede strategi til handling i deres lokale marked.',
+    insights: ['Træning skal kunne bruges mandag morgen', 'Én løsning passer ikke til 140 forretninger'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/bo-udvikling-140-franchisepartnere.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
     sort_order: 2, is_featured: false, status: 'published'
   },
   {
-    id: 'case3', slug: 'fra-reaktiv-kundeservice-til-faelles-ansvar',
-    title: 'Fra reaktiv kundeservice til fælles ansvar for kundeoplevelsen',
-    category: 'mennesker',
-    org_type: 'National kundeservice · Danmark og Sverige · Tværgående samarbejde',
-    teaser: 'Kundeservice blev koblet tættere på salg og logistik gennem nye processer, fælles data og tydelige servicemål.',
-    challenge: 'Kundeservice håndterede mange henvendelser reaktivt, og organisationen manglede et fælles overblik over svartider, sagstyper, gentagne fejl og overleveringer mellem butikker, kundeservice og logistik. Det gjorde problemer vanskeligere at løse ved kilden.',
-    responsibility: 'Jeg havde det overordnede ansvar for kundeserviceopsætningen i Danmark og Sverige og for at skabe en mere sammenhængende kundeoplevelse på tværs af kanaler og funktioner.',
+    id: 'case3', slug: 'seng-fast-ledelsesrytme',
+    title: 'SENG: Fra ambitioner til en fast ledelsesrytme',
+    category: 'ledelse',
+    org_type: 'SENG · 32 butikker · 28 ledere · 100+ medarbejdere',
+    teaser: 'En fælles ledelsesrytme på tværs af 32 butikker var med til at skabe 21 % omsætningsvækst, 25 % højere konvertering og en markant bedre kundeoplevelse.',
+    challenge: 'En organisation med 32 butikker, 28 ledere og mere end 100 medarbejdere krævede tydelig retning, gennemsigtighed og konsekvent opfølgning.',
+    responsibility: 'Lederne skulle vide, hvad der blev forventet, hvilke resultater de ejede, og hvor de skulle sætte ind for at flytte deres forretning.',
     approach: [
-      'Jeg ledte kravspecifikation og implementering af en fælles service- og sagsplatform.',
-      'Vi indførte SLA\u2019er, KPI\u2019er og månedlige performancegennemgange, så udviklingen blev synlig og kunne prioriteres.',
-      'Kundeservice blev koblet tættere til salg og logistik med tydeligere overleveringer og fælles problemløsning.',
-      'Onboarding, træning og videndeling blev styrket, så teamet kunne løse flere sager ensartet og tidligere i forløbet.'
+      'Jeg etablerede tydeligere KPI-strukturer, faste performance- og opfølgningsrytmer, et fælles årshjul og tæt sparring med den enkelte leder.',
+      'Mål og resultater blev gjort mere synlige, så lederne kunne handle hurtigere og tage et tydeligere ansvar for deres egen enhed.'
     ],
     key_figures: [
-      { value: '+10 pp', label: 'NPS' },
-      { value: 'DK + SE', label: 'Fælles setup' },
-      { value: 'Månedlig', label: 'SLA/KPI-opfølgning' }
+      { value: '+21 %', label: 'Omsætningsvækst' },
+      { value: '+25 %', label: 'Konvertering' },
+      { value: '+15 pp', label: 'NPS' }
     ],
-    result: 'NPS steg med 10 procentpoint, og organisationen fik større transparens i kundehenvendelser og serviceperformance. Samtidig blev kundeoplevelsen mere ensartet på tværs af kontaktpunkter. Resultatet var skabt i samspil med ændringer i butikker, logistik, ledelse og den samlede kunderejse.',
-    insights: ['Kunden ser én virksomhed – ikke jeres siloer'],
-    mfg_help: 'MFG Advisory kan hjælpe med at analysere kundeserviceflow, roller, data og samarbejde på tværs. Målet er ikke blot hurtigere svartider, men færre gentagne fejl og en organisation, der lærer af kundernes henvendelser.',
-    image_url: 'assets/images/cases/case-03-kundeservice-faelles-ansvar.jpg',
+    result: 'Organisationen leverede 21 % omsætningsvækst det første år, konverteringen steg med 25 %, og NPS blev forbedret med 15 procentpoint.',
+    insights: ['Strategi skaber først værdi, når den får en rytme', 'Tydelighed gør ansvar muligt'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/seng-fast-ledelsesrytme.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 3, is_featured: false, status: 'published'
+    sort_order: 3, is_featured: true, status: 'published'
   },
   {
-    id: 'case4', slug: 'en-ledelsesrytme-paa-tvaers-af-32-butikker',
-    title: 'Én ledelsesrytme på tværs af 32 butikker',
+    id: 'case4', slug: 'seng-randers-286-procent-vaekst',
+    title: 'SENG Randers: 286 % vækst på ét år',
     category: 'ledelse',
-    org_type: '32 butikker · Ca. 30 ledere · P&L ca. 250 mio. kr.',
-    teaser: 'Fælles prioriteringer, ens KPI-definitioner og en fast opfølgningsrytme gjorde forskelle i performance og eksekvering synlige tidligere.',
-    challenge: 'Butikkerne havde forskellige lokale vaner, og centrale beslutninger kunne blive fortolket forskelligt. Det gjorde det vanskeligt at vide, om et utilfredsstillende resultat skyldtes retningen, den lokale eksekvering eller manglende opfølgning.',
-    responsibility: 'Som ansvarlig for retailorganisationen skulle jeg både sætte den fælles retning og skabe en ledelsesform, der gav den enkelte leder mulighed for at handle lokalt inden for en tydelig ramme.',
+    org_type: 'SENG Randers · Lokal butik',
+    teaser: 'Tæt ledelsessparring, tydelige mål og konsekvent opfølgning bidrog til en markant kommerciel udvikling af butikken.',
+    challenge: 'Butikken i Randers havde behov for en tydeligere kommerciel retning og et stærkere fokus på de aktiviteter, der kunne flytte forretningen.',
+    responsibility: 'Ledelsen skulle tættere på hverdagen, og ambitionerne skulle omsættes til konkrete mål, salgsaktiviteter og personligt ansvar.',
     approach: [
-      'Vi reducerede retningen til få fælles prioriteter med tydelige ejere, aktiviteter, succeskriterier og tidsfrister.',
-      'KPI\u2019er, forecast, pipeline og kundeoplevelse blev fulgt i en fast ugentlig og månedlig rytme.',
-      'Kvartalsvise lederreviews, individuelle samtaler og butiksbesøg blev brugt til både støtte, modspil og konsekvent opfølgning.',
-      'Et fælles årshjul bandt kampagner, drift, træning og ledelseskommunikation sammen.'
+      'Jeg arbejdede tæt sammen med den lokale ledelse om salgsfokus, prioritering af aktiviteter og mere konsekvent opfølgning.',
+      'Det blev tydeligere, hvad der skulle gøres, hvem der havde ansvaret, og hvordan den daglige indsats skulle bidrage til butikkens samlede resultat.'
     ],
     key_figures: [
-      { value: '+21 %', label: 'Omsætning år 1' },
+      { value: '+286 %', label: 'Omsætningsvækst' },
+      { value: '1 år', label: 'Periode' }
+    ],
+    result: 'Butikken i Randers leverede en omsætningsvækst på 286 % på ét år.',
+    insights: ['Potentiale flytter sig ikke af sig selv', 'Turnaround begynder med få klare prioriteter'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/seng-randers-286-procent-vaekst.jpg',
+    cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
+    sort_order: 4, is_featured: false, status: 'published'
+  },
+  {
+    id: 'case5', slug: 'seng-kundeoplevelse-faelles-ansvar',
+    title: 'SENG: Kundeoplevelsen som et fælles ansvar',
+    category: 'kultur',
+    org_type: 'SENG · 32 butikker · Kundeservice · Digitale kontaktpunkter',
+    teaser: 'Kundeoplevelsen blev gjort til et fælles ledelses- og kulturansvar på tværs af butikker, kundeservice og digitale kontaktpunkter.',
+    challenge: 'Hos SENG blev kundeoplevelsen skabt på tværs af 32 butikker, kundeservice og digitale kontaktpunkter. Derfor kunne ansvaret ikke placeres hos én enkelt funktion.',
+    responsibility: 'Kundefeedback skulle bruges aktivt i ledelsen og omsættes til læring, adfærd og forbedringer tæt på kunden.',
+    approach: [
+      'Jeg gjorde NPS og kundeoplevelsen til en fast del af opfølgningen og skabte en tættere forbindelse mellem butikkerne, kundeservice og den samlede kunderejse.',
+      'Kundens oplevelse blev et fælles ansvar og ikke kun noget, der skulle håndteres, når en utilfreds kunde kontaktede kundeservice.'
+    ],
+    key_figures: [
+      { value: '+15 pp', label: 'NPS' },
       { value: '+25 %', label: 'Konvertering' },
       { value: '32', label: 'Butikker' }
     ],
-    result: 'Organisationen leverede 21 procent omsætningsvækst det første år og en forbedring af konverteringen på 25 procent. Ledelsesrytmen var ikke den eneste årsag, men den gjorde aftaler, aktiviteter og afvigelser synlige og skabte et bedre grundlag for at reagere, før problemerne voksede.',
-    insights: ['Strategi skaber først værdi, når den får en rytme'],
-    mfg_help: 'MFG Advisory kan etablere en enkel ledelsesrytme, der forbinder strategi med hverdagens beslutninger. Det omfatter prioriteringer, mandat, KPI\u2019er, mødefora og opfølgning – tilpasset virksomhedens størrelse og modenhed.',
-    image_url: 'assets/images/cases/case-04-ledelsesrytme-32-butikker.jpg',
-    cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 4, is_featured: true, status: 'published'
-  },
-  {
-    id: 'case5', slug: 'ledelse-gennem-indflydelse',
-    title: 'Ledelse gennem indflydelse – ikke organisationsdiagram',
-    category: 'ledelse',
-    org_type: 'Internationalt premiumbrand · Ca. 140 partnere · Fem nordiske markeder',
-    teaser: 'Selvstændige franchisepartnere blev udviklet gennem forretningsplaner, data, feltarbejde og kommerciel sparring – uden traditionel linjeledelse.',
-    challenge: 'Netværket bestod af selvstændige virksomhedsejere med forskellige markeder, ambitioner og forudsætninger. En central strategi kunne ikke implementeres gennem instruktion alene. Den skulle give lokal forretningsmæssig mening.',
-    responsibility: 'Jeg havde ansvar for nordisk retail- og franchiseudvikling på tværs af Danmark, Sverige, Norge, Finland og Island. Netværket omfattede cirka 140 partnerenheder med en samlet årlig omsætning på mere end 400 mio. kr.',
-    approach: [
-      'Jeg segmenterede partnerne efter potentiale, performance, udviklingsvilje og lokal markedsposition.',
-      'Sammen med udvalgte partnere udviklede jeg flerårige forretningsplaner med konkrete kommercielle prioriteringer.',
-      'KPI\u2019er, forecast, pipeline, CSI og CRM blev brugt som fælles faktagrundlag i den løbende sparring.',
-      'Butiksbesøg, coaching, træning og kvalificeret modspil blev tilpasset den enkelte ejers forretning og ambitionsniveau.'
-    ],
-    key_figures: [
-      { value: '140', label: 'Partnerenheder' },
-      { value: '400+ mio.', label: 'Årlig omsætning' },
-      { value: '5', label: 'Nordiske markeder' }
-    ],
-    result: 'I 15 nøgleforretninger blev der skabt en samlet vækst på 32 procent, og flere opnåede placering blandt brandets globale TOP50. Resultaterne blev skabt af partnerne og deres teams. Mit bidrag var at etablere retning, struktur, opfølgning og et samarbejde, hvor modspil kunne omsættes til lokale beslutninger.',
-    insights: ['Du kan ikke kommandere dig til ejerskab'],
-    mfg_help: 'MFG Advisory kan hjælpe franchise-, partner- og kædeorganisationer med at skabe fælles retning uden at fjerne det lokale ejerskab. Indsatsen kan omfatte partnersegmentering, forretningsplaner, performancefora og udvikling af relationen mellem kæde og selvstændige ejere.',
-    image_url: 'assets/images/cases/case-05-ledelse-gennem-indflydelse.jpg',
+    result: 'Organisationen skabte et stærkere fælles kundefokus. I perioden steg NPS med 15 procentpoint, samtidig med at konverteringen steg med 25 %.',
+    insights: ['Kundeoplevelsen er ikke kundeservices ansvar', 'Kundefeedback skal føre til handling'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/seng-kundeoplevelse-faelles-ansvar.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
     sort_order: 5, is_featured: false, status: 'published'
   },
   {
-    id: 'case6', slug: 'lokalt-mandat-uden-at-miste-faelles-retning',
-    title: 'Lokalt mandat uden at miste den fælles retning',
-    category: 'ledelse',
-    org_type: 'Distribueret organisation · Lokale beslutninger · Fælles ansvar',
-    teaser: 'Tydeligere beslutningsrum og systematisk feedback reducerede behovet for, at alle beslutninger skulle forbi den øverste leder.',
-    challenge: 'Når en organisation vokser, kan den øverste leder let blive flaskehals. Lederne venter på godkendelse, beslutninger mister tempo, og den lokale dømmekraft udvikles ikke. Omvendt kan utydeligt mandat skabe store forskelle i kvalitet og risiko.',
-    responsibility: 'I en organisation med 32 butikker arbejdede jeg med at flytte flere beslutninger tættere på kunden uden at gøre retning, ansvar eller opfølgning uklare.',
+    id: 'case6', slug: 'bo-faelles-retning-uden-formel-magt',
+    title: 'Bang & Olufsen: Fælles retning uden formel magt',
+    category: 'kultur',
+    org_type: 'Bang & Olufsen · 140 franchisepartnere',
+    teaser: '140 selvstændige franchisepartnere kunne ikke ledes gennem instruktion alene. Udviklingen blev skabt gennem tillid, tydelige forventninger og fælles data.',
+    challenge: 'Franchisepartnerne ejede deres egne virksomheder. Jeg havde derfor ikke traditionel ledelsesret, men havde fortsat ansvaret for at styrke performance og udvikling.',
+    responsibility: 'Partnerne skulle opleve respekt for deres selvstændighed og samtidig møde tydelighed omkring de kommercielle forventninger.',
     approach: [
-      'Vi tydeliggjorde, hvilke beslutninger den enkelte leder selv ejede, og hvilke der krævede involvering eller eskalation.',
-      'Beslutninger skulle vurderes på data, muligheder, risici og konsekvenser – ikke på, hvad jeg personligt ville have gjort.',
-      'Lederne blev inviteret til at udfordre antagelser før beslutningen og levere feedback under eksekveringen.',
-      'Effekten blev fulgt, og beslutninger kunne korrigeres, når fakta eller forudsætninger ændrede sig.'
+      'Jeg arbejdede med langsigtede forretningsplaner, gennemsigtige KPI\u2019er, tæt sparring, konsekvent opfølgning og deling af erfaringer mellem partnerne.',
+      'Udviklingen blev skabt gennem relationer og faglig troværdighed — ikke gennem formel magt.'
     ],
     key_figures: [
-      { value: 'Mandat', label: 'Klare beslutningsrum' },
-      { value: 'Modspil', label: 'Bedre beslutningsgrundlag' },
-      { value: 'Opfølgning', label: 'Læring og ansvar' }
+      { value: '15', label: 'Nøgleenheder' },
+      { value: '+32 %', label: 'Samlet vækst' },
+      { value: '140', label: 'Partnere' }
     ],
-    result: 'Indsatsen gjorde det muligt at fordele ansvar tydeligere og reagere hurtigere på lokale forhold. Effekten blev ikke målt som en selvstændig KPI og bør derfor ikke kobles direkte til ét bestemt resultat. Den var en del af den ledelsesdisciplin, der understøttede en mere ensartet eksekvering og den samlede kommercielle udvikling.',
-    insights: ['Frihed virker bedst med en fælles retning'],
-    mfg_help: 'MFG Advisory kan hjælpe med at afklare beslutningsrum, roller og eskalationsveje, så ansvar flyttes ud i organisationen på en kontrolleret måde – og uden at ledelsen mister indsigt i effekt og risici.',
-    image_url: 'assets/images/cases/case-06-lokalt-mandat-faelles-retning.jpg',
+    result: 'Indsatsen styrkede ejerskabet og skabte en mere databaseret dialog om forretningen. 15 nøgleenheder leverede samlet en historisk vækst på 32 %.',
+    insights: ['Du kan ikke kommandere dig til ejerskab', 'Frihed virker bedst med en fælles retning'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/bo-faelles-retning-uden-formel-magt.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
     sort_order: 6, is_featured: false, status: 'published'
   },
   {
-    id: 'case7', slug: 'kundeloeftet-blev-gjort-til-adfaerd',
-    title: 'Kundeløftet blev gjort til adfærd – ikke en plakat',
-    category: 'kultur',
-    org_type: 'Kundeoplevelse · Fælles adfærd · Data og læring',
-    teaser: 'Mission, kundeløfter, træning og kundedata blev koblet sammen, så den ønskede kundeoplevelse kunne genkendes i den daglige drift.',
-    challenge: 'En organisation kan have stærke formuleringer om kunden uden at skabe en ensartet oplevelse. Når butikker og funktioner fortolker løftet forskelligt, opstår variation i rådgivning, service, overlevering og opfølgning.',
-    responsibility: 'Jeg havde ansvar for både retail og kundeservice og kunne derfor arbejde med kundeoplevelsen på tværs af butikker, kundeservice, salg og de processer, der forbandt dem.',
+    id: 'case7', slug: 'bo-fra-6-til-37-mio',
+    title: 'Bang & Olufsen: Fra 6 til 37 mio. kr.',
+    category: 'forretningsudvikling',
+    org_type: 'Bang & Olufsen · Franchisepartner',
+    teaser: 'En franchisepartner blev udviklet gennem større kunderelevans, flere kommercielle ben og konsekvent opfølgning.',
+    challenge: 'En Bang & Olufsen-partner havde en årlig omsætning på cirka 6 mio. kr. og behov for flere kommercielle ben under forretningen.',
+    responsibility: 'Væksten skulle skabes ved at forstå kundernes behov bedre, øge tilgængeligheden og arbejde mere proaktivt med nye markeder og kundegrupper.',
     approach: [
-      'Mission, vision og kundeløfter blev oversat til konkrete forventninger til adfærd og service.',
-      'Retail Academy og den lokale lederopfølgning gjorde kundeløftet til en del af træningen og hverdagen.',
-      'NPS, kundefeedback og data fra serviceplatformen blev brugt til at finde mønstre frem for kun at håndtere enkeltsager.',
-      'Fejl i overleveringer og gentagne kundehændelser blev behandlet som fælles læring på tværs af funktioner.'
-    ],
-    key_figures: [
-      { value: '+10 pp', label: 'NPS' },
-      { value: '32', label: 'Butikker' },
-      { value: 'DK + SE', label: 'Kundeservice' }
-    ],
-    result: 'NPS blev forbedret med 10 procentpoint, og organisationen fik et mere fælles sprog for den ønskede kundeoplevelse. Forbedringen havde flere årsager, herunder træning, processer, ledelse, CRM og kommercielle ændringer. Kulturens bidrag var at gøre kundeoplevelsen til et fælles ansvar frem for en opgave for kundeservice alene.',
-    insights: ['Tydelighed gør ansvar muligt'],
-    mfg_help: 'MFG Advisory kan hjælpe med at omsætte værdier og kundeløfter til observerbar adfærd, ledelsespraksis og få relevante målepunkter. Målet er at gøre kulturen konkret nok til, at den kan trænes, følges og udvikles.',
-    image_url: 'assets/images/cases/case-07-kundeloftet-som-adfaerd.jpg',
-    cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 7, is_featured: false, status: 'published'
-  },
-  {
-    id: 'case8', slug: 'fra-lokale-sandheder-til-aaben-performancekultur',
-    title: 'Fra lokale sandheder til en åben performancekultur',
-    category: 'kultur',
-    org_type: 'Performancekultur · Transparens · Ordentlig opfølgning',
-    teaser: 'Fælles data og tydelige forventninger gjorde det lettere at tage problemer op tidligt, støtte lederne og placere ansvar på et fair grundlag.',
-    challenge: 'Når hver enhed har sin egen forklaring på performance, bliver samtalen hurtigt personlig eller defensiv. Manglende fælles definitioner kan samtidig skjule problemer, indtil de er blevet dyre for mennesker, kunder og forretning.',
-    responsibility: 'Min opgave var at skabe større transparens uden at reducere ledelse til tal. Data skulle kvalificere samtalen, mens observationer fra driften og feedback fra ledere, medarbejdere og kunder skulle forklare det, tallene ikke viste.',
-    approach: [
-      'Vi etablerede fælles KPI-definitioner, dashboards og en fast rytme for performancegennemgang.',
-      'Forventninger, aftaler, støtte og mulige konsekvenser blev gjort tydelige i de svære samtaler.',
-      'Lederne blev opfordret til at udfordre beslutninger og antagelser, når de havde relevant information fra driften.',
-      'Opfølgning blev brugt til at finde årsagen og justere indsatsen – ikke til at omskrive historien eller placere skyld.'
-    ],
-    key_figures: [
-      { value: '+15 pp', label: 'eNPS / trivsel' },
-      { value: '70 % til 15 %', label: 'Personaleomsætning' },
-      { value: 'Fælles', label: 'KPI og opfølgning' }
-    ],
-    result: 'eNPS steg med 15 procentpoint, og personaleomsætningen blev reduceret fra cirka 70 til 15 procent. Udviklingen var et samlet resultat af onboarding, ledelse, træning, tydelighed og bedre arbejdsformer. Den fælles performancekultur gjorde det lettere at reagere tidligere og behandle både mennesker og resultater ordentligt.',
-    insights: ['Åbenhed er også sund forretning'],
-    mfg_help: 'MFG Advisory kan diagnosticere de mønstre, der præger virksomhedens performancekultur, og etablere en arbejdsform, hvor data, feedback, ansvar og psykologisk tryghed understøtter hinanden.',
-    image_url: 'assets/images/cases/case-08-aaben-performancekultur.jpg',
-    cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 8, is_featured: false, status: 'published'
-  },
-  {
-    id: 'case9', slug: 'fra-uensartet-drift-til-maalbar-fremdrift',
-    title: 'Fra uensartet drift til målbar kommerciel fremdrift',
-    category: 'forretning',
-    org_type: 'Retailtransformation · P&L ca. 250 mio. kr. · 32 butikker',
-    teaser: 'En fælles salgsmodel, CRM, KPI\u2019er, træning og ledelsesopfølgning bidrog til 21 procent omsætningsvækst det første år.',
-    challenge: 'Kæden havde et større potentiale end de aktuelle resultater viste. Performance varierede mellem butikkerne, kundeoplevelsen var ujævn, og organisationen manglede en fælles kommerciel arbejdsform, der forbandt aktiviteter med resultater.',
-    responsibility: 'Som Head of Retail & Customer Service havde jeg det samlede ansvar for drift, salgsudvikling, kundeservice og P&L på cirka 250 mio. kr. Opgaven var både at skabe fremdrift her og nu og opbygge en mere robust kommerciel model.',
-    approach: [
-      'Vi etablerede en databaseret salgsmodel med fælles KPI\u2019er, forecast, pipeline og konverteringsopfølgning.',
-      'CRM og en fælles serviceplatform gav bedre transparens i kundeaktiviteter, service og opfølgning.',
-      'Retail Academy, onboarding og lederudvikling blev koblet til de kommercielle prioriteter.',
-      'Omnichannel, kampagner, årshjul og butiksbesøg blev samlet i en mere konsekvent eksekveringsrytme.'
-    ],
-    key_figures: [
-      { value: '+21 %', label: 'Omsætning år 1' },
-      { value: '+25 %', label: 'Konvertering' },
-      { value: '+10 pp', label: 'NPS' }
-    ],
-    result: 'Organisationen leverede 21 procent omsætningsvækst det første år, forbedrede konverteringen med 25 procent og løftede NPS med 10 procentpoint. Resultaterne blev skabt af ledere og medarbejdere i fællesskab og gennem flere samtidige ændringer. Mit bidrag var at samle retning, struktur, kompetencer og opfølgning i en fælles kommerciel arbejdsform.',
-    insights: [],
-    mfg_help: 'MFG Advisory kan gennemføre en kommerciel diagnose, identificere hvor potentialet går tabt og omsætte analysen til få prioriterede handlinger med ejerskab, målepunkter og en 90-dages eksekveringsrytme.',
-    image_url: 'assets/images/cases/case-09-kommerciel-fremdrift.jpg',
-    cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 9, is_featured: false, status: 'published'
-  },
-  {
-    id: 'case10', slug: 'fra-6-til-37-mio-kr-i-aarlig-omsaetning',
-    title: 'Fra 6 til 37 mio. kr. i årlig omsætning',
-    category: 'forretning',
-    org_type: 'Franchisepartner · Lokal markedsudvikling · B2B og retail',
-    teaser: 'En langsigtet partnerindsats kombinerede pipeline, proaktivt B2B-salg, lokale partnerskaber og konsekvent kommerciel sparring.',
-    challenge: 'Forretningen havde et stærkt brand og en god lokal platform, men væksten kunne ikke alene baseres på kundestrømmen i butikken. Potentialet krævede en mere proaktiv salgsmodel og et bredere lokalt økosystem.',
-    responsibility: 'Jeg arbejdede tæt sammen med den selvstændige partner om forretningsudvikling, pipeline, aktivitetsniveau og de prioriteringer, der kunne skabe vækst over flere år.',
-    approach: [
-      'Vi etablerede en mere systematisk pipeline- og aktivitetsstyring med fast opfølgning.',
-      'B2B-salget blev udviklet gennem proaktiv bearbejdning af virksomheder og beslutningstagere.',
-      'Samarbejder med ejendomsmæglere, udstillingslejligheder og tilbud i forbindelse med ejendomssalg skabte nye indgange til kunder.',
-      'Butiksbesøg, sparring, CRM og løbende vurdering af lokale muligheder gjorde det muligt at justere indsatsen over tid.'
+      'I tæt samarbejde med partneren arbejdede jeg med hotline og personlig vejledning fra kl. 08.00–22.00, en stærkere hjemmeside og målrettet annoncering i Norge.',
+      'Samtidig blev B2B-salget udviklet gennem samarbejde med ejendomsmæglere, udstillingslejligheder og tilbud i forbindelse med boligsalg. Pipeline, aktiviteter og opfølgning blev sat i system.'
     ],
     key_figures: [
       { value: '6 mio.', label: 'Udgangspunkt' },
       { value: '37 mio.', label: 'Årlig omsætning' },
       { value: '6 år', label: 'Udviklingsperiode' }
     ],
-    result: 'Forretningens årlige omsætning voksede fra cirka 6 til 37 mio. kr. over seks år. Væksten var partnerens og teamets resultat og blev påvirket af marked, brand, produkter og lokal eksekvering. Mit bidrag var den langsigtede sparring, kommercielle struktur og udviklingen af nye salgsaktiviteter og partnerskaber.',
-    insights: ['Vækst kræver flere ben på taburetten'],
-    mfg_help: 'MFG Advisory kan hjælpe ejerledede virksomheder og partnerforretninger med at finde nye vækstveje, styrke pipeline og aktivitet samt udvikle en lokal go-to-market-plan, der ikke alene afhænger af eksisterende kundestrøm.',
-    image_url: 'assets/images/cases/case-10-fra-6-til-37-mio.jpg',
+    result: 'Over cirka seks år voksede den årlige omsætning fra cirka 6 til 37 mio. kr. Det svarer til 31 mio. kr. i øget årlig omsætning og cirka 6,2 gange udgangspunktet.',
+    insights: ['Vækst kræver flere ben på taburetten', 'Vækst starter med kundens behov'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/bo-fra-6-til-37-mio.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 10, is_featured: true, status: 'published'
+    sort_order: 7, is_featured: true, status: 'published'
   },
   {
-    id: 'case11', slug: '15-noegleforretninger-skabte-32-procent-vaekst',
-    title: '15 nøgleforretninger skabte 32 procent vækst',
-    category: 'forretning',
-    org_type: '15 nøgleforretninger · Nordisk netværk · Prioriteret partnerudvikling',
-    teaser: 'Partnersegmentering og flerårige forretningsplaner koncentrerede indsatsen dér, hvor potentiale og udviklingsvilje var størst.',
-    challenge: 'I et netværk på cirka 140 partnerenheder var behovene forskellige, og ressourcerne kunne ikke fordeles ens. En mere målrettet indsats krævede et sagligt grundlag for at prioritere de forretninger, hvor tæt samarbejde kunne flytte mest.',
-    responsibility: 'Jeg havde ansvar for performance og udvikling i det nordiske franchisenetværk og arbejdede med at forbinde brandets strategi med partnernes lokale forretningsplaner.',
+    id: 'case8', slug: 'seng-sammenhaengende-kunderejse',
+    title: 'SENG: En sammenhængende kunderejse',
+    category: 'forretningsudvikling',
+    org_type: 'SENG · Webshop · Kundeservice · 32 butikker',
+    teaser: 'Omnichannel, CRM og tydeligere ejerskab skabte en stærkere forbindelse mellem de digitale kontaktpunkter, kundeservice og de 32 butikker.',
+    challenge: 'Kunden bevæger sig frit mellem webshop, kundeservice og fysisk butik. Hvis organisationen arbejder i siloer, risikerer både kundeoplevelsen og salget at gå tabt mellem kontaktpunkterne.',
+    responsibility: 'Kunderejsen skulle opleves som én sammenhængende proces — uanset hvor kunden begyndte eller afsluttede sit køb.',
     approach: [
-      'Vi identificerede 15 nøgleforretninger ud fra performance, potentiale, lokal markedsposition og udviklingsvilje.',
-      'Hver partner fik en flerårig forretningsplan med prioriteringer for salg, kundeoplevelse, organisation og lokal markedsudvikling.',
-      'KPI, forecast, CRM, CSI og pipeline blev brugt i faste reviews og i den løbende sparring.',
-      'Træning, events, butiksudvikling og best practice blev målrettet den enkelte partners konkrete muligheder.'
+      'Jeg arbejdede med udviklingen af omnichannel, webshoppen, CRM-systemet FocalScope samt tydeligere processer for ejerskab, leadhåndtering og opfølgning.',
+      'Målet var at skabe en mere sammenhængende kunderejse og sikre, at muligheder og kundehenvendelser ikke gik tabt mellem organisationens forskellige funktioner.'
     ],
     key_figures: [
-      { value: '15', label: 'Nøgleforretninger' },
-      { value: '+32 %', label: 'Samlet vækst' },
-      { value: 'TOP50', label: 'Global placering' }
+      { value: '+21 %', label: 'Omsætningsvækst' },
+      { value: '+25 %', label: 'Konvertering' },
+      { value: '+15 pp', label: 'NPS' }
     ],
-    result: 'De 15 nøgleforretninger skabte en samlet vækst på 32 procent, og flere blev placeret blandt brandets globale TOP50. Resultaterne var partnernes og deres teams. Min rolle var at kvalificere prioriteringen, udvikle planerne, skabe en fælles opfølgningsstruktur og fastholde fokus over tid.',
-    insights: [],
-    mfg_help: 'MFG Advisory kan hjælpe kæder og partnerorganisationer med at segmentere porteføljen, prioritere udviklingsressourcer og skabe individuelle planer, der stadig kan styres gennem en fælles kommerciel model.',
-    image_url: 'assets/images/cases/case-11-noeglepartnere-vaekst.jpg',
+    result: 'Indsatsen skabte et stærkere kommercielt fundament og bedre sammenhæng i kunderejsen. Den samlede udvikling omfattede 21 % omsætningsvækst det første år, 25 % højere konvertering og 15 procentpoint højere NPS.',
+    insights: ['Kunden ser én virksomhed – ikke jeres siloer', 'Et lead uden ejerskab er en tabt mulighed'],
+    mfg_help: '',
+    image_url: 'assets/images/cases/seng-sammenhaengende-kunderejse.jpg',
     cta_text: 'Book en strategisk samtale', cta_url: 'kontakt.html',
-    sort_order: 11, is_featured: false, status: 'published'
+    sort_order: 8, is_featured: false, status: 'published'
   }
 ];
