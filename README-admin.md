@@ -4,6 +4,38 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC28.1 — grundig genverifikation af kompas-fixet
+
+Den vedhæftede prompt beskrev samme opgave som RC28 (fjern den mørke
+firkant bag kompasset på forsiden). Fixet var allerede implementeret og
+leveret — ingen ny kodeændring var nødvendig denne gang. I stedet
+gennemførte jeg en langt grundigere verifikation efter den mere
+detaljerede tjekliste, som blev vedhæftet:
+
+**43 automatiserede tjek, alle bestået**, herunder specifikt:
+- Ingen `box-shadow` på kompas-wrapperen; det transparente billede
+  bekræftet i brug.
+- Al tekst bevaret ordret: MENNESKER, LEDELSE, KULTUR, FORRETNING samt
+  alle fire undertekster og "SKAB RETNING".
+- **Alle 4 retningsklik testet individuelt** — hver fører nu bekræftet
+  til den rigtige side (mennesker.html, ledelse.html, kultur.html,
+  forretning.html) — samt center-linket til mfg-compass.html.
+- **6 forskellige skærmbredder testet** (375px, 390px, 768px tablet,
+  1024px, 1440px, 1920px): ingen horisontal scroll, alle fire
+  retningselementer korrekt gengivet og proportionale på hver
+  breddegrad.
+- Klik-test gennemført separat på både mobil- og tabletbredde (ikke kun
+  desktop).
+- Header, navigation og CTA-knap bekræftet uændret.
+- Nul regression på øvrige sider, Cases (fortsat 8) og Foredrag
+  (fortsat 13).
+
+Nyt tablet-skærmbillede (768px) taget som supplement til de tidligere
+desktop- og mobilbilleder fra RC28.
+
+**Ingen filer ændret i denne runde** — ren genverifikation af det
+allerede leverede fix.
+
 ## RC28 — forsidens kompas-boks fjernet + bekræftelse af Cases-data
 
 ### 1. Forside — den mørke boks bag kompasset
