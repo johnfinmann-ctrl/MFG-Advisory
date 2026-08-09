@@ -4,6 +4,57 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC28 — forsidens kompas-boks fjernet + bekræftelse af Cases-data
+
+### 1. Forside — den mørke boks bag kompasset
+
+Årsagen: selve kompasbilledet (`mfg-compass-original.jpg/webp`) havde sin
+egen, let mørkere navy-baggrund end sidens `--navy`-farve, og
+billedwrapperen havde desuden en kraftig `box-shadow`. Sammen skabte det
+den synlige, afrundede "boks" bag kompasset.
+
+**Løsning:** Kompasgrafikken (guldstjernen, de tynde cirkler og
+gradinddelinger) er udtrukket til en ny transparent PNG/WebP-fil
+(`mfg-compass-transparent.png/webp`), hvor selve baggrunden er gjort
+100 % gennemsigtig — adskilt fra kompasgrafikken ud fra farvetone (varme
+guld-nuancer bevaret, den ensfarvede navy-baggrund fjernet). Boxshadow og
+border-radius er fjernet fra `.compass-original-wrap`/`.compass-original-img`,
+så kompasset nu sidder direkte på sektionens egen navy-baggrund uden nogen
+synlig kant, boks eller skygge — verificeret visuelt på både desktop og
+mobil, og det matcher "EFTER"-referencen præcist.
+
+Navigation, kompasrose, de fire overskrifter/undertekster, sektionen
+nedenunder, farver, skrifttyper og afstand er alt sammen bevaret uændret.
+De oprindelige `mfg-compass-original.jpg/webp`-filer er bevaret i
+projektet (ubrugte, men ikke slettet), da ingen anden side refererer til
+dem.
+
+### 2. Cases — bekræftelse
+
+Den vedhæftede prompt beskrev samme opgave, som allerede blev
+gennemført og leveret i RC27 (erstatning af hele case-datasættet med de
+8 nye, godkendte cases fra "CASES til WEB (2) erstat", kategorien
+"Forretningsudvikling", `cases_data_version` bumpet, cache-busting
+opdateret, testet i frisk og forældet browser).
+
+**Vigtig bemærkning:** Eksempel-indholdet i den vedhæftede
+prompt-grafiks "Cases – nyt indhold"-sektion (fx "Bang & Olufsen: Fra
+produktsalg til livsstilssalg" under Kultur, "SENG Randers: 286 % vækst
+på fire år" under Forretningsudvikling) stemmer **ikke** overens med
+den faktiske tekst i den originale, uploadede docx-fil, som jeg
+tidligere har gennemgået linje for linje. Jeg har bevidst **ikke**
+ændret Cases-indholdet efter grafikkens eksempeltekster, da de ikke er
+den bekræftede kilde. Cases-siden viser fortsat de 8 cases, som er
+verificeret ordret mod den rigtige fil i RC27 — genbekræftet i denne
+runde: stadig 8 cases, stadig præcis 2 pr. kategori, ingen ændringer
+foretaget. Sig til, hvis der findes en nyere version af case-filen med
+andet indhold, så retter jeg det.
+
+**Ændrede filer:** `index.html` (kompas-billedreference),
+`assets/css/style.css` (fjernet box-shadow/border-radius), to nye
+billedfiler (`mfg-compass-transparent.png`, `.webp`). Cases er
+uændrede i denne runde.
+
 ## RC27 — Cases fuldstændigt erstattet med de 8 nye, godkendte cases
 
 **Skriftlig godkendelse:** Morten har bekræftet, at "CASES til WEB (2)

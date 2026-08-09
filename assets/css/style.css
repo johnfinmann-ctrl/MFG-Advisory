@@ -124,8 +124,8 @@
 
   .mfg-compass-stage{position:relative;max-width:520px;margin:0 auto}
 
-  .compass-original-wrap{position:relative;display:inline-block;width:100%;margin:0 auto;box-shadow:0 24px 70px rgba(0,0,0,.45)}
-  .compass-original-img{display:block;width:100%;height:auto;border-radius:10px;object-fit:contain}
+  .compass-original-wrap{position:relative;display:inline-block;width:100%;margin:0 auto}
+  .compass-original-img{display:block;width:100%;height:auto;object-fit:contain}
 
   /* ---- Clickable center: round area matching the compass rose, links to mfg-compass.html ---- */
   .compass-center{
