@@ -4,6 +4,79 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC29 — Cases erstattet med det verificerede 11-case mastergrundlag
+
+**Bemærkning om vedhæftet fil:** Beskeden nævnte
+"MFG_Advisory_Websitecases_11_cases_v1(2).docx", men denne fil var ikke
+vedhæftet. Jeg har derfor brugt den eksisterende
+"MFG_Advisory_Websitecases_11_cases_v1.docx", som allerede lå i
+systemet under matchende navn, og læst den linje for linje igen for at
+sikre 100 % ordret præcision.
+
+### Opgave 1 — Case 08 | Kultur
+
+Bekræftet til stede og verificeret ordret mod dokumentet: kategori
+Kultur, org-linje "Performancekultur · Transparens · Ordentlig
+opfølgning", titel "Fra lokale sandheder til en åben
+performancekultur", samt hele teksten (Udfordringen, Mit ansvar, Sådan
+greb jeg det an, nøgletal, Resultatet, Sådan kan MFG Advisory hjælpe).
+Fungerer identisk med de øvrige cases: webkort, "Læs hele casen", fuld
+modal, korrekt filtrering under Kultur.
+
+### Opgave 2 — Alle 11 cases kontrolleret
+
+Sammenholdt hele Cases-siden med dokumentets oversigt. Det tidligere
+8-case-datasæt (SENG/Bang & Olufsen) matchede ikke dokumentet og er
+erstattet fuldstændigt med de 11 cases fra mastergrundlaget — verificeret
+felt for felt (titel, org-linje, webkort-teaser, udfordring, ansvar, alle
+fire greb, nøgletal, resultat, MFG Advisory-hjælp).
+
+**Fordeling bekræftet:** 3 Mennesker, 3 Ledelse, 2 Kultur, 3 Forretning
+= 11 i alt.
+
+**Om virksomhedsnavne:** Dokumentets 11 cases bruger ikke konkrete
+virksomhedsnavne (de er skrevet med anonymiserede organisationstyper,
+fx "Landsdækkende retailkæde") — det er ikke en beslutning, jeg har
+truffet i denne omgang, men selve indholdet i mastergrundlaget, brugt
+ordret som instrueret. Filterknappen "Forretningsudvikling" er
+tilsvarende ført tilbage til "Forretning", da det er den betegnelse,
+dokumentet selv bruger for denne kategori. Introteksten og disclaimeren
+på Cases-siden er opdateret fra "8 eksempler / primært hos SENG og Bang
+& Olufsen" til "11 eksempler / anonymiserede organisationer" — en
+direkte, nødvendig konsekvens af selve case-udskiftningen, for at siden
+ikke skulle modsige sig selv.
+
+### Billeder
+
+Som instrueret er der ikke genereret eller indsat nye billeder. De 8
+midlertidige SENG/B&O-placeholder-billeder er erstattet af 11 nye
+placeholder-filer under de oprindelige case-slugs — samme neutrale
+navy/guld-grafik som hidtil, ingen ægte fotos eller logoer.
+
+### cases_data_version
+
+Bumpet fra `v4-8cases-seng-bo` til `v5-11cases-master-doc` i både
+`content-loader.js` og `admin.js`, så browsere med det gamle 8-case-datasæt
+i LocalStorage automatisk opgraderes til de 11 cases ved næste besøg —
+verificeret med en simuleret browser med gammel v4-data.
+
+### Test — 44 automatiserede tjek, alle bestået
+
+Alle 11 cases til stede med korrekt titel; alle 8 gamle SENG/B&O-cases
+bekræftet væk; alle fire filtre viser præcis den rigtige optælling
+(tjekket via reel CSS-synlighed); Case 08 specifikt verificeret ordret i
+både kort og modal; stale-data-opgradering bekræftet; forsidens 3
+fremhævede cases; mobiltest af Kultur-filteret; nul regression på
+Foredrag (13), kompas-fixet fra forrige runde, og øvrige sider.
+Skærmbilleder taget af "Alle", Kultur-filteret og Case 08's fulde modal.
+
+**Ændrede filer:** `assets/js/default-cases.js` (fuldt genskrevet med de
+verificerede 11 cases), `assets/js/content-loader.js`, `assets/js/admin.js`
+(kategori tilbageført til "forretning" + versionsbump), `cases.html`
+(introtekst, disclaimer, filterknap), 11 nye billedfiler i
+`assets/images/cases/` (de 8 gamle slettet), samt cache-busting
+versionsbump på alle 12 sider. Ingen ændringer uden for Cases.
+
 ## RC28.1 — grundig genverifikation af kompas-fixet
 
 Den vedhæftede prompt beskrev samme opgave som RC28 (fjern den mørke

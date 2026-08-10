@@ -488,7 +488,7 @@
   const DEFAULT_TALKS = window.MFG_DEFAULT_TALKS || [];
   const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
   const DEFAULT_CASES = window.MFG_DEFAULT_CASES || [];
-  const CASES_DATA_VERSION = 'v4-8cases-seng-bo';
+  const CASES_DATA_VERSION = 'v5-11cases-master-doc';
 
   async function seedTalksIfNeeded(content) {
     const storedVersion = content['talks_data_version'];
