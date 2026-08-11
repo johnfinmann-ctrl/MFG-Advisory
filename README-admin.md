@@ -4,6 +4,75 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC30 — kun virksomhedsreferencerne rettet tilbage
+
+Én afgrænset rettelse oven på RC29, som blev godkendt på alt andet.
+
+### Hvad blev ændret
+
+For 10 af de 11 cases er `org_type`-linjen udvidet med det relevante
+virksomhedsnavn som præfiks — nøjagtig samme stil som i den seneste
+godkendte version før RC29 (fx "SENG · Landsdækkende retailkæde · 32
+butikker · 100+ medarbejdere"). Intet andet i de 11 cases er rørt:
+titel, teaser, Udfordringen, Mit ansvar, Sådan greb jeg det an, nøgletal,
+Resultatet og "Sådan kan MFG Advisory hjælpe" er alle bekræftet
+identiske med RC29 (verificeret ved diff af datafilen).
+
+**Case 08 er eksplicit ladet fuldstændig urørt**, som krævet — ingen
+virksomhedsnavn er tilføjet der, org-linjen er stadig "Performancekultur
+· Transparens · Ordentlig opfølgning".
+
+### Sådan blev virksomhedstilknytningen bestemt
+
+RC29's 11 cases og de tidligere 8 SENG/Bang & Olufsen-cases er ikke
+identiske sæt, så tilknytningen er udledt af de faktuelle kendetegn i
+hver enkelt case (samme fakta går igen på tværs af begge dokumenter):
+
+- **SENG** (7 cases): kendetegnet ved "32 butikker", dansk/svensk
+  retailkæde, P&L ca. 250 mio. kr. — case 1, 2, 3, 4, 6, 7, 9.
+- **Bang & Olufsen** (3 cases): kendetegnet ved "internationalt
+  premiumbrand", "140 partnere", franchise, nordisk netværk — case 5,
+  10, 11.
+- **Case 8**: ingen tydeligt kendetegn og eksplicit undtaget — urørt.
+
+### Disclaimer
+
+Opdateret til den præcise, angivne ordlyd: *"Cases beskriver erfaring og
+resultater fra Mortens tidligere lederroller. De nævnte virksomheder er
+tidligere arbejdsgivere/organisationer og er ikke nødvendigvis kunder
+hos MFG Advisory."* — verificeret ordret ved tegn-for-tegn-sammenligning.
+
+### cases_data_version
+
+Bumpet fra `v5-11cases-master-doc` til `v6-11cases-company-names`, så
+browsere med den anonymiserede RC29-udgave i LocalStorage automatisk
+opgraderes til udgaven med virksomhedsnavne.
+
+### Test — 39 automatiserede tjek, alle bestået
+
+- Fortsat 11 cases, fortsat 3/3/2/3-fordeling.
+- Kultur viser præcis Case 07 og Case 08 — ikke flere, ikke færre.
+- SENG bekræftet til stede i alle 7 relevante cases' modaler; Bang &
+  Olufsen bekræftet til stede i alle 3 relevante cases' modaler —
+  tjekket enkeltvis, ikke kun stikprøve.
+- Case 08 bekræftet uden virksomhedsnavn og med uændret indhold.
+- Disclaimer-tekst bekræftet ordret.
+- Placeholder-billeder bekræftet fuldstændig uændrede (byte-for-byte
+  samme filliste som RC29).
+- Stale RC29-data (v5) bekræftet automatisk opgraderet til v6 med
+  virksomhedsnavne.
+- Nul regression: Foredrag (13), kompas-fix, layout, filtre, modal,
+  navigation og alle øvrige sider uændrede.
+
+Skærmbilleder af "Alle", Kultur-filteret, samt de fulde modaler for
+Case 01 (SENG), Case 05 (Bang & Olufsen) og Case 08 (urørt).
+
+**Ændrede filer:** `assets/js/default-cases.js` (kun 10 org_type-linjer),
+`assets/js/content-loader.js`, `assets/js/admin.js` (versionsbump),
+`cases.html` (kun disclaimer-teksten), cache-busting på alle 12 sider.
+Billeder, layout, Foredrag, forsiden, The MFG Compass, navigation og
+øvrige sider er 100 % uændrede.
+
 ## RC29 — Cases erstattet med det verificerede 11-case mastergrundlag
 
 **Bemærkning om vedhæftet fil:** Beskeden nævnte
