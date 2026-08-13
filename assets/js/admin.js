@@ -1257,8 +1257,8 @@
     wireSettings();
   }
 
-  const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
-  const CASES_DATA_VERSION = 'v6-11cases-company-names';
+  const TALKS_DATA_VERSION = 'v4-13talks-kultur-grouped';
+  const CASES_DATA_VERSION = 'v7-11cases-real-images';
 
   async function seedTalksIfNeeded() {
     const hasCurrentData = savedContent.talks && savedContent['talks_data_version'] === TALKS_DATA_VERSION;

@@ -4,6 +4,121 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC32 — de 11 rigtige casebilleder indsat + Kultur-foredrag flyttet
+
+### 1. Cases — de 11 leverede billeder indsat
+
+Alle 11 billeder blev modtaget og **verificeret enkeltvis ved at læse
+CASE-nummeret trykt direkte på hvert billede**, ikke ud fra filnavn eller
+uploadrækkefølge — præcis som krævet. Alle 11 var allerede korrekt
+fortløbende nummereret (IMG_4172 = Case 01 … IMG_4182 = Case 11), men
+blev alligevel tjekket ét ad gangen for at udelukke fejl.
+
+Billederne er indsat direkte under de eksisterende, forventede filnavne
+(`case-01-onboarding-tilknytning.jpg` osv.) og erstatter de tidligere
+generiske MFG-placeholders fuldstændigt. Ingen AI-generering, ingen
+beskæring, ingen ændring af tekst/farver i billederne — kun
+formatkonvertering fra PNG til JPEG (kvalitet 92) for at matche sitets
+eksisterende billedformat. Verificeret programmatisk, at
+pixel-dimensionerne (2048×1152) er identiske før og efter — ingen
+strækning fandt sted.
+
+Case-tekster, tal, kategorier, filtre og rækkefølge er 100 % uændrede —
+bekræftet ved diff af `default-cases.js`.
+
+### 2. Foredrag — Kultur-foredraget flyttet
+
+"Når løftet møder hverdagen" (Kultur) lå sidst i rækkefølgen (nr. 13),
+adskilt fra de to andre Kultur-foredrag (nr. 7-8). Flyttet til nr. 9, så
+alle tre Kultur-foredrag nu står samlet (7, 8, 9), og
+Forretningsudvikling-foredragene rykker tilsvarende til 10-13. Kun
+`sort_order`-feltet er ændret — titel, beskrivelse, billede, kategori og
+link er 100 % uændrede for alle 13 foredrag.
+
+### 3. Den mørke firkant på mobil
+
+Jeg har undersøgt grundigt (alle `position:fixed`-elementer, alle
+højre-ankrede elementer, al JavaScript for scroll-relateret kode — der
+findes ingen —, kompas-elementernes hviletilstand, og
+`color-scheme`-indstillinger), men **kunne ikke reproducere den
+beskrevne mørke firkant** i mit testmiljø, hverken på forsiden, Foredrag
+eller Cases, før/efter cookie-accept eller før/efter scroll. Da
+kompasset allerede fik fjernet to andre mørke bokse i tidligere runder
+(den store baggrundsboks og den lille tekstboks bag "SKAB RETNING"), er
+det muligt, at det du ser, stammer fra en cachet, ældre version af
+siden. Jeg har bevidst **ikke** rørt noget for at "gætte" mig til en
+løsning, da det ville risikere at bryde en reel funktion uden grund.
+Send gerne et skærmbillede, hvis firkanten stadig ses efter en
+hård genindlæsning (ctrl/cmd+shift+R) af den nye version, så retter jeg
+det præcist.
+
+### Test — 33 automatiserede tjek, alle bestået
+
+Alle 11 cases viser korrekt, ægte billede i korrekt rækkefølge (verificeret
+pixel-dimensioner 2048×1152 på hvert eneste); ingen placeholders tilbage;
+Case 01-03 = Mennesker, 04-06 = Ledelse, 07-08 = Kultur, 09-11 =
+Forretning; Case 07/08 bekræftet stadig nabo-placeret, ikke flyttet;
+billeder bekræftet ikke strakt (`object-fit:cover`, ensartet højde på
+mobil og tablet); alle case-filtre virker; "Læs hele casen" åbner
+korrekt case med korrekt billede; "Book en samtale" intakt. Foredrag:
+fortsat 13 foredrag, alle 3 Kultur-foredrag nu bekræftet grupperet,
+Kultur-filteret viser præcis 3. Nul regression på forsiden,
+kompas-fixet, øvrige sider.
+
+**cases_data_version:** `v6-11cases-company-names` → `v7-11cases-real-images`
+**talks_data_version:** `v3-13talks-kultur-loftet` → `v4-13talks-kultur-grouped`
+
+**Ændrede/nye filer:** 11 billedfiler i `assets/images/cases/` (udskiftet),
+`assets/js/default-talks.js` (kun sort_order-felter),
+`assets/js/content-loader.js`, `assets/js/admin.js` (versionsbump),
+cache-busting på alle 12 sider. `default-cases.js` (case-teksterne) er
+100 % uændret — kun de tilhørende billedfiler er skiftet ud.
+
+## RC31 — den lille mørke firkant bag "SKAB RETNING" fjernet
+
+### Opgave 1 — Forside / The MFG Compass
+
+Årsagen: `.compass-center__label` (teksten "SKAB RETNING") havde sin
+egen halvgennemsigtige, mørke baggrund (`rgba(15,25,50,.38)` på
+desktop, `rgba(10,20,40,.55)` på mobil) med padding og afrundede
+hjørner — en lille, selvstændig boks oven på selve kompasbilledet
+(adskilt fra den store boks bag hele kompasset, som blev fjernet i en
+tidligere runde).
+
+**Løsning:** Fjernet `background`, `padding` og `border-radius` fra
+`.compass-center__label` — både i desktop- og mobil-reglen. Alt andet
+er bevaret uændret: skriftstørrelse, skriftvægt (800), bogstavafstand,
+linjehøjde, hvid farve og tekstskyggen, der giver kontrast mod guldet.
+
+**Verificeret:**
+- Teksten er stadig ordret "SKAB RETNING", uændret typografi.
+- Klikområdet (`.compass-center`) er urørt — samme størrelse, samme
+  runde form, samme hover/fokus-ring.
+- Linket sender fortsat til `mfg-compass.html`, testet eksplicit.
+- Alle fire øvrige kompaslinks (Mennesker, Ledelse, Kultur, Forretning)
+  testet enkeltvis og bekræftet uændrede.
+- Den store, blå Compass-sektion er urørt.
+- Testet og bekræftet visuelt på både desktop og mobil.
+
+### Opgave 2 — Cases / billeder
+
+Ingen ændringer foretaget. De eksisterende MFG-placeholder-billeder er
+urørt (bekræftet — Cases-siden bruger fortsat de samme 11 billedfiler
+som i RC30).
+
+### Test — 24 automatiserede tjek, alle bestået
+
+Ingen baggrund bag label (desktop og mobil), tekst og typografi
+uændret, klik til `mfg-compass.html` bekræftet, alle fire øvrige
+kompaslinks bekræftet, Cases bekræftet fortsat 11 med samme billeder,
+Foredrag fortsat 13, navigation og Book-knap uændret, nul horisontal
+scroll på alle sider.
+
+**Ændrede filer:** `assets/css/style.css` (kun de to
+`.compass-center__label`-regler). Ingen andre filer ændret ud over
+cache-busting version på de 11 offentlige sider (admin.html bruger sin
+egen `admin.css` og er upåvirket).
+
 ## RC30 — kun virksomhedsreferencerne rettet tilbage
 
 Én afgrænset rettelse oven på RC29, som blev godkendt på alt andet.

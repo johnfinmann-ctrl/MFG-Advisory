@@ -143,7 +143,7 @@ window.MFG_DEFAULT_TALKS = [
     ],
     takeaway: 'En praktisk model til at fjerne friktion og omsætte indsigt til handling.',
     image_url: 'assets/images/foredrag/forretningsudvikling-vaerdien-bliver-virkelig.jpg',
-    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 9, is_featured: true, status: 'published'
+    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 10, is_featured: true, status: 'published'
   },
   {
     id: 't10', slug: 'fra-6-til-37-mio-kr',
@@ -158,7 +158,7 @@ window.MFG_DEFAULT_TALKS = [
     ],
     takeaway: 'Principperne bag væksten – ikke en opskrift, der kopieres blindt.',
     image_url: 'assets/images/foredrag/fra-6-til-37-mio-kr.jpg',
-    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 10, is_featured: false, status: 'published'
+    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 11, is_featured: false, status: 'published'
   },
   {
     id: 't11', slug: 'strategi-virker-mandag-morgen',
@@ -173,7 +173,7 @@ window.MFG_DEFAULT_TALKS = [
     ],
     takeaway: 'En 90-dages tilgang, der gør strategien styrbar og synlig i driften.',
     image_url: 'assets/images/foredrag/strategi-virker-mandag-morgen.jpg',
-    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 11, is_featured: false, status: 'published'
+    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 12, is_featured: false, status: 'published'
   },
   {
     id: 't12', slug: 'mfg-compass-navigation-under-pres',
@@ -188,7 +188,7 @@ window.MFG_DEFAULT_TALKS = [
     ],
     takeaway: 'Et fælles navigationssprog til at handle roligt, samlet og rettidigt under pres.',
     image_url: 'assets/images/foredrag/mfg-compass-navigation-under-pres.jpg',
-    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 12, is_featured: true, status: 'published'
+    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 13, is_featured: true, status: 'published'
   },
   {
     id: 't13', slug: 'naar-loftet-moder-hverdagen',
@@ -203,6 +203,6 @@ window.MFG_DEFAULT_TALKS = [
     ],
     takeaway: 'Konkrete greb, der gør løftet troværdigt og mærkbart i hverdagen.',
     image_url: 'assets/images/foredrag/naar-loftet-moder-hverdagen.jpg',
-    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 13, is_featured: false, status: 'published'
+    cta_text: 'Forespørg på foredraget', cta_url: 'kontakt.html', sort_order: 9, is_featured: false, status: 'published'
   }
 ];

@@ -486,9 +486,9 @@
   }
 
   const DEFAULT_TALKS = window.MFG_DEFAULT_TALKS || [];
-  const TALKS_DATA_VERSION = 'v3-13talks-kultur-loftet';
+  const TALKS_DATA_VERSION = 'v4-13talks-kultur-grouped';
   const DEFAULT_CASES = window.MFG_DEFAULT_CASES || [];
-  const CASES_DATA_VERSION = 'v6-11cases-company-names';
+  const CASES_DATA_VERSION = 'v7-11cases-real-images';
 
   async function seedTalksIfNeeded(content) {
     const storedVersion = content['talks_data_version'];
