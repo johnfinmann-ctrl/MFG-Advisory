@@ -407,6 +407,16 @@
   @media(min-width:720px){.cases-grid{grid-template-columns:repeat(2,1fr)}}
   .case-teaser{display:block;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:26px 24px;transition:var(--transition)}
   .case-teaser img{width:100%;height:140px;object-fit:cover;border-radius:var(--radius);margin-bottom:14px}
+  /* Cases-siden, mobil kun: vis hele det originale 16:9-billede uden beskæring.
+     Skal IKKE påvirke desktop, tablet eller Foredrag-siden. */
+  @media(max-width:767px){
+    [data-cases-list] .talk-card img{
+      height:auto;
+      aspect-ratio:16/9;
+      object-fit:contain;
+      background:var(--navy-mid);
+    }
+  }
   .case-teaser .testimonial-avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-bottom:12px}
   .case-teaser .testimonial-logo{width:auto;height:28px;object-fit:contain;margin-top:12px;border-radius:0;background:none}
   .case-teaser .case-customer{font-size:.78rem;color:var(--copper-light);margin:-8px 0 6px}

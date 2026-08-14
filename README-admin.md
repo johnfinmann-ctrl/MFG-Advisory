@@ -4,6 +4,66 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC33 — casebilleder ikke længere beskåret på mobil
+
+### Årsagen
+
+`.case-teaser img` (bruges til casekortenes billede) havde en **fast
+højde på 140px** kombineret med `object-fit:cover`. På smalle
+mobilskærme er kortet meget smallere end det er højt i forhold til
+billedets 16:9-format, så `cover` beskar kraftigt i toppen og bunden for
+at fylde den faste højde ud — det var her "CASE 01 · MENNESKER"
+forsvandt.
+
+### Løsningen — strengt scopet til Cases på mobil
+
+Tilføjet én ny regel inden i en `@media(max-width:767px)`-blok, scopet
+specifikt til `[data-cases-list] .talk-card img` (attributten
+`data-cases-list` findes **udelukkende** på selve Cases-oversigten, ikke
+på Foredrag eller forsidens fremhævede cases-teaser):
+
+- `height:auto` (fjerner den faste 140px)
+- `aspect-ratio:16/9` (matcher billedernes faktiske, native format
+  præcist — 2048×1152)
+- `object-fit:contain` (viser hele billedet, ingen beskæring)
+
+Fordi `aspect-ratio` matcher billedernes ægte format 1:1, udfyldes
+rammen helt uden synlige bjælker i top eller bund — verificeret ved at
+sammenligne det tomme rum: 0px.
+
+### Bevidst IKKE ændret
+
+- **Desktop og tablet** (>767px): stadig `height:140px` og
+  `object-fit:cover`, helt uændret — verificeret ved computed style på
+  1440px, 1024px, 834px og 768px.
+- **Foredrag-siden på mobil**: uændret, stadig `cover`/140px — reglen er
+  scopet til `[data-cases-list]`, som Foredrag ikke bruger.
+- **Forsidens fremhævede cases-teaser**: uændret (bruger
+  `data-featured-cases-list`, ikke `data-cases-list`) — uden for den
+  eksplicitte opgave.
+- Ingen ændringer i selve billedfilerne, case-tekster, rækkefølge,
+  filtre eller modal-funktion.
+
+### Test — 30 automatiserede tjek, alle bestået
+
+Testet ved 375px, 390px, 414px og 430px: `object-fit:contain` bekræftet,
+og det gengivne billedes højde/bredde-forhold matcher 16:9 præcist på
+alle fire bredder. Alle 11 billeder til stede og indlæses korrekt (også
+verificeret efter scroll, da billederne bruger lazy-loading — allerede
+eksisterende, upåvirket adfærd). Case-rækkefølge og -indhold uændret.
+Modal bekræftet stadig fungerende på mobil. Desktop, tablet (768/834/1024px)
+og Foredrag-siden bekræftet fuldstændig uændrede. Ingen regression på
+øvrige sider.
+
+**Visuelt bekræftet:** Skærmbillede af Case 01 på 390px viser nu hele
+billedet, inklusive "CASE 01 · MENNESKER" tydeligt øverst, titlen,
+nøgletalsboksen og bundlinjen "THE MFG COMPASS™ · FRA POTENTIALE TIL
+VARIGE RESULTATER" — intet er beskåret.
+
+**Eneste ændrede fil:** `assets/css/style.css` (én ny, scopet
+mobil-regel). Øvrige filer har udelukkende cache-busting
+versionsnummer opdateret.
+
 ## RC32 — de 11 rigtige casebilleder indsat + Kultur-foredrag flyttet
 
 ### 1. Cases — de 11 leverede billeder indsat
