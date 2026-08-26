@@ -4,6 +4,84 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC34 — ny side: IPA Analyser
+
+Ny, selvstændig side tilføjet oven på den nuværende version. Ingen
+database, ingen Supabase, ingen Vercel, ingen betalte tjenester —
+fortsat 0 kr. i ekstra faste driftsomkostninger, som krævet.
+
+### Kildegrundlag
+
+Al tekst er hentet og omskrevet tæt op ad "Beskrivelser af IPA
+Analyser.docx" — intet er opfundet. Specifikt bekræftet medtaget, som
+krævet:
+- GRIT Profiles fire områder (Struktur, Handling, Samarbejde, Forandring)
+- Leadership Mindsets fire perspektiver (Struktur, Resultat, Relation,
+  Forandring) samt integratorrollen
+- Den eksplicitte præcisering af, at Meta Profile ikke er en selvstændig
+  analyse, men bygger på en gennemført Core Personality Profile
+- Den eksplicitte præcisering af, at Leadership Mindset ikke er en test
+  af, om man er en god eller dårlig leder
+- Kun anvendelser, dokumentet faktisk nævner (lederudvikling,
+  rekruttering, onboarding, karriereafklaring, coaching,
+  medarbejderudvikling, teamsamarbejde, udvikling af ledergrupper)
+
+### Navigation
+
+Testet empirisk: "IPA Analyser" gav horisontal overflow på navigationen
+ved alle testede desktopbredder (960-1440px). "Analyser" passer ved de
+normale desktopbredder (1180px+). Brugt "Analyser", præcis som
+instrueret ved pladsmangel. Tilføjet til alle 11 eksisterende sider —
+kun tilføjet, intet i den eksisterende navigation er ændret eller
+flyttet.
+
+### Design
+
+Mørk navy, MFG-guld, samme skrifttyper og komponentmønstre
+(kort/knapper/modal-stil) som resten af sitet — ingen ny visuel stil
+opfundet. Ingen HR-software-look; store billeder, kort tekst, luft.
+
+### En fejl fundet og rettet undervejs
+
+Sektionen "Hvad kan analyserne bruges til?" genbrugte den eksisterende
+`.cases-head`-klasse for dens pæne, centrerede layout — men den klasse
+sætter overskriftens farve til hvid, fordi den normalt kun bruges i
+mørke sektioner (Cases-siden). Da min sektion er lys, blev overskriften
+næsten usynlig. Fundet ved at se det faktiske skærmbillede, ikke kun
+automatiske tjek, og rettet med en scopet override
+(`.ipa-usecases .cases-head h2`), der ikke påvirker `.cases-head` andre
+steder på sitet.
+
+### Billeder
+
+De tre leverede illustrationer er indsat uændret (samme
+pixel-dimensioner før/efter, ingen beskæring, ingen tekst/farver
+ændret). Alle bruger `object-fit:contain`, så hele infografikken —
+inklusive al tekst — altid er synlig, uanset skærmbredde, som krævet.
+
+### Ikke implementeret (som instrueret)
+
+- HR RealityCheck — ingen kode, ingen scripts, ingen plads reserveret
+- Intet badge/logo for Strategisk HR — kun tekstbaseret partnerblok,
+  da intet officielt materiale er leveret
+- Ingen nye tracking-, marketing- eller tredjepartscookies
+
+### Test — 51 automatiserede tjek, alle bestået
+
+Alle tre illustrationer indlæses korrekt og ubeskåret; alle tre
+"Læs mere"-modaller åbner med korrekt, kildebaseret indhold og lukker
+korrekt via kryds, baggrundsklik og Escape; begge eksterne links
+(IPA Nordic, Strategisk HR) peger korrekt og åbner i ny fane; CTA'en
+fører til den eksisterende kontaktside; ingen horisontal scroll på
+1180-1920px desktop, iPhone 375/390px eller iPad. Nul regression:
+Cases (fortsat 11), Foredrag (fortsat 13), kompas-fixet, kontaktoplysninger
+og alle øvrige sider bekræftet uændrede. Ingen konsolfejl.
+
+**Nye filer:** `ipa-analyser.html`, `assets/images/ipa/` (3 illustrationer).
+**Ændrede filer:** `assets/css/style.css` (ny, selvstændig IPA-sektion
+tilføjet nederst i filen), samt ét tilføjet navigationslink + CSS-versionsbump
+på de 11 eksisterende offentlige sider. Intet andet er ændret.
+
 ## RC33 — casebilleder ikke længere beskåret på mobil
 
 ### Årsagen
