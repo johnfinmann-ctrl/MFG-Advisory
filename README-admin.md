@@ -4,6 +4,80 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC35 — Responsive QA: 4 reelle fejl fundet og rettet
+
+Ren teknisk CSS/layout-rettelse, intet redesign. Eneste ændrede fil:
+`assets/css/style.css`.
+
+### 1. Cases — tekst kunne i princippet klippes
+
+Fandt ingen faktisk klipning i mine test (Chromium, alle bredder
+1024-1920px), men da rapporten specifikt nævnte Opera og Edge — begge
+Windows-almindelige browsere — er den mest sandsynlige årsag, at disse
+viser en fast, pladskrævende lodret scrollbar (i modsætning til
+Mac/Linux' overlay-scrollbar). Det kan forskyde sidens reelle bredde
+med 15-17px og få tekst til at ombryde anderledes, end mit testmiljø
+viser.
+
+**Rettet på to måder:**
+- Tilføjet `scrollbar-gutter:stable` på `html`, så scrollbarens
+  bredde altid er reserveret konsekvent — forhindrer den klassiske
+  "indhold hopper i bredde, når en scrollbar dukker op"-fejl.
+- Tilføjet eksplicitte, defensive regler på case-kortenes
+  overskrift/brødtekst (`height:auto;max-height:none;overflow:visible`),
+  så de garanteret kan vokse med indholdet, uanset browser.
+
+### 2. Header/navigation — "Kontakt" reelt klippet ved 960-1100px
+
+**Bekræftet og målt direkte:** Ved 960px, 1024px og 1100px krævede
+navigationen vandret scroll, og "Kontakt" var ikke fuldt synligt uden at
+scrolle i selve menu-linjen — en reel, målbar fejl, forværret af at
+"Analyser" nu er blevet det 10. menupunkt.
+
+**Rettet:** Justeret navigationens skriftstørrelse og mellemrum
+(samt bookingknappens og telefonnummerets størrelse) til én samlet,
+testet indstilling, der giver reel plads i hele intervallet 960px og
+opefter. Verificeret ved direkte måling af hvert menupunkts position
+mod viewportets kanter — ikke kun beregnet bredde — ved 14 forskellige
+bredder fra 768px til 1920px.
+
+### 3. Mobil — indhold skjult bag sticky header
+
+Selve sidens indlæsning havde tilstrækkelig afstand til headeren
+overalt. Den reelle fejl var et andet sted: **interne anker-links**
+("Se foredragene" på Foredrag-siden, "Se relateret case →" på
+Mennesker/Ledelse/Kultur/Forretning) manglede `scroll-margin-top`.
+Ved klik hoppede siden til sektionen med toppen helt op til y=0,
+hvilket placerede overskriften bag den 67px høje faste header —
+bekræftet direkte ved at udføre det faktiske klik og måle positionen
+bagefter.
+
+**Rettet:** Tilføjet `scroll-margin-top:100px` til alle 5 berørte
+ankermål (`#foredrag-oversigt`, `#case-mennesker`, `#case-ledelse`,
+`#case-kultur`, `#case-forretning`), scopet præcist til disse ID'er.
+
+### 4. Analyser — "Læs mere →" i navy på navy
+
+Bekræftet: knapperne brugte den globale `.btn-ghost`-klasse, som er
+navy tekst/kant — designet til lyse baggrunde. På den mørke
+IPA-sektion blev teksten næsten usynlig. Rettet med en scopet
+override (`.ipa-area-card .btn-ghost.ipa-readmore-btn`) til MFG-guld
+(`--copper-light`), med omvendt (navy-på-guld) hover-tilstand.
+Modal-funktionen er urørt og fortsat fuldt fungerende.
+
+### Test — alle 8 krævede bredder, alle nævnte sider
+
+Testet ved 375/390/430/768/1024/1280/1440/1920px på forsiden, Cases
+(både oversigt og hele siden), Analyser, header/navigation. Ingen
+klippet tekst, ingen elementer uden for viewport, ingen horisontal
+scroll, intet indhold skjult bag header, ingen navigation der
+forsvinder. Bekræftet ved direkte, målte tjek — ikke kun beregnede
+værdier — for hvert punkt. Nul regression: Cases (11), Foredrag (13),
+kompas-fixet, alle modaler (Cases og Analyser) bekræftet fortsat
+fungerende.
+
+**Eneste ændrede fil:** `assets/css/style.css`.
+
 ## RC34 — ny side: IPA Analyser
 
 Ny, selvstændig side tilføjet oven på den nuværende version. Ingen
