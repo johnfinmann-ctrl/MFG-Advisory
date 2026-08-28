@@ -4,6 +4,47 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC37 — udtømmende gennemgang af tjeklisten; ingen yderligere fejl fundet
+
+**Vigtigt at være ærlig om:** De to vedhæftede billeder i denne besked
+viste begge mobilvisningen (som allerede er godkendt og bekræftet
+korrekt) — ikke desktop. Der er derfor stadig ikke set et konkret
+billede af selve desktop-fejlen.
+
+**Kodeændringer i denne runde: ingen.** Jeg gennemgik hele den
+specificerede tjekliste systematisk mod den nuværende kode:
+
+| Tjekpunkt | Fundet i CSS? |
+|---|---|
+| fast height på tekstområdet | Nej — eksplicit `height:auto` |
+| min-height/max-height | Nej — kun `min-height:0` (fjerner en flex-standard, øger ikke risiko) og `max-height:none` |
+| overflow:hidden | Nej — ingen overordnet container omkring case-kortene har det |
+| line-clamp | Findes slet ikke i hele stylesheetet |
+| grid-auto-rows | Findes slet ikke i hele stylesheetet |
+| align-items:stretch på Cases | Nej — sat til `start` specifikt for Cases-gridet |
+| flex-basis | Ikke brugt på case-kortene |
+| desktop-only media queries med højde | Ingen fundet, der rammer case-kort |
+
+Kortet er allerede en ægte flex-kolonne uden nogen højdebegrænsning —
+den mest robuste struktur, jeg kan konstruere uden at se den faktiske
+fejl.
+
+**Verificeret på ny:** 1024, 1100, 1280, 1440, 1920px — nul målt
+klipning af overskrift, teaser eller nøgletal; begge CTA-knapper
+("Læs hele casen", "Book en samtale") synlige på alle kort ved alle
+fem bredder. Screenshots ved 1280px og 1440px af de første 4 kort
+vedhæftet, som krævet — al tekst og begge knapper er synlige.
+Mobil/tablet under 1024px bekræftet fuldstændig uændret.
+
+**Hvis fejlen stadig består:** Jeg har nu tre gange lavet stadigt
+kraftigere, strukturelle rettelser uden at kunne gengive problemet i
+mit testmiljø (Chromium, inkl. simuleret Windows-skalering). Uden et
+faktisk desktop-screenshot af selve fejlen — gerne med
+browser-zoomniveau og evt. Windows-skærmskalering (100/125/150 %) —
+er jeg nu ved grænsen for, hvad jeg kan finde ved kodegennemgang alene.
+En kort skærmoptagelse eller endnu et screenshot, denne gang af PC-
+visningen, vil gøre en afgørende forskel.
+
 ## RC36 — Cases-kort gjort markant mere robuste mod klipning
 
 **Vigtigt at vide:** Der var ikke vedhæftet noget screenshot i denne
