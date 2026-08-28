@@ -4,6 +4,67 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC36 — Cases-kort gjort markant mere robuste mod klipning
+
+**Vigtigt at vide:** Der var ikke vedhæftet noget screenshot i denne
+besked. Jeg har derfor ikke selv kunnet se det konkrete udseende, du
+oplever på Windows/Opera/Edge. Jeg har til gengæld gravet betydeligt
+dybere end sidste gang og lavet en markant stærkere rettelse — men jeg
+kan ærligt talt ikke 100% garantere, at den løser præcis det, du ser,
+uden selv at have set billedet.
+
+### Hvad jeg gjorde denne gang
+
+Sidste rettelse (RC35) tilføjede defensive regler mod faste højder, men
+kortene brugte stadig almindelig blok-visning inde i et CSS Grid, som
+som udgangspunkt strækker naboer til samme højde (`align-items:stretch`
+er Grids standard). Det burde ikke i sig selv klippe tekst, og jeg kunne
+heller ikke måle nogen klipning — men for at fjerne enhver tvivl har jeg
+nu lavet en væsentligt kraftigere, mere garanterende løsning:
+
+- **Case-kortet er nu en ægte flex-kolonne** (`display:flex;flex-direction:column`),
+  ikke almindelig blokvisning. Det er samme, afprøvede metode, jeg
+  tidligere brugte til at løse et tilsvarende problem på
+  Foredrag-siden.
+- **`align-items:start` på selve grid'et**, så Grids indbyggede
+  strækning af naboer til samme højde er slået helt fra på Cases-siden.
+  (Præcist scopet, så Foredrag-siden — som bevidst ØNSKER ensartet
+  korthøjde — beholder sin egen indstilling uændret.)
+- Hvert element i kortet (billede, kategori-tag, overskrift, teaser,
+  nøgletal, knapper) er eksplicit sat til `flex:none`, så intet
+  krymper eller vokser ud over sit eget indhold.
+- De tidligere defensive regler (`height:auto;max-height:none;overflow:visible`
+  på overskrift og brødtekst) er bevaret.
+
+### Test udført
+
+- 33 automatiserede tjek ved præcis de 6 bredder, du bad om (960, 1024,
+  1100, 1280, 1440, 1920px): nul målte tilfælde af klippet tekst
+  (`scrollHeight > clientHeight`) på nogen overskrift eller brødtekst.
+- Testet desuden med simuleret Windows-skærmskalering (125 %), som er
+  almindelig på bærbare — stadig nul klipning målt.
+- Høj-opløsnings nærbilleder af enkeltkort gennemgået visuelt af mig —
+  fuld overskrift, fuld brødtekst, alle nøgletal og begge knapper
+  synlige på hvert kort, jeg tjekkede.
+- Jeg forsøgte at teste i WebKit (Safari-motoren) og Firefox for at
+  udelukke en motor-specifik gengivelsesforskel, men kunne ikke
+  installere dem i dette miljø (ingen netværksadgang til browser-
+  download'et). Jeg kan derfor ikke 100 % udelukke en Chromium-specifik
+  Windows-gengivelsesforskel, jeg ikke selv kan se.
+- Nul regression: Cases (11), Foredrag (13), filtre, begge modaller
+  (Cases og Analyser), navigation ved alle 6 bredder, kompas-fixet og
+  Analyser-knappernes guldfarve alle bekræftet uændrede/fungerende.
+
+### Hvis fejlen stadig består
+
+Send det faktiske screenshot med denne besked — det blev ikke
+vedhæftet denne gang, og uden at se det konkrete udseende, kan jeg kun
+gøre koden defensivt stærkere, ikke ramme en specifik, usynlig fejl
+præcist. Gerne også hvilken skærmopløsning og evt. Windows-skalering
+(100 %/125 %/150 %) du bruger.
+
+**Eneste ændrede fil:** `assets/css/style.css`.
+
 ## RC35 — Responsive QA: 4 reelle fejl fundet og rettet
 
 Ren teknisk CSS/layout-rettelse, intet redesign. Eneste ændrede fil:

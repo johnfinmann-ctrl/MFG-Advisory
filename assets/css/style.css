@@ -407,8 +407,15 @@
   .cases-head .eyebrow{color:var(--copper-light);justify-content:center;display:flex}
   .cases-head h2{color:var(--white);margin:16px 0 14px}
   .cases-head p{color:#c7cedb}
-  .cases-grid{display:grid;grid-template-columns:1fr;gap:20px}
+  .cases-grid{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
   @media(min-width:720px){.cases-grid{grid-template-columns:repeat(2,1fr)}}
+  /* Cases-siden: kortet er en flex-kolonne uden nogen højdebegrænsning,
+     så det altid vokser præcist til det indhold, det faktisk indeholder
+     (overskrift, teaser, nøgletal, CTA-knapper) — uanset skærmbredde
+     eller browser. align-items:start på grid'et forhindrer desuden Grids
+     standard "stretch"-adfærd i at tvinge naboer til samme højde. */
+  [data-cases-list] .talk-card{display:flex;flex-direction:column;height:auto;min-height:0}
+  [data-cases-list] .talk-card > *{flex:none}
   .case-teaser{display:block;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:26px 24px;transition:var(--transition);height:auto;overflow:visible}
   .case-teaser h4,.case-teaser p{height:auto;max-height:none;overflow:visible;white-space:normal;word-wrap:break-word}
   .case-teaser img{width:100%;height:140px;object-fit:cover;border-radius:var(--radius);margin-bottom:14px}
