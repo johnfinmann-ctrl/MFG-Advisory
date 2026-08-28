@@ -4,6 +4,52 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC38 — Case-billeder rettet på desktop/tablet
+
+**Årsagen fundet præcist:** `.case-teaser img{height:140px;object-fit:cover}`
+tvang billedet ind i en fast 140px-højde og beskar dermed toppen af de
+16:9-formaterede billeder — herunder titlen indbygget i selve
+billedfilen (fx "Ledelse gennem indflydelse" og "Kundeløftet blev gjort
+til adfærd"). En tilsvarende rettelse var allerede lavet, men kun for
+mobil (`@media(max-width:767px)`), og gjaldt derfor ikke desktop og
+tablet.
+
+**Løsningen:** Fjernet mobil-afgrænsningen fra den eksisterende,
+allerede godkendte fix, så den nu gælder ved alle bredder — men kun for
+selve Cases-siden. Billedet bruger `aspect-ratio:16/9` (matcher
+billedernes faktiske format præcist) og `object-fit:contain` i stedet
+for `cover`, så hele billedet, inklusive al tekst i selve filen, altid
+er synligt uden beskæring eller forvrængning.
+
+**Strengt scopet, rører intet andet:**
+- Reglen gælder kun `[data-cases-list] .talk-card img` — et attribut,
+  der udelukkende findes på selve Cases-oversigten.
+- Foredrag-siden og forsidens fremhævede cases-teaser bruger begge
+  fortsat den oprindelige `height:140px;object-fit:cover`-regel
+  uændret — verificeret eksplicit.
+- Ingen ændring af billedfilerne selv, case-tekst, nøgletal, CTA-knapper,
+  kortbredde eller modal-funktion — alt det, RC36/RC37 allerede rettede,
+  er urørt og genverificeret.
+- Mobil er bekræftet 100 % uændret (samme regel som allerede var
+  godkendt der).
+
+### Test — alle 4 krævede bredder, alle tjek bestået
+
+1024px, 1280px, 1440px og 1920px: alle billeder bekræftet
+`object-fit:contain`, korrekt indlæst, og det gengivne billedes
+højde/bredde-forhold matcher 16:9 præcist (ingen strækning/forvrængning).
+Screenshots af Case 05 og Case 07 vedhæftet ved 1280px — begge viser nu
+hele overskriften inde i billedet ("CASE 05 · LEDELSE" / "Ledelse
+gennem indflydelse — ikke organisationsdiagram" og "CASE 07 · KULTUR" /
+"Kundeløftet blev gjort til adfærd — ikke en plakat") fuldt synlig.
+
+Fuld regressionstest: ingen tekstklipning, modal fungerer, 11 cases,
+mobilbillede uændret, Foredrag-billeder uændret (fortsat `cover`),
+forsidens fremhævede cases uændret (fortsat `cover`).
+
+**Eneste ændrede fil:** `assets/css/style.css` (én CSS-regel udvidet
+fra mobil-kun til alle bredder).
+
 ## RC37 — udtømmende gennemgang af tjeklisten; ingen yderligere fejl fundet
 
 **Vigtigt at være ærlig om:** De to vedhæftede billeder i denne besked

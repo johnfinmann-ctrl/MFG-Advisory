@@ -419,15 +419,16 @@
   .case-teaser{display:block;background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:26px 24px;transition:var(--transition);height:auto;overflow:visible}
   .case-teaser h4,.case-teaser p{height:auto;max-height:none;overflow:visible;white-space:normal;word-wrap:break-word}
   .case-teaser img{width:100%;height:140px;object-fit:cover;border-radius:var(--radius);margin-bottom:14px}
-  /* Cases-siden, mobil kun: vis hele det originale 16:9-billede uden beskæring.
-     Skal IKKE påvirke desktop, tablet eller Foredrag-siden. */
-  @media(max-width:767px){
-    [data-cases-list] .talk-card img{
-      height:auto;
-      aspect-ratio:16/9;
-      object-fit:contain;
-      background:var(--navy-mid);
-    }
+  /* Cases-siden (alle bredder — mobil, tablet og desktop): vis hele det
+     originale 16:9-billede uden beskæring af tekst/indhold i selve
+     billedet. Scopet strengt til [data-cases-list], så det IKKE
+     påvirker Foredrag-siden eller forsidens fremhævede cases-teaser,
+     som begge fortsat bruger standard-reglen ovenfor. */
+  [data-cases-list] .talk-card img{
+    height:auto;
+    aspect-ratio:16/9;
+    object-fit:contain;
+    background:var(--navy-mid);
   }
   .case-teaser .testimonial-avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-bottom:12px}
   .case-teaser .testimonial-logo{width:auto;height:28px;object-fit:contain;margin-top:12px;border-radius:0;background:none}
