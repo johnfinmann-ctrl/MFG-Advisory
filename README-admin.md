@@ -4,6 +4,44 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC39 — De 3 fremhævede cases på forsiden rettet
+
+**Undersøgelsen bekræftede præcis det, du mistænkte:** Forsiden bruger
+en **helt separat komponent** til de 3 fremhævede cases —
+`[data-featured-cases-list]` — adskilt fra selve Cases-sidens
+`[data-cases-list]`. RC38's rettelse var scopet strengt til
+`[data-cases-list]` og påvirkede derfor aldrig forsidens kort, som
+stadig brugte den oprindelige `.case-teaser img{height:140px;object-fit:cover}`
+og dermed beskar toppen af billedet — nøjagtig de eksempler, du nævnte.
+
+**Løsningen:** Tilføjet den samme, allerede afprøvede regel
+(`aspect-ratio:16/9;object-fit:contain`) som en ny, lokal regel scopet
+specifikt til `[data-featured-cases-list] .talk-card img` — én blok
+kode, ingen ændring af den globale `.case-teaser`-regel eller af
+Cases-siden.
+
+**Bekræftet urørt:**
+- `cases.html` — bekræftet ved diff: kun cache-busting
+  versionsnummer ændret, intet indhold. Fortsat 11 cases, billeder
+  fortsat korrekte, modal fungerer.
+- De samme 3 cases vises fortsat (Case 01, Case 04, Case 07).
+- Case-data, tekster, nøgletal, CTA'er, modal — alt uændret.
+- Foredrag-siden — fortsat `cover`/140px, uændret.
+- Mobilvisningen på forsiden — allerede korrekt, fortsat uændret.
+
+### Test — alle 4 krævede bredder
+
+1024px, 1280px, 1440px og 1920px: alle 3 fremhævede billeder bekræftet
+`object-fit:contain`, korrekt indlæst, gengivet forhold matcher 16:9
+præcist. Skærmbillede af hele sektionen "Cases og dokumenterede
+resultater" med alle 3 kort vedhæftet ved 1280px — alle tre
+billedoverskrifter ("Fra høj personaleomsætning...", "Én
+ledelsesrytme på tværs af 32 butikker", "Kundeløftet blev gjort til
+adfærd — ikke en plakat") er nu fuldt synlige fra begyndelsen.
+
+**Ændret fil:** `assets/css/style.css` (én ny, lokal regel tilføjet).
+`cases.html` er ikke rørt.
+
 ## RC38 — Case-billeder rettet på desktop/tablet
 
 **Årsagen fundet præcist:** `.case-teaser img{height:140px;object-fit:cover}`
