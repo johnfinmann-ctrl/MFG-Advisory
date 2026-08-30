@@ -4,6 +4,82 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC40 — Navigationen forenklet: fra 10 til 4 hovedpunkter
+
+Ny desktop-navigation: **MFG leverancer | Analyser & HR-værktøjer |
+Cases | Om MFG**, plus telefonnummer og "Book en strategisk samtale" —
+implementeret på alle 12 offentlige sider.
+
+### 1. "Forside" fjernet
+
+Logoet linker fortsat til `index.html`, uændret. Menupunktet "Forside"
+findes ikke længere.
+
+### 2. "MFG leverancer" — ny dropdown
+
+Mennesker, Ledelse, Kultur, Forretning og Foredrag er samlet under ét
+klik-baseret dropdown-punkt. Fungerer identisk med mus-klik og
+touch-tap (ren klik-toggle i JavaScript, ikke afhængig af `:hover`).
+Lukker ved klik udenfor, ved Escape, og ved valg af et link. Alle 5
+oprindelige URL'er (`mennesker.html` osv.) er 100 % uændrede.
+
+**En reel fejl fundet og rettet undervejs:** Dropdown-panelet var
+usynligt ved første implementering — `elementFromPoint` viste, at
+forsidens kompas-sektion modtog klik/hover i stedet for menuen.
+Årsagen var `.main-nav{overflow-x:auto}`: ifølge CSS-specifikationen
+tvinger en eksplicit `overflow-x`-værdi browseren til også at sætte
+`overflow-y` til `auto`, hvilket usynligt beskar den absolut
+positionerede dropdown-menu, der stikker ud under navigationslinjen.
+Rettet ved at fjerne `overflow-x:auto` — ikke længere nødvendigt som
+sikkerhedsnet, nu hvor der kun er 4 hovedpunkter i stedet for 10.
+Fanget ved at teste faktisk klikbarhed (`elementFromPoint`), ikke kun
+`display`/`opacity`.
+
+**Mobil:** Ingen ekstra klik nødvendigt. Når burgermenuen åbnes, vises
+alle fem punkter direkte under overskriften "MFG LEVERANCER" — bekræftet
+ved skærmbillede.
+
+### 3. "Analyser" → "Analyser & HR-værktøjer"
+
+Kun navnet ændret. Selve IPA Analyser-siden er urørt. Ingen nye
+integrationer, ingen HR RealityCheck-kode tilføjet, som eksplicit
+instrueret.
+
+### 4. Cases bevaret som selvstændigt hovedpunkt
+
+Ikke flyttet ind under noget andet menupunkt. `cases.html` er
+fuldstændig uændret — bekræftet: fortsat 11 cases, billederne fortsat
+korrekte, modal fungerer.
+
+### 5. "Om Morten" → "Om MFG"
+
+Kun navigations-label ændret. Selve siden (`om-morten.html`, URL og alt
+biografisk indhold) er urørt, som instrueret.
+
+### 6. "Kontakt" fjernet fra hovedmenuen
+
+`kontakt.html` findes fortsat uændret og er fortsat linket fra footeren
+(var allerede der). Telefonnummer og "Book en strategisk samtale" er
+fortsat synlige i headeren på alle sider, uændret.
+
+### Test — alle 7 krævede bredder
+
+375px, 390px, 768px, 1024px, 1280px, 1440px og 1920px: ingen
+menupunkter klippes, ingen horisontal scroll. Dropdown testet med
+faktisk klik (ikke kun hover) og bekræftet klikbar/ikke skjult bagved
+andet indhold. Burgermenu testet. Logo bekræftet linker til forsiden.
+Alle 5 sider under "MFG leverancer" åbnet og korrekt aktiv-tilstand
+verificeret (både på dropdown-knappen og det specifikke link). Cases
+og Analyser bekræftet fuldstændig uændrede.
+
+Screenshots af desktop-dropdown (åben tilstand) og mobilmenu vedhæftet.
+
+**Ændrede filer:** `assets/css/style.css` (dropdown-styling + fjernet
+`overflow-x:auto`), `assets/js/main.js` (dropdown-toggle-logik), samt
+navigationsblokken på alle 12 offentlige sider (nyt markup, korrekt
+aktiv-tilstand pr. side). Ingen ændring af sideindhold, Cases-data,
+Foredrag-data, Compass eller Analyser-siden.
+
 ## RC39 — De 3 fremhævede cases på forsiden rettet
 
 **Undersøgelsen bekræftede præcis det, du mistænkte:** Forsiden bruger

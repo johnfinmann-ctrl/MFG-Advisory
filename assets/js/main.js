@@ -32,6 +32,36 @@
     }
   }
 
+  // "MFG leverancer"-dropdown (desktop, ≥768px). På mobil er dette ikke
+  // en dropdown — de fem links vises altid direkte i den åbne burgermenu,
+  // så denne logik er kun relevant, når toggle-knappen rent faktisk er synlig.
+  const navDropdown = document.getElementById('navLeverancerDropdown');
+  const navDropdownToggle = document.getElementById('navLeverancerToggle');
+  if (navDropdown && navDropdownToggle) {
+    function closeDropdown(){
+      navDropdown.classList.remove('open');
+      navDropdownToggle.setAttribute('aria-expanded', 'false');
+    }
+    function openDropdown(){
+      navDropdown.classList.add('open');
+      navDropdownToggle.setAttribute('aria-expanded', 'true');
+    }
+    navDropdownToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navDropdown.classList.contains('open') ? closeDropdown() : openDropdown();
+    });
+    document.addEventListener('click', (e) => {
+      if (navDropdown.classList.contains('open') && !navDropdown.contains(e.target)) closeDropdown();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navDropdown.classList.contains('open')) closeDropdown();
+    });
+    // Luk dropdown'en, når man vælger et af de fem links (samme mønster som burgermenuen)
+    navDropdown.querySelectorAll('.nav-dropdown-menu a').forEach(a => {
+      a.addEventListener('click', closeDropdown);
+    });
+  }
+
   // Mobile hamburger menu (<768px only — desktop nav is untouched by this)
   const hamburger = document.getElementById('navHamburger');
   const navWrap = hamburger ? hamburger.closest('.nav-wrap') : null;
