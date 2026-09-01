@@ -705,6 +705,30 @@
     .ipa-modal-panel{padding:28px 20px;max-height:92vh}
   }
 
+  /* ---- Digitale analyseværktøjer (HR RealityCheck, Stress, Wellbeing) ---- */
+  .ipa-tools{padding:90px 0;background:var(--navy)}
+  .ipa-tools .cases-head{max-width:640px}
+  .ipa-tools .cases-head h2{color:var(--white)}
+  .ipa-tools .cases-head .eyebrow{color:var(--copper-light)}
+  .ipa-tools-intro{color:#c7cedb;margin-top:14px}
+  .ipa-tools-grid{display:grid;grid-template-columns:1fr;gap:20px;margin-top:44px}
+  @media(min-width:720px){.ipa-tools-grid{grid-template-columns:repeat(3,1fr)}}
+  .ipa-tool-card{background:var(--navy-mid);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);padding:30px;text-align:left}
+  .ipa-tool-icon{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:rgba(212,164,92,.12);color:var(--copper-light);margin-bottom:16px}
+  .ipa-tool-card h3{font-family:var(--font-display);font-size:1.2rem;color:var(--white);font-weight:500;margin-bottom:10px}
+  .ipa-tool-card p{color:#c7cedb;font-size:.9rem;line-height:1.65;margin-bottom:18px}
+  .ipa-tool-card .ipa-tool-open{border-color:var(--copper-light);color:var(--copper-light);background:transparent}
+  .ipa-tool-card .ipa-tool-open:hover{background:var(--copper-light);color:var(--navy)}
+
+  .ipa-modal-panel--wide{max-width:960px}
+  .ipa-tool-iframe-container{position:relative;width:100%;padding-top:56.25%;overflow:hidden;border-radius:8px;background:var(--warm-grey)}
+  .ipa-tool-iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+  .ipa-tool-iframe-fixed{min-height:600px}
+  @media(max-width:767px){
+    .ipa-modal-panel--wide{max-width:100%}
+    .ipa-tool-iframe-fixed{min-height:900px}
+  }
+
   .ipa-usecases{padding:90px 0;background:var(--off-white)}
   .ipa-usecases .cases-head h2{color:var(--text-dark)}
   .ipa-usecases .cases-head .eyebrow{color:var(--copper)}
@@ -719,7 +743,9 @@
 
   .ipa-partner{padding:56px 0;background:var(--white);border-top:1px solid var(--border)}
   .ipa-partner .container{max-width:720px;text-align:center}
+  .ipa-partner-logo{max-width:220px;width:100%;height:auto;margin:0 auto 20px;display:block}
   .ipa-partner-eyebrow{color:var(--copper);font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:10px}
   .ipa-partner h3{font-family:var(--font-display);font-size:1.3rem;color:var(--navy);font-weight:500;margin-bottom:12px}
   .ipa-partner p{color:var(--text-mid);font-size:.92rem;line-height:1.7;margin-bottom:16px}
+  .ipa-partner-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 28px}
 

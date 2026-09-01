@@ -4,6 +4,130 @@ Denne mappe indeholder et komplet, letvægts admin-CMS oven på den statiske
 MFG Advisory-hjemmeside. Det ændrer intet ved det offentlige design — det
 tilføjer kun et redigeringslag ovenpå.
 
+## RC41 — teknisk verifikation (ingen kodeændringer)
+
+Ren kontrolrunde efter anmodning. **Ingen filer er ændret** — bekræftet
+ved MD5-tjeksum af `ipa-analyser.html` og `assets/css/style.css` før og
+efter kontrollen.
+
+### "Host not in allowlist" — årsag afgjort
+
+Testede systematisk fem forskellige eksterne domæner i mit testmiljø:
+`360.ipanordic.dk`, `strategisk-hr.dk`, `www.ipanordic.com`,
+`www.google.com` og selve **mfgadvisory.dk**. Alle fem gav nøjagtig
+samme "Host not in allowlist"-fejl. Det bekræfter definitivt: det er en
+**generel netværksbegrænsning i mit eget testmiljø**, som blokerer al
+udgående trafik til eksterne domæner uden undtagelse — ikke noget
+specifikt problem med IPA Nordic eller Strategisk HR, og intet problem
+i vores iframe-implementering. URL'erne er **ikke** ændret.
+
+### Teknisk kontrol af de tre værktøjer
+
+- **URL'er:** Alle tre sammenlignet byte-for-byte mod den oprindeligt
+  leverede kode. Fuldstændig identiske, inklusive det afsluttende `#`
+  på Stress- og Wellbeing-linkene.
+- **HR RealityCheck:** `id`, `width`, `height="950"`, `frameborder`,
+  `style` og `title` matcher den leverede kode 1:1. `postMessage`-lytteren
+  for dynamisk højdejustering er ordret identisk med den leverede logik.
+- **Responsivitet — verificeret ved faktisk måling, ikke kun kode-læsning:**
+  16:9-forholdet for Stress og Wellbeing bekræftet matematisk korrekt
+  (1,78) ved 375px, 390px, 1024px, 1280px, 1440px og 1920px — både
+  inden i modalen på desktop og mobil. HR RealityChecks `width:100%`
+  bekræftet ved at måle, at iframets faktiske bredde nøjagtigt svarer
+  til modal-panelets indholdsbredde (efter padding) ved 768px og 1280px.
+- **Funktionalitet:** Alle tre modaler åbner og lukker korrekt (kryds,
+  baggrund, Escape). Doven indlæsning bekræftet intakt — ingen af de
+  tre iframes indlæses, før brugeren rent faktisk åbner det pågældende
+  kort.
+
+**Markeret til verifikation på den rigtige, deployede side:** Selve
+indholdet af de tre eksterne værktøjer (om de faktisk viser det
+korrekte IPA-/HR RealityCheck-indhold) kunne ikke ses i mit testmiljø
+på grund af netværksbegrænsningen ovenfor. Strukturen, koden og
+URL'erne er 100 % verificeret korrekte — den sidste, reelle
+indholdsverifikation bør ske på mfgadvisory.dk.
+
+### PeopleSuite-kontrol
+
+Genbekræftet: intet "Strategisk HR" tilbage nogen steder på siden,
+overskriften "En del af PeopleSuite Partnernetværk" til stede, logoet
+indlæses korrekt med rigtig alt-tekst, og begge links ("Læs mere om
+PeopleSuite Partnernetværk" og "Læs mere hos IPA Nordic") har korrekt
+adresse og åbner i ny fane.
+
+## RC41 — PeopleSuite Partnernetværk + tre nye analyseværktøjer
+
+### 1. "Strategisk HR" → "PeopleSuite Partnernetværk"
+
+Global søgning gennemført: **"Strategisk HR" fandtes udelukkende i
+`ipa-analyser.html`** — ingen andre filer i projektet nævnte navnet.
+Genkontrolleret efter ændringen: nul resterende forekomster.
+
+De to tidligere delvist overlappende sektioner ("En del af PeopleSuite
+Netværket" og den separate "Associeret samarbejdspartner med
+Strategisk HR") er slået sammen til **én diskret sektion**:
+"En del af PeopleSuite Partnernetværk", med det nye logo (fra det
+leverede billede) og begge eksisterende, gyldige links bevaret —
+"Læs mere om PeopleSuite Partnernetværk" og "Læs mere hos IPA Nordic".
+
+**Vigtigt forbehold om URL:** Ingen ny webadresse til PeopleSuite
+Partnernetværk blev leveret. Jeg har bevidst **ikke gættet** en ny
+URL — linket peger fortsat på den eksisterende adresse
+(strategisk-hr.dk/.../peoplesuite-netvaerk/), kun teksten er opdateret.
+Send den nye URL, hvis der findes en, så retter jeg linket.
+
+Sektionen er holdt bevidst diskret (lille logo, kort tekst, lys
+baggrund) og dominerer ikke MFG-brandet, som instrueret.
+
+### 2. Tre nye analyseværktøjer tilføjet
+
+Ny sektion "Analyser, du kan afprøve direkte" på Analyser-siden, med
+tre **kort** (ikke tre iframes efter hinanden): HR RealityCheck, IPA
+Stress Analyse, IPA Wellbeing. Hvert kort åbner det valgte værktøj i en
+modal — nøjagtig de leverede iframe-koder, uændrede i deres funktion:
+
+- **HR RealityCheck:** samme `src`, samme faste starthøjde (950px), og
+  den dynamiske højdejustering via `postMessage` er bevaret 1:1 —
+  testet eksplicit ved at simulere beskeden og bekræfte, at iframets
+  højde opdateres korrekt.
+- **IPA Stress Analyse og IPA Wellbeing:** samme 16:9
+  `padding-top`-teknik som i den leverede kode, så de altid er
+  responsive uden at blive beskåret.
+
+Alle tre iframes er **doven-indlæst** — de får først deres rigtige
+`src`, når brugeren rent faktisk åbner det pågældende kort, så de tre
+eksterne værktøjer ikke belaster sidens indlæsning unødigt.
+
+**Vigtigt om test af selve værktøjerne:** Mit testmiljø har en
+netværksbegrænsning, der blokerer adgang til eksterne domæner
+(`strategisk-hr.dk`, `360.ipanordic.dk`). Jeg har derfor kunnet
+verificere fuldt ud, at **strukturen, modalerne, den responsive
+opførsel og de korrekte `src`-værdier** er 100 % korrekte og matcher
+den leverede kode nøjagtigt — men jeg har ikke kunnet se selve
+værktøjernes indhold indlæse i mit testmiljø. Det bør fungere korrekt
+på den faktiske, offentligt tilgængelige hjemmeside.
+
+### 3. Test — alle 7 bredder
+
+375px, 390px, 768px, 1024px, 1280px, 1440px, 1920px: ingen horisontal
+scroll, hverken på selve siden eller med en åben værktøjs-modal. Alle
+tre modaler bekræftet med korrekt `src`, korrekt lazy-load-adfærd, og
+korrekt luk-funktion (kryds, baggrund, Escape — samme mønster som de
+øvrige IPA-modaler).
+
+### 4. Kontrol — intet andet ændret
+
+Navigation (RC40's dropdown), footer, Cases (11), Foredrag (13),
+Compass-fixet og de tre oprindelige personprofil-modaller (A/B/C, "Læs
+mere"-knapperne fortsat guld) alle bekræftet uændrede ved gentestning.
+
+**Ændrede/nye filer:** `ipa-analyser.html` (ny værktøjs-sektion, ny
+partnersektion, opdateret JS), `assets/css/style.css` (ny styling for
+værktøjskort, brede modaller, responsive iframe-beholdere),
+`assets/images/partners/peoplesuite-partnernetvaerk-logo.png` (nyt
+logo). Ingen andre filers indhold er ændret — øvrige sider har kun
+cache-busting versionsnummer opdateret, bekræftet ved diff.
+
 ## RC40 — Navigationen forenklet: fra 10 til 4 hovedpunkter
 
 Ny desktop-navigation: **MFG leverancer | Analyser & HR-værktøjer |

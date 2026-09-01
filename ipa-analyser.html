@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=rc40b">
+<link rel="stylesheet" href="assets/css/style.css?v=rc41">
 </head>
 <body>
 
@@ -129,6 +129,42 @@
     </div>
   </section>
 
+  <section class="ipa-tools">
+    <div class="container">
+      <div class="cases-head">
+        <span class="eyebrow">Digitale værktøjer</span>
+        <h2 class="display-md" data-edit="ipa-tools-title">Analyser, du kan afprøve direkte</h2>
+        <p class="body-lg ipa-tools-intro" data-edit="ipa-tools-intro">Tre digitale værktøjer, der supplerer personprofilerne med et hurtigt øjebliksbillede — af organisationens HR-fundament, af stressniveauet eller af trivslen. Vælg det værktøj, der er relevant, og åbn det direkte her på siden.</p>
+      </div>
+      <div class="ipa-tools-grid">
+        <div class="ipa-tool-card">
+          <span class="ipa-tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l2 2 4-4M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg>
+          </span>
+          <h3>HR RealityCheck</h3>
+          <p>Et hurtigt tjek af organisationens HR-fundament — hvor solidt det står, og hvor de største udviklingsmuligheder ligger.</p>
+          <button type="button" class="btn btn-ghost btn-sm ipa-tool-open" data-open-ipa-modal="modal-tool-hrcheck" data-clarity-event="ipa_tool_hrcheck_open">Åbn analysen →</button>
+        </div>
+        <div class="ipa-tool-card">
+          <span class="ipa-tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+          </span>
+          <h3>IPA Stress Analyse</h3>
+          <p>Et øjebliksbillede af stressniveauet — som udgangspunkt for en tidlig og konstruktiv samtale, før belastningen vokser sig for stor.</p>
+          <button type="button" class="btn btn-ghost btn-sm ipa-tool-open" data-open-ipa-modal="modal-tool-stress" data-clarity-event="ipa_tool_stress_open">Åbn analysen →</button>
+        </div>
+        <div class="ipa-tool-card">
+          <span class="ipa-tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.5-9.5-9C1 8 2.5 4 6.5 4c2 0 3.5 1.2 4.5 2.8C12 5.2 13.5 4 15.5 4 19.5 4 21 8 21 12c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+          </span>
+          <h3>IPA Wellbeing</h3>
+          <p>Et bredere billede af trivslen i hverdagen — som grundlag for dialog om, hvad der styrker energi, engagement og fastholdelse.</p>
+          <button type="button" class="btn btn-ghost btn-sm ipa-tool-open" data-open-ipa-modal="modal-tool-wellbeing" data-clarity-event="ipa_tool_wellbeing_open">Åbn analysen →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="ipa-usecases">
     <div class="container">
       <div class="cases-head">
@@ -148,20 +184,16 @@
     </div>
   </section>
 
-  <section class="ipa-network">
-    <div class="container">
-      <h2 class="display-md" data-edit="ipa-network-title">En del af PeopleSuite Netværket</h2>
-      <p data-edit="ipa-network-text">MFG Advisory arbejder med IPA-analyser og PeopleSuite-løsninger som en del af PeopleSuite Netværket — et fagligt netværk omkring IPA-analyser, PeopleSuite, HR-værktøjer, faglig sparring og fælles synlighed. MFG Advisory driver fortsat egen virksomhed, egne kunder og egne ydelser.</p>
-      <a class="btn btn-outline" href="https://www.ipanordic.com/da" target="_blank" rel="noopener" data-clarity-event="ipa_nordic_link_click"><span data-edit="ipa-network-cta">Læs mere hos IPA Nordic ↗</span></a>
-    </div>
-  </section>
-
   <section class="ipa-partner">
     <div class="container">
+      <img class="ipa-partner-logo" src="assets/images/partners/peoplesuite-partnernetvaerk-logo.png" alt="PeopleSuite Partnernetværk" loading="lazy">
       <span class="ipa-partner-eyebrow">Samarbejde</span>
-      <h3 data-edit="ipa-partner-title">Associeret samarbejdspartner med Strategisk HR</h3>
-      <p data-edit="ipa-partner-text">MFG Advisory indgår i det faglige netværk omkring PeopleSuite, IPA-analyser og Strategisk HR.</p>
-      <a class="ct-link" href="https://www.strategisk-hr.dk/om-strategisk-hr/peoplesuite-netvaerk/" target="_blank" rel="noopener" data-clarity-event="strategisk_hr_link_click">Læs mere om Strategisk HR ↗</a>
+      <h3 data-edit="ipa-partner-title">En del af PeopleSuite Partnernetværk</h3>
+      <p data-edit="ipa-partner-text">MFG Advisory arbejder med IPA-analyser og PeopleSuite-løsninger som en del af PeopleSuite Partnernetværk — et fagligt netværk omkring IPA-analyser, PeopleSuite, HR-værktøjer, faglig sparring og fælles synlighed. MFG Advisory driver fortsat egen virksomhed, egne kunder og egne ydelser.</p>
+      <div class="ipa-partner-links">
+        <a class="ct-link" href="https://www.strategisk-hr.dk/om-strategisk-hr/peoplesuite-netvaerk/" target="_blank" rel="noopener" data-clarity-event="peoplesuite_partnernetvaerk_link_click">Læs mere om PeopleSuite Partnernetværk ↗</a>
+        <a class="ct-link" href="https://www.ipanordic.com/da" target="_blank" rel="noopener" data-clarity-event="ipa_nordic_link_click">Læs mere hos IPA Nordic ↗</a>
+      </div>
     </div>
   </section>
 </main>
@@ -271,6 +303,49 @@
   </div>
 </div>
 
+<!-- ===== Digitale analyseværktøjer — iframe-modaller ===== -->
+<div class="ipa-modal" id="modal-tool-hrcheck">
+  <div class="ipa-modal-backdrop" data-close-ipa-modal></div>
+  <div class="ipa-modal-panel ipa-modal-panel--wide" role="dialog" aria-modal="true" aria-labelledby="modal-tool-hrcheck-title">
+    <button class="ipa-modal-close" type="button" data-close-ipa-modal aria-label="Luk">✕</button>
+    <h3 id="modal-tool-hrcheck-title">HR RealityCheck</h3>
+    <div id="hrcheck-wrap" style="width:100%;">
+      <iframe
+          id="hrcheck-frame"
+          class="ipa-tool-iframe-fixed"
+          data-src="https://strategisk-hr.dk/HRRealityCheckSite.html"
+          width="100%"
+          height="950"
+          frameborder="0"
+          style="border:none; display:block; width:100%;"
+          title="HR RealityCheck">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<div class="ipa-modal" id="modal-tool-stress">
+  <div class="ipa-modal-backdrop" data-close-ipa-modal></div>
+  <div class="ipa-modal-panel ipa-modal-panel--wide" role="dialog" aria-modal="true" aria-labelledby="modal-tool-stress-title">
+    <button class="ipa-modal-close" type="button" data-close-ipa-modal aria-label="Luk">✕</button>
+    <h3 id="modal-tool-stress-title">IPA Stress Analyse</h3>
+    <div class="ipa-tool-iframe-container">
+      <iframe data-src="https://360.ipanordic.dk/IPAStressIndex.html#" frameborder="0" title="IPA Stress Analyse"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="ipa-modal" id="modal-tool-wellbeing">
+  <div class="ipa-modal-backdrop" data-close-ipa-modal></div>
+  <div class="ipa-modal-panel ipa-modal-panel--wide" role="dialog" aria-modal="true" aria-labelledby="modal-tool-wellbeing-title">
+    <button class="ipa-modal-close" type="button" data-close-ipa-modal aria-label="Luk">✕</button>
+    <h3 id="modal-tool-wellbeing-title">IPA Wellbeing</h3>
+    <div class="ipa-tool-iframe-container">
+      <iframe data-src="https://360.ipanordic.dk/IPAWellbeingIndex.html#" frameborder="0" title="IPA Wellbeing"></iframe>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="container">
     <div class="footer-brand">MFG <em>Advisory</em></div>
@@ -312,6 +387,13 @@
       if (!modal) return;
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+      // Doven indlæsning: iframe'et for analyseværktøjerne får først sin
+      // rigtige src, første gang modalen faktisk åbnes — så de tre
+      // eksterne værktøjer ikke belaster sidens indlæsning, før nogen
+      // rent faktisk beder om at se dem.
+      modal.querySelectorAll('iframe[data-src]').forEach(iframe => {
+        if (!iframe.getAttribute('src')) iframe.setAttribute('src', iframe.getAttribute('data-src'));
+      });
       const closeBtn = modal.querySelector('.ipa-modal-close');
       if (closeBtn) closeBtn.focus();
     });
@@ -320,6 +402,15 @@
     el.addEventListener('click', closeAllIpaModals);
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllIpaModals(); });
+
+  // HR RealityCheck: dynamisk højde via postMessage — samme funktion som i
+  // den leverede kode, uændret i sin logik.
+  window.addEventListener('message', function (e) {
+    if (e.data && e.data.iframeHeight) {
+      const frame = document.getElementById('hrcheck-frame');
+      if (frame) frame.style.height = (e.data.iframeHeight + 30) + 'px';
+    }
+  });
 })();
 </script>
 
